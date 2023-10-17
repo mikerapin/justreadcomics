@@ -1,21 +1,7 @@
-import { model, ObjectId, Schema } from 'mongoose';
+import { model, Schema } from 'mongoose';
+import { ISeriesSchema } from '../types/series';
 
-interface SeriesSchema {
-  seriesName: string;
-  image?: string;
-  credits?: {
-    name: string;
-    role: string;
-  };
-  services?: ObjectId[];
-  meta: {
-    searches: number;
-    clickOuts: number;
-  };
-  lastScan?: string;
-}
-
-const seriesSchema = new Schema<SeriesSchema>(
+const seriesSchema = new Schema<ISeriesSchema>(
   {
     seriesName: {
       required: true,
@@ -38,13 +24,16 @@ const seriesSchema = new Schema<SeriesSchema>(
         default: 0
       }
     },
-    lastScan: Date
+    lastScan: {
+      type: Date,
+      default: null
+    }
   },
   {
     timestamps: true
   }
 );
 
-const seriesModel = model<SeriesSchema>('comic_series', seriesSchema);
+const seriesModel = model<ISeriesSchema>('comic_series', seriesSchema);
 
 export { seriesModel };

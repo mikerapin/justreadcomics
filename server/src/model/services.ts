@@ -1,13 +1,14 @@
 import { model, Schema } from 'mongoose';
+import { IServicesSchema } from '../types/services';
 
-const dataSchema = new Schema({
+const servicesSchema = new Schema<IServicesSchema>({
   serviceName: {
     required: true,
     type: String
   },
   image: {
-    required: true,
-    type: String
+    type: String,
+    default: null
   },
   siteUrl: {
     required: true,
@@ -15,4 +16,6 @@ const dataSchema = new Schema({
   }
 });
 
-module.exports = model('Data', dataSchema);
+const servicesModel = model<IServicesSchema>('services', servicesSchema);
+
+export { servicesModel };

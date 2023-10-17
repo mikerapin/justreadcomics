@@ -1,19 +1,25 @@
 import { Request } from 'express';
+import { ObjectId } from 'mongoose';
 
-interface GetSeriesById {
-  id: string;
-}
-
-interface GetSeriesByIdRequest extends Request {
-  body: GetSeriesById;
-}
-
-interface GetSeriesByName {
+interface Creator {
   name: string;
+  role: string;
 }
 
-interface GetSeriesByNameRequest extends Request {
-  body: GetSeriesByName;
+interface ISeriesSchema {
+  seriesName: string;
+  image?: string;
+  credits?: Creator[];
+  services?: string[];
+  meta: {
+    searches: number;
+    clickOuts: number;
+  };
+  lastScan?: string;
 }
 
-export { GetSeriesByIdRequest, GetSeriesByNameRequest };
+interface CreateSeriesRequest extends Request {
+  body: ISeriesSchema;
+}
+
+export { ISeriesSchema, CreateSeriesRequest };

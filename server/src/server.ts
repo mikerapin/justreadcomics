@@ -1,8 +1,12 @@
 import cors = require('cors');
 import express = require('express');
 import dotenv from 'dotenv';
+// don't move this line down or the DB won't connect correctly
 dotenv.config({ path: './config.env' });
+
 import { connectToServer } from './db/conn';
+import { seriesRouter } from './controllers/series';
+import { servicesRouter } from './controllers/services';
 
 const app = express();
 
@@ -15,6 +19,8 @@ process.on('uncaughtException', function (err) {
 
 app.use(cors());
 app.use(express.json());
+app.use('/api/series', seriesRouter);
+app.use('/api/services', servicesRouter);
 
 app.listen(port, async () => {
   try {
