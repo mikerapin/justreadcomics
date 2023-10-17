@@ -8,6 +8,7 @@ interface Creator {
 
 interface ISeriesSchema {
   seriesName: string;
+  description?: string;
   image?: string;
   credits?: Creator[];
   services?: string[];

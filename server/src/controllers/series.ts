@@ -10,10 +10,11 @@ import { lookupServices } from './services';
 const seriesRouter = express.Router();
 
 seriesRouter.post('/create', async (req: CreateSeriesRequest, res: Response) => {
-  const { seriesName, image, credits, services, meta, lastScan } = req.body;
+  const { seriesName, description, image, credits, services, meta, lastScan } = req.body;
   try {
     const newSeries = new seriesModel({
       seriesName,
+      description,
       image,
       credits,
       services,
@@ -41,12 +42,13 @@ seriesRouter.get('/get/:id', async (req: Request, res: Response) => {
 });
 
 seriesRouter.patch('/update/:id', async (req: CreateSeriesRequest, res: Response) => {
-  const { seriesName, image, credits, services, meta, lastScan } = req.body;
+  const { seriesName, description, image, credits, services, meta, lastScan } = req.body;
   try {
     const series = await seriesModel.findOneAndUpdate(
       { _id: new Types.ObjectId(req.params.id) },
       {
         seriesName,
+        description,
         image,
         credits,
         services,

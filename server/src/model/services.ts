@@ -1,7 +1,7 @@
 import { model, Schema } from 'mongoose';
-import { IServicesSchema } from '../types/services';
+import { IServices } from '../types/services';
 
-const servicesSchema = new Schema<IServicesSchema>({
+const servicesSchema = new Schema<IServices>({
   serviceName: {
     required: true,
     type: String
@@ -16,6 +16,6 @@ const servicesSchema = new Schema<IServicesSchema>({
   }
 });
 
-const servicesModel = model<IServicesSchema>('services', servicesSchema);
+const servicesModel = model<IServices>('services', servicesSchema);
 
 export { servicesModel };

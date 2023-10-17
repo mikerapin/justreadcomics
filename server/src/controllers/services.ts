@@ -18,12 +18,13 @@ const lookupServices = async (serviceIds?: string[]) => {
 };
 
 servicesRouter.post('/create', async (req: CreateServiceRequest, res: Response) => {
-  const { serviceName, siteUrl, image } = req.body;
+  const { serviceName, siteUrl, image, type } = req.body;
   try {
-    const newService = await new servicesModel({
+    const newService = new servicesModel({
       serviceName,
       siteUrl,
-      image
+      image,
+      type
     });
 
     await newService.validate();

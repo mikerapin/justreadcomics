@@ -9,14 +9,21 @@ import { ObjectId } from 'mongoose';
 //   params: GetSeriesById;
 // }
 
-interface IServicesSchema {
+enum ServiceType {
+  PAID = 'paid',
+  SUBSCRIPTION = ' subscription',
+  FREE = 'free'
+}
+
+interface IServices {
   serviceName: string;
   image?: string;
   siteUrl: string;
+  type: ServiceType;
 }
 
 interface CreateServiceRequest extends Request {
-  body: IServicesSchema;
+  body: IServices;
 }
 
 interface FindServices {
@@ -27,4 +34,4 @@ interface FindServicesRequest extends Request {
   body: FindServices;
 }
 
-export { IServicesSchema, CreateServiceRequest, FindServicesRequest };
+export { IServices, CreateServiceRequest, FindServicesRequest };

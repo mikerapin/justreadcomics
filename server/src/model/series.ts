@@ -7,6 +7,7 @@ const seriesSchema = new Schema<ISeriesSchema>(
       required: true,
       type: String
     },
+    description: String,
     image: {
       type: String
     },

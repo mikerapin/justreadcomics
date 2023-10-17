@@ -3,28 +3,33 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.css';
-import {createBrowserRouter, RouterProvider,} from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Home from './pages/Home';
 import ErrorPage from './pages/ErrorPage';
 import PageTemplate from './pages/PageTemplate';
+import { SeriesDetail } from './pages/SeriesDetail';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <PageTemplate/>,
-    errorElement: <ErrorPage/>,
+    element: <PageTemplate />,
+    errorElement: <ErrorPage />,
     children: [
       {
         path: '/',
         element: <Home />
+      },
+      {
+        path: '/series/:id',
+        element: <SeriesDetail />
       }
     ]
-  },
+  }
 ]);
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <RouterProvider router={router}/>
+    <RouterProvider router={router} />
   </React.StrictMode>
 );
 
