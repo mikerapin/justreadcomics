@@ -18,16 +18,41 @@ const lookupServices = async (serviceIds?: string[]) => {
 };
 
 servicesRouter.post('/create', async (req: CreateServiceRequest, res: Response) => {
-  console.log(req.body);
+  const { serviceName, siteUrl, image } = req.body;
   try {
     const newService = await new servicesModel({
-      serviceName: req.body.serviceName,
-      siteUrl: req.body.siteUrl
+      serviceName,
+      siteUrl,
+      image
     });
 
     await newService.validate();
     const savedSeries = await newService.save();
     res.status(200).json(savedSeries);
+  } catch (err: any) {
+    res.status(400).json(err);
+  }
+});
+
+servicesRouter.patch('/update/:id', async (req: CreateServiceRequest, res: Response) => {
+  const { serviceName, siteUrl, image } = req.body;
+  try {
+    const updatedService = await servicesModel.findOneAndUpdate(
+      { _id: new Types.ObjectId(req.params.id) },
+      {
+        serviceName,
+        siteUrl,
+        image
+      }
+    );
+
+    if (updatedService) {
+      await updatedService.validate();
+      const savedService = await updatedService.save();
+      res.status(200).json(savedService);
+    } else {
+      res.status(404).json({ message: 'service with id:' + req.params.id + ' not found, sorry dude' });
+    }
   } catch (err: any) {
     res.status(400).json(err);
   }
