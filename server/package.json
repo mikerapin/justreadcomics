@@ -4,6 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "ts-node ./src/server.ts",
+    "start:prod": "npm run build && node ./dist/src/server.js",
+    "build": "npx tsc",
+    "start:nodemon": "./node_modules/nodemon/bin/nodemon.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -14,7 +18,20 @@
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "mongodb": "^6.1.0",
-    "mongoose": "^7.6.2",
-    "nodemon": "^3.0.1"
+    "mongoose": "^7.6.2"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.14",
+    "@types/express": "^4.17.19",
+    "@types/node": "^20.8.6",
+    "@typescript-eslint/eslint-plugin": "^6.8.0",
+    "@typescript-eslint/parser": "^6.8.0",
+    "eslint": "^8.51.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "nodemon": "^3.0.1",
+    "prettier": "^3.0.3",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
   }
 }
