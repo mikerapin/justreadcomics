@@ -1,7 +1,7 @@
 import { model, Schema } from 'mongoose';
-import { ISeriesSchema } from '../types/series';
+import { ISeries } from '../types/series';
 
-const seriesSchema = new Schema<ISeriesSchema>(
+const seriesSchema = new Schema<ISeries>(
   {
     seriesName: {
       required: true,
@@ -35,6 +35,6 @@ const seriesSchema = new Schema<ISeriesSchema>(
   }
 );
 
-const seriesModel = model<ISeriesSchema>('comic_series', seriesSchema);
+const seriesModel = model<ISeries>('comic_series', seriesSchema);
 
 export { seriesModel };

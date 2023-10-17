@@ -1,12 +1,13 @@
 import { Request } from 'express';
 import { ObjectId } from 'mongoose';
+import { IService } from './services';
 
 interface Creator {
   name: string;
   role: string;
 }
 
-interface ISeriesSchema {
+interface ISeries {
   seriesName: string;
   description?: string;
   image?: string;
@@ -19,8 +20,13 @@ interface ISeriesSchema {
   lastScan?: string;
 }
 
-interface CreateSeriesRequest extends Request {
-  body: ISeriesSchema;
+interface IHydratedSeries {
+  series: ISeries;
+  services: IService | object;
 }
 
-export { ISeriesSchema, CreateSeriesRequest };
+interface CreateSeriesRequest extends Request {
+  body: ISeries;
+}
+
+export { IHydratedSeries, ISeries, CreateSeriesRequest };

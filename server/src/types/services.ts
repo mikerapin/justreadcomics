@@ -15,7 +15,7 @@ enum ServiceType {
   FREE = 'free'
 }
 
-interface IServices {
+interface IService {
   serviceName: string;
   image?: string;
   siteUrl: string;
@@ -23,7 +23,7 @@ interface IServices {
 }
 
 interface CreateServiceRequest extends Request {
-  body: IServices;
+  body: IService;
 }
 
 interface FindServices {
@@ -34,4 +34,4 @@ interface FindServicesRequest extends Request {
   body: FindServices;
 }
 
-export { IServices, CreateServiceRequest, FindServicesRequest };
+export { IService, CreateServiceRequest, FindServicesRequest };

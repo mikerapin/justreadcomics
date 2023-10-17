@@ -4,7 +4,7 @@ export enum ServiceType {
   FREE = 'free'
 }
 
-export interface IServices {
+export interface IService {
   serviceName: string;
   image?: string;
   siteUrl: string;

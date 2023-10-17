@@ -1,6 +1,6 @@
-import { IServices, ServiceType } from '../types/service';
+import { IService, ServiceType } from '../types/service';
 
-export const Services = ({ services }: { services?: IServices[] }) => {
+export const Services = ({ services }: { services?: IService[] }) => {
   if (!services) {
     return null;
   }

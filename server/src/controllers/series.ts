@@ -2,12 +2,51 @@ import express = require('express');
 import { Request, Response } from 'express';
 import { Types } from 'mongoose';
 
-import { CreateSeriesRequest } from '../types/series';
+import { CreateSeriesRequest, IHydratedSeries } from '../types/series';
 
 import { seriesModel } from '../model/series';
 import { lookupServices } from './services';
 
 const seriesRouter = express.Router();
+
+// GetAll Method
+seriesRouter.get('/get/all', async (req: Request, res: Response) => {
+  let skip = 0;
+  console.log(req.params.cursor, parseInt(req.params.cursor, 10));
+  const cursor = parseInt(req.params.cursor, 10) || 0;
+  if (cursor > 0) {
+    skip = cursor * 25;
+  }
+  const seriesLookup = await seriesModel.find().sort('seriesName').limit(26).skip(skip);
+  let hasNextPage = false;
+  if (seriesLookup.length === 26) {
+    hasNextPage = true;
+    seriesLookup.pop();
+  }
+
+  const hydratedSeries: Promise<IHydratedSeries>[] = seriesLookup.map(async (s) => {
+    const hydratedServices = await lookupServices(s?.services);
+    return {
+      series: s,
+      services: hydratedServices
+    };
+  });
+
+  const findResults = {
+    data: await Promise.all(hydratedSeries),
+    hasNextPage,
+    hasPreviousPage: cursor === 0
+  };
+  res.status(200).json(findResults);
+});
+
+// Get by ID Method
+seriesRouter.get('/get/:id', async (req: Request, res: Response) => {
+  const series = await seriesModel.findOne({ _id: new Types.ObjectId(req.params.id) });
+
+  const hydratedServices = await lookupServices(series?.services);
+  res.status(200).json({ series, services: hydratedServices });
+});
 
 seriesRouter.post('/create', async (req: CreateSeriesRequest, res: Response) => {
   const { seriesName, description, image, credits, services, meta, lastScan } = req.body;
@@ -31,14 +70,6 @@ seriesRouter.post('/create', async (req: CreateSeriesRequest, res: Response) => 
   } catch (error: any) {
     res.status(400).json({ message: error.message });
   }
-});
-
-// Get by ID Method
-seriesRouter.get('/get/:id', async (req: Request, res: Response) => {
-  const series = await seriesModel.findOne({ _id: new Types.ObjectId(req.params.id) });
-
-  const hydratedServices = await lookupServices(series?.services);
-  res.status(200).json({ series, services: hydratedServices });
 });
 
 seriesRouter.patch('/update/:id', async (req: CreateSeriesRequest, res: Response) => {
@@ -70,6 +101,7 @@ seriesRouter.patch('/update/:id', async (req: CreateSeriesRequest, res: Response
     res.status(400).json({ message: error.message });
   }
 });
+
 // Search by name Method
 // router.get('/get-name/:name', (req: Request, res: Response) => {
 //   res.send('Get by ID API');

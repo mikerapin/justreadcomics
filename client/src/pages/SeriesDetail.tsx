@@ -3,12 +3,12 @@ import { fetchSeriesById } from '../data/series';
 import { useParams } from 'react-router-dom';
 import { ISeries } from '../types/series';
 import { Services } from '../components/Services';
-import { IServices } from '../types/service';
+import { IService } from '../types/service';
 
 export const SeriesDetail = () => {
   let { id } = useParams();
   const [series, setSeries] = useState<ISeries>();
-  const [services, setServices] = useState<IServices[]>();
+  const [services, setServices] = useState<IService[]>();
   useEffect(() => {
     if (id) {
       fetchSeriesById(id).then((result) => {

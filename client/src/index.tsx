@@ -8,7 +8,12 @@ import Home from './pages/Home';
 import ErrorPage from './pages/ErrorPage';
 import PageTemplate from './pages/PageTemplate';
 import { SeriesDetail } from './pages/SeriesDetail';
+import { AdminTemplate } from './pages/admin/AdminTemplate';
+import { AdminHome } from './pages/admin/AdminHome';
+import { AdminSeries } from './pages/admin/AdminSeries';
+import { AdminService } from './pages/admin/AdminService';
 
+// @ts-ignore
 const router = createBrowserRouter([
   {
     path: '/',
@@ -22,6 +27,25 @@ const router = createBrowserRouter([
       {
         path: '/series/:id',
         element: <SeriesDetail />
+      }
+    ]
+  },
+  {
+    path: '/admin',
+    element: <AdminTemplate />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        path: '/admin',
+        element: <AdminHome />
+      },
+      {
+        path: '/admin/series',
+        element: <AdminSeries />
+      },
+      {
+        path: '/admin/services',
+        element: <AdminService />
       }
     ]
   }
