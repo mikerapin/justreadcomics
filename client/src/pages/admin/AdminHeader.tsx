@@ -16,19 +16,30 @@ export const AdminHeader = () => {
             <Logo admin />
           </a>
 
-          <ul className="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-            <li>
-              <Link to="/admin" className={`nav-link px-2 ${path === '/admin' ? 'link-secondary' : 'link-body-emphasis'}`}>
+          <ul className="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0 ">
+            <li className="btn-group">
+              <Link to="/admin" className={`btn ${path === '/admin' ? 'btn-danger' : 'btn-secondary'}`}>
                 Dashboard
               </Link>
             </li>
-            <li>
-              <Link to="/admin/series" className={`nav-link px-2 ${path === '/admin/series' ? 'link-secondary' : 'link-body-emphasis'}`}>
+            <li className={'btn-group'}>
+              <Link to="/admin/series" className={`btn ${path.match('/admin/series') ? 'btn-danger' : 'btn-secondary'}`}>
                 Series
               </Link>
+              <button type="button" className="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                <span className="visually-hidden">Toggle Dropdown</span>
+              </button>
+
+              <ul className="dropdown-menu">
+                <li>
+                  <a className="dropdown-item" href="/admin/series/add">
+                    Add
+                  </a>
+                </li>
+              </ul>
             </li>
             <li>
-              <Link to="/admin/services" className={`nav-link px-2 ${path === '/admin/services' ? 'link-secondary' : 'link-body-emphasis'}`}>
+              <Link to="/admin/services" className={`btn ${path.match('/admin/services') ? 'btn-danger' : 'btn-secondary'}`}>
                 Services
               </Link>
             </li>

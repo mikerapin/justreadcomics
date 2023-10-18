@@ -3,6 +3,7 @@ import { IService } from './service';
 export interface Creator {
   name: string;
   role: string;
+  order: number;
 }
 
 export interface ISeries {

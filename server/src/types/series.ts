@@ -5,6 +5,7 @@ import { IService } from './services';
 interface Creator {
   name: string;
   role: string;
+  order?: number;
 }
 
 interface ISeries {

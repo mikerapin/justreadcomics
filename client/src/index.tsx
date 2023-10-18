@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.css';
+import '@popperjs/core/dist/esm/popper';
+import 'bootstrap/dist/js/bootstrap.js';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Home from './pages/Home';
 import ErrorPage from './pages/ErrorPage';
@@ -12,6 +14,7 @@ import { AdminTemplate } from './pages/admin/AdminTemplate';
 import { AdminHome } from './pages/admin/AdminHome';
 import { AdminSeries } from './pages/admin/AdminSeries';
 import { AdminService } from './pages/admin/AdminService';
+import { AdminSeriesEdit } from './pages/admin/AdminSeriesEdit';
 
 // @ts-ignore
 const router = createBrowserRouter([
@@ -42,6 +45,10 @@ const router = createBrowserRouter([
       {
         path: '/admin/series',
         element: <AdminSeries />
+      },
+      {
+        path: '/admin/series/:id',
+        element: <AdminSeriesEdit />
       },
       {
         path: '/admin/services',
