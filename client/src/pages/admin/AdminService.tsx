@@ -40,9 +40,9 @@ export const AdminService = () => {
   return (
     <div className="container">
       <div className="d-flex justify-content-end">
-        <button type="button" className="btn btn-primary">
+        <Link to="/admin/service/new" type="button" className="btn btn-primary">
           + Add
-        </button>
+        </Link>
       </div>
       <div className="series content">
         <table className="table table-striped table-hover table-responsive align-middle">

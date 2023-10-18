@@ -27,3 +27,15 @@ export const updateSeriesById = async (series: Partial<ISeries>) => {
   });
   return res.json();
 };
+
+export const createSeries = async (series: Partial<ISeries>) => {
+  const res = await fetch(`${API_BASE_URL}/series/create`, {
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    },
+    method: 'POST',
+    body: JSON.stringify(series)
+  });
+  return res.json();
+};

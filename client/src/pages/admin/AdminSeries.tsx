@@ -20,13 +20,14 @@ export const AdminSeries = () => {
 
     return seriesList.data.map((hydratedSeries) => {
       return (
-        <tr key={hydratedSeries.series.seriesName}>
+        <tr key={hydratedSeries.series._id}>
           <td>{hydratedSeries.series.seriesName}</td>
           <td>
             {hydratedSeries.services &&
               hydratedSeries.services.map((service) => {
                 return (
                   <img
+                    key={service._id}
                     style={{ maxHeight: '30px' }}
                     className="img-thumbnail rounded-2 bg-whit"
                     src={`/img/services/${service.image}`}
@@ -49,9 +50,9 @@ export const AdminSeries = () => {
   return (
     <div className="container">
       <div className="d-flex justify-content-end">
-        <button type="button" className="btn btn-primary">
+        <Link to="/admin/series/new" type="button" className="btn btn-primary">
           + Add
-        </button>
+        </Link>
       </div>
       <div className="series content">
         <table className="table table-striped table-hover table-responsive align-middle">

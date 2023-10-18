@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import { Creator, ISeries } from '../../types/series';
-import { fetchSeriesById, updateSeriesById } from '../../data/series';
+import { createSeries, fetchSeriesById, updateSeriesById } from '../../data/series';
 import { Toast } from 'bootstrap';
 import { getCoverImage } from '../../util/image';
 import { useFieldArray, useForm } from 'react-hook-form';
@@ -50,18 +50,23 @@ export const AdminSeriesEdit = () => {
     }
   }, [showSuccessToast]);
 
-  if (!series) {
-    return <></>;
-  }
-
   const saveSeries = handleSubmit((seriesForm) => {
     seriesForm.credits = seriesForm.credits?.filter((c) => c.name !== '' && c.role !== '');
-    updateSeriesById({ _id: id, ...seriesForm }).then(() => {
-      if (successToastRef.current) {
-        const toastBootstrap = new Toast(successToastRef.current);
-        toastBootstrap.show();
-      }
-    });
+    if (id) {
+      updateSeriesById({ _id: id, ...seriesForm }).then(() => {
+        if (successToastRef.current) {
+          const toastBootstrap = new Toast(successToastRef.current);
+          toastBootstrap.show();
+        }
+      });
+    } else {
+      createSeries(seriesForm).then(() => {
+        if (successToastRef.current) {
+          const toastBootstrap = new Toast(successToastRef.current);
+          toastBootstrap.show();
+        }
+      });
+    }
   });
 
   const getNextOrder = () => {
@@ -76,7 +81,7 @@ export const AdminSeriesEdit = () => {
     <div className="container">
       <form onSubmit={saveSeries}>
         <div className="d-flex justify-content-between align-items-center">
-          <h3 className="mt-3 mb-3">Editing {series.seriesName}</h3>
+          <h3 className="mt-3 mb-3">Editing {series?.seriesName}</h3>
           <div>
             <button type="submit" className="btn btn-primary">
               Save
@@ -90,7 +95,7 @@ export const AdminSeriesEdit = () => {
           </div>
           <div ref={rightColumnRef} className="col-md-8">
             <div className="mb-3">
-              Last Scan: <strong>{series.lastScan ? new Date(series.lastScan).toLocaleString() : 'Unknown'}</strong>
+              Last Scan: <strong>{series?.lastScan ? new Date(series.lastScan).toLocaleString() : 'Unknown'}</strong>
             </div>
             <div className="form-floating mb-3">
               <input {...register('seriesName')} className="form-control" id="seriesName" placeholder="X-Men (2023)" />
@@ -132,7 +137,7 @@ export const AdminSeriesEdit = () => {
       </form>
       <div ref={successToastRef} className="toast align-items-center text-bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
         <div className="d-flex">
-          <div className="toast-body">Successfully saved {series.seriesName}</div>
+          <div className="toast-body">Successfully saved {series?.seriesName}</div>
           <button type="button" className="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
       </div>

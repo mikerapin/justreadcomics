@@ -41,12 +41,20 @@ export const siteRouter = [
         element: <AdminSeries />
       },
       {
+        path: '/admin/series/new',
+        element: <AdminSeriesEdit />
+      },
+      {
         path: '/admin/series/:id',
         element: <AdminSeriesEdit />
       },
       {
         path: '/admin/services',
         element: <AdminService />
+      },
+      {
+        path: '/admin/service/new',
+        element: <AdminServiceEdit />
       },
       {
         path: '/admin/service/:id',
