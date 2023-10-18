@@ -12,7 +12,6 @@ const seriesRouter = express.Router();
 // GetAll Method
 seriesRouter.get('/get/all', async (req: Request, res: Response) => {
   let skip = 0;
-  console.log(req.params.cursor, parseInt(req.params.cursor, 10));
   const cursor = parseInt(req.params.cursor, 10) || 0;
   if (cursor > 0) {
     skip = cursor * 25;
@@ -35,7 +34,7 @@ seriesRouter.get('/get/all', async (req: Request, res: Response) => {
   const findResults = {
     data: await Promise.all(hydratedSeries),
     hasNextPage,
-    hasPreviousPage: cursor === 0
+    hasPreviousPage: cursor !== 0
   };
   res.status(200).json(findResults);
 });

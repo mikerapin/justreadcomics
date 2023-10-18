@@ -13,6 +13,14 @@ const servicesSchema = new Schema<IService>({
   siteUrl: {
     required: true,
     type: String
+  },
+  searchUrl: {
+    required: true,
+    type: String
+  },
+  type: {
+    required: true,
+    type: String
   }
 });
 

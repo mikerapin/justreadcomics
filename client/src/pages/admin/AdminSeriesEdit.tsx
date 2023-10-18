@@ -3,10 +3,10 @@ import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { Creator, ISeries } from '../../types/series';
 import { IService } from '../../types/service';
 import { fetchSeriesById, updateSeriesById } from '../../data/series';
-import { DEFAULT_COVER_IMAGE } from '../../static/const';
 import { EditCreator } from './subcomponents/EditCreator';
 import uniqid from 'uniqid';
 import { Toast } from 'bootstrap';
+import { getCoverImage } from '../../util/image';
 
 export const AdminSeriesEdit = () => {
   let { id } = useParams();
@@ -124,7 +124,7 @@ export const AdminSeriesEdit = () => {
       <div className="row">
         <div className="col-4 mb-3">
           {/* add click to view in modal \/\/\/ */}
-          <img className="img-fluid" src={series.image || DEFAULT_COVER_IMAGE} />
+          <img className="img-fluid" src={getCoverImage(series)} />
         </div>
         <div ref={rightColumnRef} className="col-md-8">
           <div className="mb-3">

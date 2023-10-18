@@ -6,57 +6,10 @@ import 'bootstrap/dist/css/bootstrap.css';
 import '@popperjs/core/dist/esm/popper';
 import 'bootstrap/dist/js/bootstrap.js';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import Home from './pages/Home';
-import ErrorPage from './pages/ErrorPage';
-import PageTemplate from './pages/PageTemplate';
-import { SeriesDetail } from './pages/SeriesDetail';
-import { AdminTemplate } from './pages/admin/AdminTemplate';
-import { AdminHome } from './pages/admin/AdminHome';
-import { AdminSeries } from './pages/admin/AdminSeries';
-import { AdminService } from './pages/admin/AdminService';
-import { AdminSeriesEdit } from './pages/admin/AdminSeriesEdit';
+import { siteRouter } from './router/routes';
 
 // @ts-ignore
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <PageTemplate />,
-    errorElement: <ErrorPage />,
-    children: [
-      {
-        path: '/',
-        element: <Home />
-      },
-      {
-        path: '/series/:id',
-        element: <SeriesDetail />
-      }
-    ]
-  },
-  {
-    path: '/admin',
-    element: <AdminTemplate />,
-    errorElement: <ErrorPage />,
-    children: [
-      {
-        path: '/admin',
-        element: <AdminHome />
-      },
-      {
-        path: '/admin/series',
-        element: <AdminSeries />
-      },
-      {
-        path: '/admin/series/:id',
-        element: <AdminSeriesEdit />
-      },
-      {
-        path: '/admin/services',
-        element: <AdminService />
-      }
-    ]
-  }
-]);
+const router = createBrowserRouter(siteRouter);
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>

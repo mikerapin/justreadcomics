@@ -1,23 +1,15 @@
 import { Request } from 'express';
-import { ObjectId } from 'mongoose';
-
-// interface GetSeriesById {
-//   id: string;
-// }
-//
-// interface GetSeriesByIdRequest extends Request {
-//   params: GetSeriesById;
-// }
 
 enum ServiceType {
+  FREE = 'free',
   PAID = 'paid',
-  SUBSCRIPTION = ' subscription',
-  FREE = 'free'
+  SUBSCRIPTION = ' subscription'
 }
 
 interface IService {
-  serviceName: string;
   image?: string;
+  searchUrl: string;
+  serviceName: string;
   siteUrl: string;
   type: ServiceType;
 }

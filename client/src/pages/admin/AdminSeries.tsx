@@ -37,7 +37,7 @@ export const AdminSeries = () => {
           </td>
           <td>{hydratedSeries.series.lastScan || 'Unknown'}</td>
           <td>
-            <Link to={`/admin/series/${hydratedSeries.series._id}`} className="btn btn-secondary" type="button">
+            <Link to={`/admin/series/${hydratedSeries.series._id}`} className="btn btn-sm btn-primary">
               Edit
             </Link>
           </td>

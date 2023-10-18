@@ -39,7 +39,7 @@ export const AdminHeader = () => {
               </ul>
             </li>
             <li>
-              <Link to="/admin/services" className={`btn ${path.match('/admin/services') ? 'btn-danger' : 'btn-secondary'}`}>
+              <Link to="/admin/services" className={`btn ${path.match('/admin/service') ? 'btn-danger' : 'btn-secondary'}`}>
                 Services
               </Link>
             </li>
