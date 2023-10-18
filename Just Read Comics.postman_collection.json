@@ -1,12 +1,60 @@
 {
 	"info": {
-		"_postman_id": "9e1b7a60-88d7-415b-8051-3fe5316ca2b9",
+		"_postman_id": "79bc5f50-1e33-40a1-a8ff-dae362b7390d",
 		"name": "Just Read Comics",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "519730",
-		"_collection_link": "https://cloudy-moon-271833.postman.co/workspace/Mike~6785f2b0-495c-4aa4-a71a-e0185022302b/collection/519730-9e1b7a60-88d7-415b-8051-3fe5316ca2b9?action=share&source=collection_link&creator=519730"
+		"_exporter_id": "28540183",
+		"_collection_link": "https://acuity-enterprise.postman.co/workspace/Acuity-Enterprise-Workspace~a3e62fa1-2160-4757-8c0e-437337ef35fc/collection/28540183-79bc5f50-1e33-40a1-a8ff-dae362b7390d?action=share&source=collection_link&creator=28540183"
 	},
 	"item": [
+		{
+			"name": "get series by id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8090/api/series/get/652dd3bb54404cf3543c2be1",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"api",
+						"series",
+						"get",
+						"652dd3bb54404cf3543c2be1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all series",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8090/api/series/get/all?cursor=0",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"api",
+						"series",
+						"get",
+						"all"
+					],
+					"query": [
+						{
+							"key": "cursor",
+							"value": "0"
+						}
+					]
+				}
+			},
+			"response": []
+		},
 		{
 			"name": "create series",
 			"request": {
@@ -43,7 +91,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"seriesName\": \"Transformers (2023)\",\n    \"services\": [\"652de841ce685949fc8a622a\"],\n    \"credits\": [{\n        \"name\": \"Daniel Warren Johnson\",\n        \"role\": \"Penciller\"\n    }]\n}",
+					"raw": "{\n    \"seriesName\": \"Transformers (2023)\",\n    \"services\": [\"652ea8fd905191bc5f8c34bd\"],\n    \"description\": \"THE ALL NEW TRANSFORMERS ERA STARTS HERE! Superstar creator DANIEL WARREN JOHNSON (DO A POWERBOMB, Wonder Woman: Dead Earth), alongside ENERGON UNIVERSE showrunner ROBERT KIRKMAN (VOID RIVALS, INVINCIBLE), reimagines Hasbro’s robots in disguise for a brand-new generation.\\n\\nOptimus Prime was supposed to have led the Autobots to victory. Instead, the fate of Cybertron is unknown, and his allies have crash-landed far  from home, alongside their enemies—the Decepticons. As these titanic forces renew their war on Earth, one thing is immediately clear: the planet will never be the same. New alliances are struck. Battle lines are redrawn. And humanity’s only hope of survival is Optimus Prime.\\n\\nDiscover THE TRANSFORMERS like you’ve never seen them before!\",\n    \"credits\": [{\n        \"name\": \"Daniel Warren Johnson\",\n        \"role\": \"Penciller\"\n    }]\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -51,7 +99,7 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8090/api/series/update/652dd3bb54404cf3543c2be1",
+					"raw": "localhost:8090/api/series/update/652ea8a5661fc16cb99b77d4",
 					"host": [
 						"localhost"
 					],
@@ -60,58 +108,7 @@
 						"api",
 						"series",
 						"update",
-						"652dd3bb54404cf3543c2be1"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "update service",
-			"request": {
-				"method": "PATCH",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"image\": \"amazon.svg\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "localhost:8090/api/services/update/652de841ce685949fc8a622a",
-					"host": [
-						"localhost"
-					],
-					"port": "8090",
-					"path": [
-						"api",
-						"services",
-						"update",
-						"652de841ce685949fc8a622a"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "get series by id",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "localhost:8090/api/series/get/652dd3bb54404cf3543c2be1",
-					"host": [
-						"localhost"
-					],
-					"port": "8090",
-					"path": [
-						"api",
-						"series",
-						"get",
-						"652dd3bb54404cf3543c2be1"
+						"652ea8a5661fc16cb99b77d4"
 					]
 				}
 			},
@@ -153,7 +150,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\": \"Amazon.com\",\n    \"siteUrl\": \"https://www.amazon.com/comixology\"\n}",
+					"raw": "{\n    \"serviceName\": \"Amazon.com\",\n    \"siteUrl\": \"https://www.amazon.com/comixology\",\n    \"image\": \"amazon.svg\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -170,6 +167,36 @@
 						"api",
 						"services",
 						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update service",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"image\": \"amazon.svg\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8090/api/services/update/652de841ce685949fc8a622a",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"api",
+						"services",
+						"update",
+						"652de841ce685949fc8a622a"
 					]
 				}
 			},
