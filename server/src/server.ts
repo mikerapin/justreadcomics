@@ -7,6 +7,7 @@ dotenv.config({ path: './config.env' });
 import { connectToServer } from './db/conn';
 import { seriesRouter } from './controllers/series';
 import { servicesRouter } from './controllers/services';
+import { scraperRouter } from './controllers/scraper';
 
 const app = express();
 
@@ -21,6 +22,9 @@ app.use(cors());
 app.use(express.json());
 app.use('/api/series', seriesRouter);
 app.use('/api/services', servicesRouter);
+
+// scraper services
+app.use('/scraper', scraperRouter);
 
 app.listen(port, async () => {
   try {
