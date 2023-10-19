@@ -23,7 +23,8 @@ interface ISeries {
 
 interface IHydratedSeries {
   series: ISeries;
-  services: IService | object;
+  services: IService[] | object;
+  msg?: string;
 }
 
 interface CreateSeriesRequest extends Request {

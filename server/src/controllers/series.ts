@@ -23,7 +23,12 @@ seriesRouter.get('/get/all', async (req: Request, res: Response) => {
     seriesLookup.pop();
   }
 
-  const hydratedSeries: Promise<IHydratedSeries>[] = await seriesLookup.map(async (s) => {
+  if (seriesLookup.length === 0) {
+    res.status(200).json({});
+    return;
+  }
+
+  const hydratedSeries: Promise<IHydratedSeries>[] = seriesLookup.map(async (s) => {
     const hydratedServices = await lookupServices(s?.services);
     return {
       series: s,
@@ -39,12 +44,28 @@ seriesRouter.get('/get/all', async (req: Request, res: Response) => {
   res.status(200).json(findResults);
 });
 
+const getSeriesById = async (id: string) => {
+  const series = await seriesModel.findOne({ _id: new Types.ObjectId(id) });
+  if (!series) {
+    return {};
+  }
+
+  const hydratedServices = await lookupServices(series.services);
+
+  return { series, services: hydratedServices };
+};
+
 // Get by ID Method
 seriesRouter.get('/get/:id', async (req: Request, res: Response) => {
-  const series = await seriesModel.findOne({ _id: new Types.ObjectId(req.params.id) });
-
-  const hydratedServices = await lookupServices(series?.services);
-  res.status(200).json({ series, services: hydratedServices });
+  if (!req.params.id) {
+    res.status(400).json({ msg: 'no id? no data' });
+  }
+  const results = await getSeriesById(req.params.id);
+  if (Object.keys(results).length === 0) {
+    res.status(400).json({ msg: 'nothing found, sorry', services: {}, series: {} });
+    return;
+  }
+  res.status(200).json(results);
 });
 
 seriesRouter.post('/create', async (req: CreateSeriesRequest, res: Response) => {
@@ -116,4 +137,4 @@ seriesRouter.patch('/update/:id', async (req: CreateSeriesRequest, res: Response
 //   res.send('Delete by ID API');
 // });
 
-export { seriesRouter };
+export { getSeriesById, seriesRouter };

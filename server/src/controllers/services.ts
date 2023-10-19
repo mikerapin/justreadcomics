@@ -2,15 +2,16 @@ import express = require('express');
 import { Request, Response } from 'express';
 
 import { servicesModel } from '../model/services';
-import { CreateServiceRequest, FindServicesRequest } from '../types/services';
+import { CreateServiceRequest, FindServicesRequest, IService } from '../types/services';
 import { Types } from 'mongoose';
 
 const servicesRouter = express.Router();
 
-const lookupServices = async (serviceIds?: string[]) => {
+const lookupServices = async (serviceIds?: string[]): Promise<IService[] | object> => {
   if (!serviceIds) {
     return {};
   }
+  console.log(serviceIds);
   return servicesModel.find({ _id: { $in: serviceIds } });
 };
 
@@ -40,7 +41,7 @@ servicesRouter.get('/get/all', async (req: Request, res: Response) => {
 servicesRouter.get('/get/:id', async (req: Request, res: Response) => {
   const id = req.params.id;
   if (!id) {
-    res.status(400).json({ message: 'no service with that id, bub' });
+    res.status(400).json({ message: 'no id, bub?' });
     return;
   }
   const service = await servicesModel.findOne({ _id: new Types.ObjectId(id) });

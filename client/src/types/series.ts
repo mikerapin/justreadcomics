@@ -23,6 +23,7 @@ export interface ISeries {
 export interface IHydratedSeries {
   series: ISeries;
   services: IService[];
+  msg?: string;
 }
 
 export interface IGetAllSeriesWithCursor {

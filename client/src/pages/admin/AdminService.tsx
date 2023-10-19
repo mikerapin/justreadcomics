@@ -22,9 +22,11 @@ export const AdminService = () => {
         <tr key={service._id}>
           <td>{service.serviceName}</td>
           <td>
-            <a target="_blank" rel="nofollow noreferrer" href={service.siteUrl}>
-              {service.siteUrl}
-            </a>
+            <small>
+              <a target="_blank" rel="nofollow noreferrer" href={service.siteUrl}>
+                {service.siteUrl}
+              </a>
+            </small>
           </td>
           <td>Search box here</td>
           <td>

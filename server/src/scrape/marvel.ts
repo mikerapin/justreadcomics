@@ -1,17 +1,16 @@
 // Import puppeteer
-import { Request, Response } from 'express';
-import { initScraperPage } from '../scraper/util';
+import { initScraperPage } from './util';
 
-export const searchMarvel = async (req: Request, res: Response) => {
-  const { page, browser } = await initScraperPage();
+export const searchMarvel = async (search: string, headless?: boolean) => {
+  const { page, browser } = await initScraperPage(headless);
 
-  const searchQuery = 'https://www.marvel.com/search?limit=1&query=%s&offset=0&content_type=comics'.replace('%s', encodeURIComponent('Dark X-Men (2023)'));
+  const searchQuery = 'https://www.marvel.com/search?limit=1&query=%s&offset=0&content_type=comics'.replace('%s', encodeURIComponent(search));
 
   await page.goto(searchQuery, { waitUntil: 'domcontentloaded' });
 
   const firstSearchResultSelector = '.search-list a.card-body__content-type';
 
-  const firstSearchResult = await page.waitForSelector(firstSearchResultSelector + ' ::-p-text(comic series)');
+  await page.waitForSelector(firstSearchResultSelector + ' ::-p-text(comic series)');
 
   // cap the image
   const filteredUrl = await page.evaluate((sel) => {
@@ -19,9 +18,8 @@ export const searchMarvel = async (req: Request, res: Response) => {
   }, firstSearchResultSelector);
 
   if (!filteredUrl) {
-    res.status(400).json({ msg: 'no results, sorry' });
     await browser.close();
-    return;
+    return { error: 'no results, sorry' };
   }
 
   // auto filter the results to MU books
@@ -55,7 +53,8 @@ export const searchMarvel = async (req: Request, res: Response) => {
   //   await isDigitalFilter.click();
   // }
 
-  res.status(200).json({ msg: 'cool', imageHref, muResults });
   // Close browser.
   await browser.close();
+
+  return { msg: 'cool', results: { imageHref, muResults } };
 };

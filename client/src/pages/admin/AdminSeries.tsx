@@ -25,7 +25,7 @@ export const AdminSeries = () => {
       return (
         <tr key={_id}>
           <td>
-            <Link to={`/series/${_id}`}>{seriesName}</Link>
+            <Link to={`/admin/series/${_id}`}>{seriesName}</Link>
           </td>
           <td>
             {hydratedSeries.services &&
@@ -34,7 +34,7 @@ export const AdminSeries = () => {
                   <img
                     key={service._id}
                     style={{ maxHeight: '30px' }}
-                    className="img-thumbnail rounded-2 bg-whit"
+                    className="img-thumbnail rounded-2 bg-white"
                     src={`/img/services/${getServiceImage(service)}`}
                     alt={service.serviceName}
                     title={service.serviceName}
@@ -44,8 +44,8 @@ export const AdminSeries = () => {
           </td>
           <td>{lastScan || 'Unknown'}</td>
           <td>
-            <Link to={`/admin/series/${_id}`} className="btn btn-sm btn-primary">
-              Edit
+            <Link to={`/series/${_id}`} className="btn btn-sm btn-primary">
+              Public
             </Link>
           </td>
         </tr>

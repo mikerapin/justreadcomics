@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { redirect, useParams } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import { createService, fetchServiceById, updateServiceById } from '../../data/services';
 import { IService, ServiceType } from '../../types/service';
@@ -54,8 +54,9 @@ export const AdminServiceEdit = () => {
         showToast();
       });
     } else {
-      createService(serviceForm).then(() => {
+      createService(serviceForm).then((res) => {
         showToast();
+        redirect(`/admin/service/${res._id}`);
       });
     }
   });

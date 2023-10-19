@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { redirect, useParams } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import { Creator, ISeries } from '../../types/series';
 import { createSeries, fetchSeriesById, updateSeriesById } from '../../data/series';
@@ -32,9 +32,14 @@ export const AdminSeriesEdit = () => {
           setSeries(fetchedSeries.series);
           setServices(fetchedServices.data);
           const { seriesName, credits, services, description } = fetchedSeries.series;
-          return { seriesName, credits, services, description };
+          const foundServices = services || [];
+          console.log(fetchedSeries.series, { seriesName, credits, services: foundServices, description });
+          return { seriesName, credits, services: foundServices, description };
         });
       }
+      fetchAllServices().then((fetchedServices) => {
+        setServices(fetchedServices.data);
+      });
       return {};
     }
   });
@@ -60,6 +65,7 @@ export const AdminSeriesEdit = () => {
     } else {
       createSeries(seriesForm).then((res) => {
         showToast();
+        redirect(`/admin/series/${res._id}`);
       });
     }
   });
