@@ -9,9 +9,9 @@ export const Services = ({ services }: { services?: IService[] }) => {
       return service.type === type;
     });
     return subscriptionServices.map((service) => (
-      <div className="col-3 col-md-2">
-        <a href="https://marvel.com/unlimited">
-          <img className="img-thumbnail rounded-2 bg-white" src="/img/services/marvel-unlimited.png" alt="Marvel Unlimited" />
+      <div key={service.serviceName} className="col-3 col-md-2">
+        <a target="_blank" href={service.siteUrl}>
+          <img className="img-thumbnail rounded-2 bg-white" src={`/img/services/${service.image}`} alt={service.serviceName} />
         </a>
       </div>
     ));
@@ -58,14 +58,6 @@ export const Services = ({ services }: { services?: IService[] }) => {
       {getFreeServices()}
       {getSubscriptionServices()}
       {getPaidServices()}
-      <div className="row border-top border-bottom p-3">
-        <h5>For purchase:</h5>
-        <div className="col-3 col-md-2">
-          <a href="https://amazon.com/comixology">
-            <img className="img-thumbnail rounded-2 bg-white" src="/img/services/amazon.svg" alt="Amazon.com" />
-          </a>
-        </div>
-      </div>
     </div>
   );
 };
