@@ -1,9 +1,10 @@
 import { useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createService, fetchServiceById, updateServiceById } from '../../data/services';
 import { IService, ServiceType } from '../../types/service';
 import { getServiceImage } from '../../util/image';
 import { useForm } from 'react-hook-form';
+import { Toast } from 'bootstrap';
 
 interface IServiceForm {
   serviceName?: string;
@@ -13,6 +14,10 @@ interface IServiceForm {
 }
 
 export const AdminServiceEdit = () => {
+  let { id } = useParams();
+  const [service, setService] = useState<IService>();
+  const successToastRef = useRef<HTMLDivElement>(null);
+
   const { register, handleSubmit } = useForm<IServiceForm>({
     defaultValues: async () => {
       if (id) {
@@ -24,8 +29,6 @@ export const AdminServiceEdit = () => {
       return {};
     }
   });
-  let { id } = useParams();
-  const [service, setService] = useState<IService>();
   useEffect(() => {
     if (id) {
       fetchServiceById(id).then((res) => {
@@ -34,6 +37,13 @@ export const AdminServiceEdit = () => {
     }
   }, [id]);
 
+  const showToast = () => {
+    if (successToastRef.current) {
+      const toastBootstrap = new Toast(successToastRef.current);
+      toastBootstrap.show();
+    }
+  };
+
   const saveService = handleSubmit((serviceForm) => {
     if (id) {
       const updatedService: Partial<IService> = {
@@ -41,11 +51,11 @@ export const AdminServiceEdit = () => {
         ...serviceForm
       };
       updateServiceById(updatedService).then(() => {
-        console.log('show toast');
+        showToast();
       });
     } else {
       createService(serviceForm).then(() => {
-        console.log('show toast');
+        showToast();
       });
     }
   });
@@ -64,7 +74,7 @@ export const AdminServiceEdit = () => {
         <div className="row">
           <div className="col-4 mb-3">
             {/* add click to view in modal \/\/\/ */}
-            <img alt={service?.serviceName} className="img-fluid bg-white rounded-3" src={getServiceImage(service)} />
+            <img alt={service?.serviceName} className="img-fluid bg-white rounded-3" src={`/img/services/${getServiceImage(service)}`} />
           </div>
           <div className="col-md-8">
             <div className="form-floating mb-3">
@@ -97,6 +107,14 @@ export const AdminServiceEdit = () => {
           </div>
         </div>
       </form>
+      <div className="toast-container position-fixed bottom-0 end-0 p-3">
+        <div ref={successToastRef} className="toast align-items-center text-bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
+          <div className="d-flex">
+            <div className="toast-body">Successfully saved!</div>
+            <button type="button" className="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

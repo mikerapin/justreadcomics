@@ -44,32 +44,22 @@ export const AdminSeriesEdit = () => {
     control
   });
 
-  useEffect(() => {
-    if (showSuccessToast && successToastRef.current) {
+  const showToast = () => {
+    if (successToastRef.current) {
       const toastBootstrap = new Toast(successToastRef.current);
-      console.log(toastBootstrap);
       toastBootstrap.show();
-      setTimeout(() => {
-        setShowSuccessToast(false);
-      }, 5000);
     }
-  }, [showSuccessToast]);
+  };
 
   const saveSeries = handleSubmit((seriesForm) => {
     seriesForm.credits = seriesForm.credits?.filter((c) => c.name !== '' && c.role !== '');
     if (id) {
-      updateSeriesById({ _id: id, ...seriesForm }).then(() => {
-        if (successToastRef.current) {
-          const toastBootstrap = new Toast(successToastRef.current);
-          toastBootstrap.show();
-        }
+      updateSeriesById({ _id: id, ...seriesForm }).then((res) => {
+        showToast();
       });
     } else {
-      createSeries(seriesForm).then(() => {
-        if (successToastRef.current) {
-          const toastBootstrap = new Toast(successToastRef.current);
-          toastBootstrap.show();
-        }
+      createSeries(seriesForm).then((res) => {
+        showToast();
       });
     }
   });
@@ -163,10 +153,12 @@ export const AdminSeriesEdit = () => {
           </div>
         </div>
       </form>
-      <div ref={successToastRef} className="toast align-items-center text-bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
-        <div className="d-flex">
-          <div className="toast-body">Successfully saved {series?.seriesName}</div>
-          <button type="button" className="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      <div className="toast-container position-fixed bottom-0 end-0 p-3">
+        <div ref={successToastRef} className="toast align-items-center text-bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
+          <div className="d-flex">
+            <div className="toast-body">Successfully saved!</div>
+            <button type="button" className="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
         </div>
       </div>
     </div>

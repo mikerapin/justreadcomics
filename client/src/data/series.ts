@@ -16,7 +16,7 @@ export const fetchSeriesById = async (seriesId: string): Promise<IHydratedSeries
   return await res.json();
 };
 
-export const updateSeriesById = async (series: Partial<ISeries>) => {
+export const updateSeriesById = async (series: Partial<ISeries>): Promise<IHydratedSeries> => {
   const res = await fetch(`${API_BASE_URL}/series/update/${series._id}`, {
     headers: {
       Accept: 'application/json',
