@@ -2,12 +2,24 @@ import express = require('express');
 import { Request, Response } from 'express';
 import { Types } from 'mongoose';
 
-import { CreateSeriesRequest, IHydratedSeries } from '../types/series';
+import { CreateSeriesRequest, IHydratedSeries, ISeries } from '../types/series';
 
 import { seriesModel } from '../model/series';
 import { lookupServices } from './services';
+import { escapeRegex } from '../util/util';
 
 const seriesRouter = express.Router();
+
+const getSeriesById = async (id: string) => {
+  const series = await seriesModel.findOne({ _id: new Types.ObjectId(id) });
+  if (!series) {
+    return {};
+  }
+
+  const hydratedServices = await lookupServices(series.services);
+
+  return { series, services: hydratedServices };
+};
 
 // GetAll Method
 seriesRouter.get('/get/all', async (req: Request, res: Response) => {
@@ -44,17 +56,6 @@ seriesRouter.get('/get/all', async (req: Request, res: Response) => {
   res.status(200).json(findResults);
 });
 
-const getSeriesById = async (id: string) => {
-  const series = await seriesModel.findOne({ _id: new Types.ObjectId(id) });
-  if (!series) {
-    return {};
-  }
-
-  const hydratedServices = await lookupServices(series.services);
-
-  return { series, services: hydratedServices };
-};
-
 // Get by ID Method
 seriesRouter.get('/get/:id', async (req: Request, res: Response) => {
   if (!req.params.id) {
@@ -62,7 +63,7 @@ seriesRouter.get('/get/:id', async (req: Request, res: Response) => {
   }
   const results = await getSeriesById(req.params.id);
   if (Object.keys(results).length === 0) {
-    res.status(400).json({ msg: 'nothing found, sorry', services: {}, series: {} });
+    res.status(404).json({ msg: 'nothing found, sorry', services: {}, series: {} });
     return;
   }
   res.status(200).json(results);
@@ -123,9 +124,17 @@ seriesRouter.patch('/update/:id', async (req: CreateSeriesRequest, res: Response
 });
 
 // Search by name Method
-// router.get('/get-name/:name', (req: Request, res: Response) => {
-//   res.send('Get by ID API');
-// });
+seriesRouter.get('/get-name/:name', async (req: Request, res: Response) => {
+  const { name } = req.params;
+
+  // the frontend should prevent searching with less than 2 characters, but just in case...
+  if (name.length < 2) {
+    res.status(200).json();
+  }
+  const regex = new RegExp(escapeRegex(name), 'gi');
+  const names = await seriesModel.find({ seriesName: regex }).limit(10);
+  res.status(200).json(names);
+});
 //
 // // Update by ID Method
 // router.patch('/update/:id', (req: Request, res: Response) => {

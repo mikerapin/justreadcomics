@@ -6,8 +6,8 @@ export const fetchAllSeries = async (cursor = 0): Promise<IGetAllSeriesWithCurso
   return await res.json();
 };
 
-export const fetchSeriesByName = async (seriesName: string) => {
-  const res = await fetch(`${API_BASE_URL}/series/name/${seriesName}`);
+export const fetchSeriesByName = async (seriesName: string): Promise<ISeries[]> => {
+  const res = await fetch(`${API_BASE_URL}/series/get-name/${seriesName}`);
   return await res.json();
 };
 
