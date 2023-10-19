@@ -1,4 +1,5 @@
 import { IService, ServiceType } from '../types/service';
+import { getServiceImage } from '../util/image';
 
 export const Services = ({ services }: { services?: IService[] }) => {
   if (!services) {
@@ -11,7 +12,12 @@ export const Services = ({ services }: { services?: IService[] }) => {
     return subscriptionServices.map((service) => (
       <div key={service.serviceName} className="col-3 col-md-2">
         <a target="_blank" href={service.siteUrl}>
-          <img className="img-thumbnail rounded-2 bg-white" src={`/img/services/${service.image}`} alt={service.serviceName} />
+          <img
+            className="img-thumbnail rounded-2 bg-white"
+            src={`/img/services/${getServiceImage(service)}`}
+            alt={service.serviceName}
+            title={service.serviceName}
+          />
         </a>
       </div>
     ));
@@ -21,7 +27,7 @@ export const Services = ({ services }: { services?: IService[] }) => {
     const filteredServices = getServices(ServiceType.SUBSCRIPTION);
     if (filteredServices.length) {
       return (
-        <div className="row border-top border-bottom p-3">
+        <div className="row border-top p-3">
           <h5>Subscription:</h5>
           {filteredServices}
         </div>

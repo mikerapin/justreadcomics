@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { IGetAllSeriesWithCursor } from '../../types/series';
 import { fetchAllSeries } from '../../data/series';
 import { Link } from 'react-router-dom';
+import { getServiceImage } from '../../util/image';
 
 export const AdminSeries = () => {
   const [seriesList, setSeriesList] = useState<IGetAllSeriesWithCursor>();
@@ -19,9 +20,13 @@ export const AdminSeries = () => {
     }
 
     return seriesList.data.map((hydratedSeries) => {
+      console.log(hydratedSeries);
+      const { _id, seriesName, lastScan } = hydratedSeries.series;
       return (
-        <tr key={hydratedSeries.series._id}>
-          <td>{hydratedSeries.series.seriesName}</td>
+        <tr key={_id}>
+          <td>
+            <Link to={`/series/${_id}`}>{seriesName}</Link>
+          </td>
           <td>
             {hydratedSeries.services &&
               hydratedSeries.services.map((service) => {
@@ -30,15 +35,16 @@ export const AdminSeries = () => {
                     key={service._id}
                     style={{ maxHeight: '30px' }}
                     className="img-thumbnail rounded-2 bg-whit"
-                    src={`/img/services/${service.image}`}
+                    src={`/img/services/${getServiceImage(service)}`}
                     alt={service.serviceName}
+                    title={service.serviceName}
                   />
                 );
               })}
           </td>
-          <td>{hydratedSeries.series.lastScan || 'Unknown'}</td>
+          <td>{lastScan || 'Unknown'}</td>
           <td>
-            <Link to={`/admin/series/${hydratedSeries.series._id}`} className="btn btn-sm btn-primary">
+            <Link to={`/admin/series/${_id}`} className="btn btn-sm btn-primary">
               Edit
             </Link>
           </td>

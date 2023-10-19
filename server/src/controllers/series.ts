@@ -16,14 +16,14 @@ seriesRouter.get('/get/all', async (req: Request, res: Response) => {
   if (cursor > 0) {
     skip = cursor * 25;
   }
-  const seriesLookup = await seriesModel.find().sort('seriesName').limit(26).skip(skip);
+  const seriesLookup = await seriesModel.find().sort('seriesName').limit(51).skip(skip);
   let hasNextPage = false;
-  if (seriesLookup.length === 26) {
+  if (seriesLookup.length === 51) {
     hasNextPage = true;
     seriesLookup.pop();
   }
 
-  const hydratedSeries: Promise<IHydratedSeries>[] = seriesLookup.map(async (s) => {
+  const hydratedSeries: Promise<IHydratedSeries>[] = await seriesLookup.map(async (s) => {
     const hydratedServices = await lookupServices(s?.services);
     return {
       series: s,
@@ -74,9 +74,6 @@ seriesRouter.post('/create', async (req: CreateSeriesRequest, res: Response) => 
 seriesRouter.patch('/update/:id', async (req: CreateSeriesRequest, res: Response) => {
   const { seriesName, description, image, credits, services, meta, lastScan } = req.body;
   try {
-    const convertedServices = services?.map((s) => {
-      return new Types.ObjectId(s);
-    });
     const series = await seriesModel.findOneAndUpdate(
       { _id: new Types.ObjectId(req.params.id) },
       {
@@ -84,7 +81,7 @@ seriesRouter.patch('/update/:id', async (req: CreateSeriesRequest, res: Response
         description,
         image,
         credits,
-        services: convertedServices,
+        services,
         meta,
         lastScan
       }

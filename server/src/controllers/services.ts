@@ -11,10 +11,7 @@ const lookupServices = async (serviceIds?: string[]) => {
   if (!serviceIds) {
     return {};
   }
-  const serviceObjectIds = serviceIds.map((id) => {
-    return new Types.ObjectId(id);
-  });
-  return await servicesModel.find().all('_id', serviceObjectIds).exec();
+  return servicesModel.find({ _id: { $in: serviceIds } });
 };
 
 servicesRouter.get('/get/all', async (req: Request, res: Response) => {
