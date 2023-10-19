@@ -5,6 +5,7 @@ import { IService, IServiceWithImageUpload, ServiceType } from '../../types/serv
 import { getServiceImage } from '../../util/image';
 import { useForm } from 'react-hook-form';
 import { Toast } from 'bootstrap';
+import { ImageUploader } from './subcomponents/ImageUploader';
 
 interface IServiceForm {
   serviceName?: string;
@@ -82,14 +83,7 @@ export const AdminServiceEdit = () => {
           <div className="col-4 mb-3">
             {/* add click to view in modal \/\/\/ */}
             <img alt={service?.serviceName} className="img-fluid bg-white rounded-3" src={getServiceImage(service)} />
-            <div className="mt-2 d-flex flex-column">
-              <div className="col mb-1">
-                <label htmlFor="image">Upload new Image</label>
-              </div>
-              <div className="col">
-                <input {...register('imageBlob')} type="file" id="image" className="form-control" />
-              </div>
-            </div>
+            <ImageUploader register={register} fieldName={'imageBlob'} />
           </div>
           <div className="col-md-8">
             <div className="form-floating mb-3">

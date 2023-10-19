@@ -53,11 +53,10 @@ servicesRouter.get('/get/:id', async (req: Request, res: Response) => {
 servicesRouter.post('/create', upload.single('imageBlob'), async (req: CreateServiceRequest, res: Response) => {
   const { serviceName, siteUrl, searchUrl, type } = req.body;
   try {
-    let file;
-    console.log(req.file);
+    let fileUrl;
     if (req.file) {
       // upload file we received to S3 and get url to add to db
-      file = await uploadImageToS3({
+      fileUrl = await uploadImageToS3({
         image: req.file?.buffer,
         filename: req.file?.originalname || '',
         path: 'services/'
@@ -68,7 +67,7 @@ servicesRouter.post('/create', upload.single('imageBlob'), async (req: CreateSer
     const newService = new servicesModel({
       serviceName,
       siteUrl,
-      image: file?.Location,
+      image: fileUrl,
       searchUrl,
       type
     });
@@ -84,22 +83,20 @@ servicesRouter.post('/create', upload.single('imageBlob'), async (req: CreateSer
 
 servicesRouter.patch('/update-image/:id', upload.single('imageBlob'), async (req, res) => {
   try {
-    let file;
-    console.log(req.file, req.file?.buffer);
+    let fileUrl;
     if (req.file) {
       // upload file we received to S3 and get url to add to db
-      file = await uploadImageToS3({
+      fileUrl = await uploadImageToS3({
         image: req.file.buffer,
         filename: req.file.originalname || '',
         path: 'services/'
       });
     }
-    console.log(file);
 
     const updatedService = await servicesModel.findOneAndUpdate(
       { _id: new Types.ObjectId(req.params.id) },
       {
-        image: file?.Location
+        image: fileUrl
       }
     );
 

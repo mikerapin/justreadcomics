@@ -2,7 +2,7 @@ import cors = require('cors');
 import express = require('express');
 import dotenv from 'dotenv';
 // don't move this line down or the DB won't connect correctly
-dotenv.config({ path: './config.env' });
+dotenv.config({ path: `./config/.env.${process.env.NODE_ENV}` });
 
 import { connectToServer } from './db/conn';
 import { seriesRouter } from './controllers/series';
