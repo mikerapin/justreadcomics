@@ -12,12 +12,7 @@ export const Services = ({ services }: { services?: IService[] }) => {
     return subscriptionServices.map((service) => (
       <div key={service.serviceName} className="col-3 col-md-2">
         <a target="_blank" rel="noreferrer" href={service.siteUrl}>
-          <img
-            className="img-thumbnail rounded-2 bg-white"
-            src={`/img/services/${getServiceImage(service)}`}
-            alt={service.serviceName}
-            title={service.serviceName}
-          />
+          <img className="img-thumbnail rounded-2 bg-white" src={getServiceImage(service)} alt={service.serviceName} title={service.serviceName} />
         </a>
       </div>
     ));

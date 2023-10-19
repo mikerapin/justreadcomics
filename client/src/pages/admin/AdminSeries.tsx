@@ -35,7 +35,7 @@ export const AdminSeries = () => {
                     key={service._id}
                     style={{ maxHeight: '30px' }}
                     className="img-thumbnail rounded-2 bg-white"
-                    src={`/img/services/${getServiceImage(service)}`}
+                    src={getServiceImage(service)}
                     alt={service.serviceName}
                     title={service.serviceName}
                   />

@@ -142,7 +142,7 @@ export const AdminSeriesEdit = () => {
                   <label className="form-check-label" htmlFor={`service${service._id}`}>
                     <div className={`card`}>
                       <div className="m-3">
-                        <img className="card-img-top bg-white" alt={service?.serviceName} src={`/img/services/${getServiceImage(service)}`} />
+                        <img className="card-img-top bg-white" alt={service?.serviceName} src={getServiceImage(service)} />
                       </div>
                       <div className="card-body">
                         <p className="card-title text-center">{service.serviceName}</p>

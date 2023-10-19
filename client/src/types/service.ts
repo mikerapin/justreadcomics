@@ -13,6 +13,10 @@ export interface IService {
   type: ServiceType;
 }
 
+export interface IServiceWithImageUpload extends IService {
+  imageBlob?: File;
+}
+
 export interface IGetAllServicesWithCursor {
   data: IService[];
   hasNextPage: boolean;

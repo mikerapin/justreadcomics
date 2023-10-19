@@ -1,7 +1,7 @@
-import { redirect, useParams } from 'react-router-dom';
+import { redirectDocument, useParams } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import { createService, fetchServiceById, updateServiceById } from '../../data/services';
-import { IService, ServiceType } from '../../types/service';
+import { IService, IServiceWithImageUpload, ServiceType } from '../../types/service';
 import { getServiceImage } from '../../util/image';
 import { useForm } from 'react-hook-form';
 import { Toast } from 'bootstrap';
@@ -11,6 +11,7 @@ interface IServiceForm {
   type?: ServiceType;
   siteUrl?: string;
   searchUrl?: string;
+  imageBlob?: File[];
 }
 
 export const AdminServiceEdit = () => {
@@ -45,20 +46,25 @@ export const AdminServiceEdit = () => {
   };
 
   const saveService = handleSubmit((serviceForm) => {
-    if (id) {
-      const updatedService: Partial<IService> = {
-        ...service,
-        ...serviceForm
-      };
-      updateServiceById(updatedService).then(() => {
-        showToast();
-      });
-    } else {
-      createService(serviceForm).then((res) => {
-        showToast();
-        redirect(`/admin/service/${res._id}`);
-      });
+    let file;
+    if (serviceForm.imageBlob?.length) {
+      file = serviceForm.imageBlob[0];
     }
+    const updatedService: Partial<IServiceWithImageUpload> = {
+      ...service,
+      ...serviceForm,
+      imageBlob: file
+    };
+    let promise;
+    if (id) {
+      promise = updateServiceById(updatedService);
+    } else {
+      promise = createService(updatedService);
+    }
+    promise.then((res) => {
+      showToast();
+      redirectDocument(`/admin/service/${res._id}`);
+    });
   });
 
   return (
@@ -75,7 +81,15 @@ export const AdminServiceEdit = () => {
         <div className="row">
           <div className="col-4 mb-3">
             {/* add click to view in modal \/\/\/ */}
-            <img alt={service?.serviceName} className="img-fluid bg-white rounded-3" src={`/img/services/${getServiceImage(service)}`} />
+            <img alt={service?.serviceName} className="img-fluid bg-white rounded-3" src={getServiceImage(service)} />
+            <div className="mt-2 d-flex flex-column">
+              <div className="col mb-1">
+                <label htmlFor="image">Upload new Image</label>
+              </div>
+              <div className="col">
+                <input {...register('imageBlob')} type="file" id="image" className="form-control" />
+              </div>
+            </div>
           </div>
           <div className="col-md-8">
             <div className="form-floating mb-3">

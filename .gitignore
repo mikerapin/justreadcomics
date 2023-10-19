@@ -23,3 +23,6 @@ yarn-debug.log*
 yarn-error.log*
 
 .idea
+
+# will need to recreate this on the server end
+secrets.env

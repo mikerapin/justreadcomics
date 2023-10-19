@@ -14,8 +14,12 @@ interface IService {
   type: ServiceType;
 }
 
+interface IServiceRequestBody extends IService {
+  imageBlob?: File[];
+}
+
 interface CreateServiceRequest extends Request {
-  body: IService;
+  body: IServiceRequestBody;
 }
 
 interface FindServices {

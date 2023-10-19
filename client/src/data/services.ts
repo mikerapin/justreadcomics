@@ -1,4 +1,4 @@
-import { IGetAllServicesWithCursor, IService } from '../types/service';
+import { IGetAllServicesWithCursor, IService, IServiceWithImageUpload } from '../types/service';
 import { API_BASE_URL } from '../static/const';
 
 export const fetchAllServices = async (cursor?: number): Promise<IGetAllServicesWithCursor> => {
@@ -12,7 +12,23 @@ export const fetchServiceById = async (id: string): Promise<IService> => {
   return await res.json();
 };
 
-export const updateServiceById = async (service: Partial<IService>) => {
+export const updateServiceById = async (service: Partial<IServiceWithImageUpload>) => {
+  let serviceData = service;
+  if (serviceData.imageBlob) {
+    const imageBlob = serviceData.imageBlob;
+    const formData = new FormData();
+
+    const filename = `${service.serviceName}.${imageBlob.name.split('.').pop()}`.toLowerCase();
+
+    formData.append('imageBlob', imageBlob, filename);
+
+    await fetch(`${API_BASE_URL}/services/update-image/${service._id}`, {
+      method: 'PATCH',
+      body: formData
+    });
+    // delete the imageBlob from the object here?
+    // delete service.imageBlob;
+  }
   const res = await fetch(`${API_BASE_URL}/services/update/${service._id}`, {
     headers: {
       Accept: 'application/json',
@@ -24,7 +40,7 @@ export const updateServiceById = async (service: Partial<IService>) => {
   return res.json();
 };
 
-export const createService = async (service: Partial<IService>) => {
+export const createService = async (service: Partial<IServiceWithImageUpload>) => {
   const res = await fetch(`${API_BASE_URL}/services/create`, {
     headers: {
       Accept: 'application/json',
