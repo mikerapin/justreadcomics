@@ -1,8 +1,9 @@
-import { IGetAllServicesCursor, IService } from '../types/service';
+import { IGetAllServicesWithCursor, IService } from '../types/service';
 import { API_BASE_URL } from '../static/const';
 
-export const fetchAllServices = async (cursor = 0): Promise<IGetAllServicesCursor> => {
-  const res = await fetch(`${API_BASE_URL}/services/get/all?cursor=${cursor}`);
+export const fetchAllServices = async (cursor?: number): Promise<IGetAllServicesWithCursor> => {
+  const c = cursor || 0;
+  const res = await fetch(`${API_BASE_URL}/services/get/all?cursor=${c}`);
   return await res.json();
 };
 

@@ -21,11 +21,13 @@ servicesRouter.get('/get/all', async (req: Request, res: Response) => {
   let skip = 0;
   const cursor = parseInt(req.params.cursor, 10) || 0;
   if (cursor > 0) {
-    skip = cursor * 25;
+    skip = cursor * 100;
   }
-  const servicesLookup = await servicesModel.find().sort('serviceName').limit(26).skip(skip);
+
+  // no need to limit this because it's going to be pretty finite
+  const servicesLookup = await servicesModel.find().sort('serviceName').limit(101).skip(skip);
   let hasNextPage = false;
-  if (servicesLookup.length === 26) {
+  if (servicesLookup.length === 101) {
     hasNextPage = true;
     servicesLookup.pop();
   }
@@ -50,12 +52,13 @@ servicesRouter.get('/get/:id', async (req: Request, res: Response) => {
 });
 
 servicesRouter.post('/create', async (req: CreateServiceRequest, res: Response) => {
-  const { serviceName, siteUrl, image, type } = req.body;
+  const { serviceName, siteUrl, searchUrl, image, type } = req.body;
   try {
     const newService = new servicesModel({
       serviceName,
       siteUrl,
       image,
+      searchUrl,
       type
     });
 

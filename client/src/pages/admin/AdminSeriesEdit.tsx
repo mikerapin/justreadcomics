@@ -3,8 +3,10 @@ import { useEffect, useRef, useState } from 'react';
 import { Creator, ISeries } from '../../types/series';
 import { createSeries, fetchSeriesById, updateSeriesById } from '../../data/series';
 import { Toast } from 'bootstrap';
-import { getCoverImage } from '../../util/image';
+import { getCoverImage, getServiceImage } from '../../util/image';
 import { useFieldArray, useForm } from 'react-hook-form';
+import { fetchAllServices } from '../../data/services';
+import { IService } from '../../types/service';
 
 interface ISeriesForm {
   seriesName?: string;
@@ -17,6 +19,7 @@ export const AdminSeriesEdit = () => {
   let { id } = useParams();
 
   const [series, setSeries] = useState<ISeries>();
+  const [services, setServices] = useState<IService[]>();
   const [showSuccessToast, setShowSuccessToast] = useState<boolean>(false);
 
   const rightColumnRef = useRef<HTMLDivElement>(null);
@@ -24,10 +27,12 @@ export const AdminSeriesEdit = () => {
   const { register, handleSubmit, control, getValues } = useForm<ISeriesForm>({
     defaultValues: async () => {
       if (id) {
-        return fetchSeriesById(id).then((result) => {
-          setSeries(result.series);
-          const { seriesName, credits, description } = result.series;
-          return { seriesName, credits, description };
+        return Promise.all([fetchSeriesById(id), fetchAllServices()]).then((result) => {
+          const [fetchedSeries, fetchedServices] = result;
+          setSeries(fetchedSeries.series);
+          setServices(fetchedServices.data);
+          const { seriesName, credits, services, description } = fetchedSeries.series;
+          return { seriesName, credits, services, description };
         });
       }
       return {};
@@ -91,7 +96,7 @@ export const AdminSeriesEdit = () => {
         <div className="row">
           <div className="col-4 mb-3">
             {/* add click to view in modal \/\/\/ */}
-            <img className="img-fluid" src={getCoverImage(series)} />
+            <img alt={series?.seriesName} className="img-fluid" src={getCoverImage(series)} />
           </div>
           <div ref={rightColumnRef} className="col-md-8">
             <div className="mb-3">
@@ -122,16 +127,39 @@ export const AdminSeriesEdit = () => {
                   <label htmlFor={`role-${field.id}`}>Role</label>
                 </div>
                 <input type="hidden" {...register(`credits.${index}.order` as const)} />
-                <div className="col-1">
-                  <button type="button" className={'btn btn-danger'} onClick={() => remove(index)}>
-                    X
+                <div className="col-1 d-flex align-items-center">
+                  <button type="button" className="btn btn-danger btn-sm" onClick={() => remove(index)}>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style={{ width: '28px' }}>
+                      <path d="M268 416h24a12 12 0 0 0 12-12V188a12 12 0 0 0-12-12h-24a12 12 0 0 0-12 12v216a12 12 0 0 0 12 12zM432 80h-82.41l-34-56.7A48 48 0 0 0 274.41 0H173.59a48 48 0 0 0-41.16 23.3L98.41 80H16A16 16 0 0 0 0 96v16a16 16 0 0 0 16 16h16v336a48 48 0 0 0 48 48h288a48 48 0 0 0 48-48V128h16a16 16 0 0 0 16-16V96a16 16 0 0 0-16-16zM171.84 50.91A6 6 0 0 1 177 48h94a6 6 0 0 1 5.15 2.91L293.61 80H154.39zM368 464H80V128h288zm-212-48h24a12 12 0 0 0 12-12V188a12 12 0 0 0-12-12h-24a12 12 0 0 0-12 12v216a12 12 0 0 0 12 12z" />
+                    </svg>
                   </button>
                 </div>
               </div>
             ))}
-            {/*{credits?.map((credit) => {*/}
-            {/*  return <EditCreator key={uniqid()} credit={credit} updateCredits={updateCredits} removeCredit={removeCredit} />;*/}
-            {/*})}*/}
+          </div>
+        </div>
+        <div className="container">
+          <h3>Services</h3>
+          <div className="row">
+            {services?.map((service) => {
+              return (
+                <div key={service.serviceName} className="col-2">
+                  <label className="form-check-label" htmlFor={`service${service._id}`}>
+                    <div className={`card`}>
+                      <div className="m-3">
+                        <img className="card-img-top bg-white" alt={service?.serviceName} src={`/img/services/${getServiceImage(service)}`} />
+                      </div>
+                      <div className="card-body">
+                        <p className="card-title text-center">{service.serviceName}</p>
+                        <p className="text-center">
+                          <input {...register('services')} id={`service${service._id}`} className="form-check-input" type="checkbox" value={service._id} />
+                        </p>
+                      </div>
+                    </div>
+                  </label>
+                </div>
+              );
+            })}
           </div>
         </div>
       </form>

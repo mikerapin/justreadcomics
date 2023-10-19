@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { fetchAllServices } from '../../data/services';
-import { IGetAllServicesCursor } from '../../types/service';
+import { IGetAllServicesWithCursor } from '../../types/service';
 import { Link } from 'react-router-dom';
 
 export const AdminService = () => {
-  const [servicesList, setServicesList] = useState<IGetAllServicesCursor>();
+  const [servicesList, setServicesList] = useState<IGetAllServicesWithCursor>();
   const [cursor, setCursor] = useState(0);
   useEffect(() => {
     fetchAllServices(cursor).then((res) => {

@@ -74,6 +74,9 @@ seriesRouter.post('/create', async (req: CreateSeriesRequest, res: Response) => 
 seriesRouter.patch('/update/:id', async (req: CreateSeriesRequest, res: Response) => {
   const { seriesName, description, image, credits, services, meta, lastScan } = req.body;
   try {
+    const convertedServices = services?.map((s) => {
+      return new Types.ObjectId(s);
+    });
     const series = await seriesModel.findOneAndUpdate(
       { _id: new Types.ObjectId(req.params.id) },
       {
@@ -81,7 +84,7 @@ seriesRouter.patch('/update/:id', async (req: CreateSeriesRequest, res: Response
         description,
         image,
         credits,
-        services,
+        services: convertedServices,
         meta,
         lastScan
       }

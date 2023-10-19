@@ -13,7 +13,7 @@ export interface IService {
   type: ServiceType;
 }
 
-export interface IGetAllServicesCursor {
+export interface IGetAllServicesWithCursor {
   data: IService[];
   hasNextPage: boolean;
   hasPrevPage: boolean;
