@@ -2,7 +2,7 @@ import { IService, ServiceType } from '../types/service';
 import { getServiceImage } from '../util/image';
 
 export const Services = ({ services }: { services?: IService[] }) => {
-  if (!services) {
+  if (!services || services.length === 0) {
     return null;
   }
   const getServices = (type: ServiceType) => {
@@ -11,7 +11,7 @@ export const Services = ({ services }: { services?: IService[] }) => {
     });
     return subscriptionServices.map((service) => (
       <div key={service.serviceName} className="col-3 col-md-2">
-        <a target="_blank" href={service.siteUrl}>
+        <a target="_blank" rel="noreferrer" href={service.siteUrl}>
           <img
             className="img-thumbnail rounded-2 bg-white"
             src={`/img/services/${getServiceImage(service)}`}

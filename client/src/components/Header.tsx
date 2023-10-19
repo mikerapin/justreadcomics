@@ -18,9 +18,7 @@ function Header() {
             {/*<li><a href="#" className="nav-link px-2 link-body-emphasis">Products</a></li>*/}
           </ul>
 
-          <form className="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
-            <Search />
-          </form>
+          <Search />
         </div>
       </div>
     </header>

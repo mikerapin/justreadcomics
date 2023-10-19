@@ -5,13 +5,12 @@ import { Link } from 'react-router-dom';
 
 export const AdminService = () => {
   const [servicesList, setServicesList] = useState<IGetAllServicesWithCursor>();
-  const [cursor, setCursor] = useState(0);
   useEffect(() => {
-    fetchAllServices(cursor).then((res) => {
+    fetchAllServices().then((res) => {
       setServicesList(res);
       console.log(res);
     });
-  }, [cursor]);
+  }, []);
 
   const renderServices = () => {
     if (!servicesList) {

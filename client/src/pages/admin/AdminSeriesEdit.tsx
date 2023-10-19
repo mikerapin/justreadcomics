@@ -1,5 +1,5 @@
 import { redirect, useParams } from 'react-router-dom';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Creator, ISeries } from '../../types/series';
 import { createSeries, fetchSeriesById, updateSeriesById } from '../../data/series';
 import { Toast } from 'bootstrap';
@@ -20,7 +20,6 @@ export const AdminSeriesEdit = () => {
 
   const [series, setSeries] = useState<ISeries>();
   const [services, setServices] = useState<IService[]>();
-  const [showSuccessToast, setShowSuccessToast] = useState<boolean>(false);
 
   const rightColumnRef = useRef<HTMLDivElement>(null);
   const successToastRef = useRef<HTMLDivElement>(null);
