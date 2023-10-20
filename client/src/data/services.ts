@@ -12,23 +12,23 @@ export const fetchServiceById = async (id: string): Promise<IService> => {
   return await res.json();
 };
 
+const uploadServiceImage = async (service: IService, imageBlob: File) => {
+  const formData = new FormData();
+
+  const filename = `${service.serviceName}.${imageBlob.name.split('.').pop()}`.toLowerCase();
+
+  formData.append('imageBlob', imageBlob, filename);
+
+  const res = await fetch(`${API_BASE_URL}/services/update-image/${service._id}`, {
+    method: 'PATCH',
+    body: formData
+  });
+  return res.json();
+  // delete the imageBlob from the object here?
+  // delete service.imageBlob;
+};
+
 export const updateServiceById = async (service: Partial<IServiceWithImageUpload>) => {
-  let serviceData = service;
-  if (serviceData.imageBlob) {
-    const imageBlob = serviceData.imageBlob;
-    const formData = new FormData();
-
-    const filename = `${service.serviceName}.${imageBlob.name.split('.').pop()}`.toLowerCase();
-
-    formData.append('imageBlob', imageBlob, filename);
-
-    await fetch(`${API_BASE_URL}/services/update-image/${service._id}`, {
-      method: 'PATCH',
-      body: formData
-    });
-    // delete the imageBlob from the object here?
-    // delete service.imageBlob;
-  }
   const res = await fetch(`${API_BASE_URL}/services/update/${service._id}`, {
     headers: {
       Accept: 'application/json',
@@ -37,6 +37,11 @@ export const updateServiceById = async (service: Partial<IServiceWithImageUpload
     method: 'PATCH',
     body: JSON.stringify(service)
   });
+
+  if (service.imageBlob) {
+    const updatedService: IService = await res.json();
+    return uploadServiceImage(updatedService, service.imageBlob);
+  }
   return res.json();
 };
 
@@ -49,5 +54,10 @@ export const createService = async (service: Partial<IServiceWithImageUpload>) =
     method: 'POST',
     body: JSON.stringify(service)
   });
+
+  if (service.imageBlob) {
+    const updatedService: IService = await res.json();
+    return uploadServiceImage(updatedService, service.imageBlob);
+  }
   return res.json();
 };

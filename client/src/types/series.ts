@@ -20,6 +20,10 @@ export interface ISeries {
   lastScan?: string;
 }
 
+export interface ISeriesWithImageUpload extends ISeries {
+  imageBlob?: File;
+}
+
 export interface IHydratedSeries {
   series: ISeries;
   services: IService[];

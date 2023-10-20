@@ -2,7 +2,6 @@ import React, { ChangeEvent, useEffect, useState } from 'react';
 import { UseFormRegister } from 'react-hook-form';
 
 export const ImageUploader = ({ register, fieldName }: { register: UseFormRegister<any>; fieldName: string }) => {
-  // const objectUrl = URL.createObjectURL(selectedFile)
   const [preview, setPreview] = useState<string>();
   const [selectedFile, setSelectedFile] = useState<File>();
 
@@ -48,7 +47,7 @@ export const ImageUploader = ({ register, fieldName }: { register: UseFormRegist
           <div className="d-flex align-items-center flex-column">
             <div className="col-6">Preview:</div>
             <div className="col-6">
-              <img src={preview} className="img-thumbnail m-auto" alt="temp image YOU uploaded, bub" />
+              <img src={preview} className="img-thumbnail m-auto" alt="YOU uploaded this, bub" />
             </div>
           </div>
         )}

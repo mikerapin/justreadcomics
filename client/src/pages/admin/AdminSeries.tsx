@@ -15,12 +15,11 @@ export const AdminSeries = () => {
   }, [cursor]);
 
   const renderSeries = () => {
-    if (!seriesList) {
+    if (!seriesList?.data) {
       return null;
     }
 
     return seriesList.data.map((hydratedSeries) => {
-      console.log(hydratedSeries);
       const { _id, seriesName, lastScan } = hydratedSeries.series;
       return (
         <tr key={_id}>

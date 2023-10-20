@@ -7,6 +7,9 @@ import { CreateSeriesRequest, IHydratedSeries, ISeries } from '../types/series';
 import { seriesModel } from '../model/series';
 import { lookupServices } from './services';
 import { escapeRegex } from '../util/util';
+import { upload } from '../util/multer';
+import { uploadImageToS3 } from '../s3/s3';
+import { servicesModel } from '../model/services';
 
 const seriesRouter = express.Router();
 
@@ -90,6 +93,38 @@ seriesRouter.post('/create', async (req: CreateSeriesRequest, res: Response) => 
     res.status(200).json({ series: savedSeries, services: hydratedServices });
   } catch (error: any) {
     res.status(400).json({ message: error.message });
+  }
+});
+
+seriesRouter.patch('/update-image/:id', upload.single('imageBlob'), async (req, res) => {
+  try {
+    let fileUrl;
+    console.log(req);
+    if (req.file) {
+      // upload file we received to S3 and get url to add to db
+      fileUrl = await uploadImageToS3({
+        image: req.file.buffer,
+        filename: req.file.originalname || '',
+        path: 'series/'
+      });
+    }
+
+    const updatedSeries = await seriesModel.findOneAndUpdate(
+      { _id: new Types.ObjectId(req.params.id) },
+      {
+        image: fileUrl
+      }
+    );
+
+    if (updatedSeries) {
+      await updatedSeries.validate();
+      const savedService = await updatedSeries.save();
+      res.status(200).json(savedService);
+    } else {
+      res.status(404).json({ message: 'series with id:' + req.params.id + ' not found, sorry dude' });
+    }
+  } catch (err: any) {
+    res.status(400).json(err);
   }
 });
 

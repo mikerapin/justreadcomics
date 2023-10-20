@@ -1,18 +1,20 @@
-import { redirect, useParams } from 'react-router-dom';
+import { redirectDocument, useParams } from 'react-router-dom';
 import { useRef, useState } from 'react';
-import { Creator, ISeries } from '../../types/series';
+import { Creator, ISeries, ISeriesWithImageUpload } from '../../types/series';
 import { createSeries, fetchSeriesById, updateSeriesById } from '../../data/series';
 import { Toast } from 'bootstrap';
 import { getCoverImage, getServiceImage } from '../../util/image';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { fetchAllServices } from '../../data/services';
 import { IService } from '../../types/service';
+import { ImageUploader } from './subcomponents/ImageUploader';
 
 interface ISeriesForm {
   seriesName?: string;
   description?: string;
   services?: string[];
   credits?: Creator[];
+  imageBlob?: File[];
 }
 
 export const AdminSeriesEdit = () => {
@@ -32,7 +34,6 @@ export const AdminSeriesEdit = () => {
           setServices(fetchedServices.data);
           const { seriesName, credits, services, description } = fetchedSeries.series;
           const foundServices = services || [];
-          console.log(fetchedSeries.series, { seriesName, credits, services: foundServices, description });
           return { seriesName, credits, services: foundServices, description };
         });
       }
@@ -57,16 +58,26 @@ export const AdminSeriesEdit = () => {
 
   const saveSeries = handleSubmit((seriesForm) => {
     seriesForm.credits = seriesForm.credits?.filter((c) => c.name !== '' && c.role !== '');
-    if (id) {
-      updateSeriesById({ _id: id, ...seriesForm }).then((res) => {
-        showToast();
-      });
-    } else {
-      createSeries(seriesForm).then((res) => {
-        showToast();
-        redirect(`/admin/series/${res._id}`);
-      });
+    let file;
+    if (seriesForm.imageBlob?.length) {
+      file = seriesForm.imageBlob[0];
     }
+    const updatedSeries: Partial<ISeriesWithImageUpload> = {
+      ...series,
+      ...seriesForm,
+      imageBlob: file
+    };
+
+    let promise;
+    if (id) {
+      promise = updateSeriesById(updatedSeries);
+    } else {
+      promise = createSeries(updatedSeries);
+    }
+    promise.then((res) => {
+      showToast();
+      redirectDocument(`/admin/series/${res._id}`);
+    });
   });
 
   const getNextOrder = () => {
@@ -92,6 +103,7 @@ export const AdminSeriesEdit = () => {
           <div className="col-4 mb-3">
             {/* add click to view in modal \/\/\/ */}
             <img alt={series?.seriesName} className="img-fluid" src={getCoverImage(series)} />
+            <ImageUploader register={register} fieldName={'imageBlob'} />
           </div>
           <div ref={rightColumnRef} className="col-md-8">
             <div className="mb-3">
