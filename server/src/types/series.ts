@@ -8,12 +8,19 @@ interface Creator {
   order?: number;
 }
 
+export interface ISeriesServices {
+  id: string;
+  seriesServiceUrl?: string;
+  lastScan?: string;
+}
+
 interface ISeries {
   seriesName: string;
   description?: string;
   image?: string;
+  ongoingSeries?: boolean;
   credits?: Creator[];
-  services?: string[];
+  services?: ISeriesServices[];
   meta: {
     searches: number;
     clickOuts: number;

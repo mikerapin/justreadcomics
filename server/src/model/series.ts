@@ -5,15 +5,18 @@ const seriesSchema = new Schema<ISeries>(
   {
     seriesName: {
       required: true,
-      type: String
+      type: String,
+      index: true,
+      unique: true
     },
     description: String,
     image: {
       type: String
     },
     credits: {
-      type: Object
+      type: Array
     },
+    ongoingSeries: Boolean,
     services: Array,
     meta: {
       searches: {

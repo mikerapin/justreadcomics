@@ -2,16 +2,24 @@ import express = require('express');
 import { Request, Response } from 'express';
 import { Types } from 'mongoose';
 
-import { CreateSeriesRequest, IHydratedSeries, ISeries } from '../types/series';
+import { CreateSeriesRequest, IHydratedSeries, ISeries, ISeriesServices } from '../types/series';
 
 import { seriesModel } from '../model/series';
-import { lookupServices } from './services';
 import { escapeRegex } from '../util/util';
 import { upload } from '../util/multer';
 import { uploadImageToS3 } from '../s3/s3';
 import { servicesModel } from '../model/services';
+import { IService } from '../types/services';
 
 const seriesRouter = express.Router();
+
+const lookupServicesForSeries = async (serviceIds?: ISeriesServices[]): Promise<IService[] | object> => {
+  if (!serviceIds) {
+    return {};
+  }
+  const ids = serviceIds.map((seriesService) => seriesService.id);
+  return servicesModel.find({ _id: { $in: ids } });
+};
 
 const getSeriesById = async (id: string) => {
   const series = await seriesModel.findOne({ _id: new Types.ObjectId(id) });
@@ -19,7 +27,7 @@ const getSeriesById = async (id: string) => {
     return {};
   }
 
-  const hydratedServices = await lookupServices(series.services);
+  const hydratedServices = await lookupServicesForSeries(series.services);
 
   return { series, services: hydratedServices };
 };
@@ -44,7 +52,7 @@ seriesRouter.get('/get/all', async (req: Request, res: Response) => {
   }
 
   const hydratedSeries: Promise<IHydratedSeries>[] = seriesLookup.map(async (s) => {
-    const hydratedServices = await lookupServices(s?.services);
+    const hydratedServices = await lookupServicesForSeries(s?.services);
     return {
       series: s,
       services: hydratedServices
@@ -89,7 +97,7 @@ seriesRouter.post('/create', async (req: CreateSeriesRequest, res: Response) => 
 
     const savedSeries = await newSeries.save();
 
-    const hydratedServices = await lookupServices(services);
+    const hydratedServices = await lookupServicesForSeries(services);
     res.status(200).json({ series: savedSeries, services: hydratedServices });
   } catch (error: any) {
     res.status(400).json({ message: error.message });
@@ -146,7 +154,7 @@ seriesRouter.patch('/update/:id', async (req: CreateSeriesRequest, res: Response
       await series.validate();
       const updatedSeries = await series.save();
 
-      const hydratedServices = await lookupServices(updatedSeries.services);
+      const hydratedServices = await lookupServicesForSeries(updatedSeries.services);
 
       res.status(200).json({ series: updatedSeries, services: hydratedServices });
     } else {

@@ -4,7 +4,9 @@ import { IService } from '../types/services';
 const servicesSchema = new Schema<IService>({
   serviceName: {
     required: true,
-    type: String
+    type: String,
+    index: true,
+    unique: true
   },
   image: {
     type: String,
