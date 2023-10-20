@@ -99,7 +99,6 @@ seriesRouter.post('/create', async (req: CreateSeriesRequest, res: Response) => 
 seriesRouter.patch('/update-image/:id', upload.single('imageBlob'), async (req, res) => {
   try {
     let fileUrl;
-    console.log(req);
     if (req.file) {
       // upload file we received to S3 and get url to add to db
       fileUrl = await uploadImageToS3({

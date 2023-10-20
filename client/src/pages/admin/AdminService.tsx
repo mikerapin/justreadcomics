@@ -8,7 +8,6 @@ export const AdminService = () => {
   useEffect(() => {
     fetchAllServices().then((res) => {
       setServicesList(res);
-      console.log(res);
     });
   }, []);
 
