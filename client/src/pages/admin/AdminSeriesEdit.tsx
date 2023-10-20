@@ -102,7 +102,7 @@ export const AdminSeriesEdit = () => {
               <label htmlFor="seriesName">Series Name</label>
             </div>
             <div className="form-floating mb-3">
-              <textarea {...register('description')} id="description" className="form-control"></textarea>
+              <textarea {...register('description')} id="description" className="form-control" style={{ height: '160px' }}></textarea>
               <label htmlFor="description">Description</label>
             </div>
             <div className="d-flex align-items-center gap-2 mb-2">

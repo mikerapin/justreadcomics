@@ -1,4 +1,3 @@
-// Import puppeteer
 import { initScraperPage } from './util';
 
 export const searchMarvel = async (search: string, headless?: boolean) => {
