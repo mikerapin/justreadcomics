@@ -4,6 +4,8 @@ import { useParams } from 'react-router-dom';
 import { ISeries } from '../types/series';
 import { Services } from '../components/Services';
 import { IService } from '../types/service';
+import { getCoverImage } from '../util/image';
+import { LoadingSeries } from './LoadingSeries';
 
 export const SeriesDetail = () => {
   let { id } = useParams();
@@ -17,11 +19,16 @@ export const SeriesDetail = () => {
       });
     }
   }, [id]);
+
+  if (!series) {
+    return <LoadingSeries />;
+  }
+
   return (
     <div className="container">
       <div className="row">
         <div className="col-4">
-          <img className="img-fluid" src="https://cdn.imagecomics.com/assets/i/releases/1004971/transformers-1_93d4f9fa47.jpg" alt="transformers" />
+          <img className="img-fluid" src={getCoverImage(series)} alt={series?.seriesName} />
         </div>
         <div className="col-8">
           <div className="text-content">

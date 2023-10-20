@@ -53,6 +53,11 @@ export const Services = ({ services }: { services?: IService[] }) => {
       );
     }
   };
+
+  if (!services) {
+    return <></>;
+  }
+
   return (
     <div className="services pt-4 pb-4">
       <h3>Available on:</h3>
