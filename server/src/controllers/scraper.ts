@@ -21,6 +21,7 @@ scraperRouter.get('/marvel-import/massImport', async (req: Request, res: Respons
 
   try {
     const finalResults = result.series.map((series) => {
+      const date = new Date().toJSON();
       const { seriesName, link, ongoing } = series;
       return {
         seriesName,
@@ -29,7 +30,7 @@ scraperRouter.get('/marvel-import/massImport', async (req: Request, res: Respons
           {
             id: '65314ab18afab97567984de1',
             seriesServiceUrl: link,
-            lastScan: Date.now().toLocaleString()
+            lastScan: date
           }
         ]
       };
