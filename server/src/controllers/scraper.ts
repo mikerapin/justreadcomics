@@ -2,13 +2,13 @@ import express = require('express');
 import { Request, Response } from 'express';
 import { massImportMarvel, searchMarvel } from '../scrape/marvel';
 import { getSeriesById } from './series';
+import { seriesModel } from '../model/series';
 
 const scraperRouter = express.Router();
 
 // honestly, this should only be done once.
-// and it lives above `/marvel/:id` so it's not caught by that route
 scraperRouter.get('/marvel-import/massImport', async (req: Request, res: Response) => {
-  const key = 'fea91d86-3356-4dea-83d6-05cf70a832df';
+  const key = process.env.MASS_IMPORT_KEY;
   if (req.query.key !== key) {
     res.status(400).json({ msg: 'no key, no import' });
     return;
@@ -19,9 +19,29 @@ scraperRouter.get('/marvel-import/massImport', async (req: Request, res: Respons
     return;
   }
 
-  // TODO: add the data to the db
+  try {
+    const finalResults = result.series.map((series) => {
+      const { seriesName, link, ongoing } = series;
+      return {
+        seriesName,
+        ongoing,
+        services: [
+          {
+            id: '65314ab18afab97567984de1',
+            seriesServiceUrl: link,
+            lastScan: Date.now().toLocaleString()
+          }
+        ]
+      };
+    });
 
-  res.status(200).json(result);
+    const newSeries = await seriesModel.insertMany(finalResults, { throwOnValidationError: false, ordered: false });
+
+    res.status(200).json({ size: finalResults.length, series: newSeries });
+  } catch (e: any) {
+    console.log(e);
+    res.status(400).json({ e });
+  }
 });
 
 scraperRouter.get('/marvel/:id', async (req: Request, res: Response) => {

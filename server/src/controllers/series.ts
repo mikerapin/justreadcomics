@@ -177,15 +177,5 @@ seriesRouter.get('/get-name/:name', async (req: Request, res: Response) => {
   const names = await seriesModel.find({ seriesName: regex }).limit(10);
   res.status(200).json(names);
 });
-//
-// // Update by ID Method
-// router.patch('/update/:id', (req: Request, res: Response) => {
-//   res.send('Update by ID API');
-// });
-//
-// // Delete by ID Method
-// router.delete('/delete/:id', (req: Request, res: Response) => {
-//   res.send('Delete by ID API');
-// });
 
 export { getSeriesById, seriesRouter };

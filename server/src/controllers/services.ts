@@ -10,10 +10,10 @@ import { uploadImageToS3 } from '../s3/s3';
 const servicesRouter = express.Router();
 
 const lookupServices = async (serviceIds?: string[]): Promise<IService[] | object> => {
-  if (!serviceIds) {
-    return {};
+  if (serviceIds && serviceIds.length) {
+    return servicesModel.find({ _id: { $in: serviceIds } });
   }
-  return servicesModel.find({ _id: { $in: serviceIds } });
+  return {};
 };
 
 servicesRouter.get('/get/all', async (req: Request, res: Response) => {
