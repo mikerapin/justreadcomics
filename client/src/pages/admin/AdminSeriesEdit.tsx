@@ -103,6 +103,26 @@ export const AdminSeriesEdit = () => {
     return 2;
   };
 
+  const getSeriesServiceInfo = (serviceId: string) => {
+    const service = series.services?.find((service) => service.id === serviceId);
+    if (service) {
+      return (
+        <div>
+          <small>
+            <a target="_blank" rel="nofollow noreferrer" href={service.seriesServiceUrl}>
+              Series Page
+            </a>
+          </small>
+
+          <div style={{ fontSize: '10px' }}>
+            Last Scan: <pre>{service.lastScan}</pre>
+          </div>
+        </div>
+      );
+    }
+    return <></>;
+  };
+
   return (
     <div className="container">
       <form onSubmit={saveSeries}>
@@ -173,9 +193,11 @@ export const AdminSeriesEdit = () => {
                       </div>
                       <div className="card-body">
                         <p className="card-title text-center">{service.serviceName}</p>
-                        <p className="text-center">
+                        <div className="text-center">
                           <input {...register(`services`)} id={`service${service._id}`} className="form-check-input" type="checkbox" value={service._id} />
-                        </p>
+                          {getSeriesServiceInfo(service._id || '')}
+                          {/* todo: add scan now button to update series metadata */}
+                        </div>
                       </div>
                     </div>
                   </label>
