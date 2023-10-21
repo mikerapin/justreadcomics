@@ -6,13 +6,19 @@ export interface Creator {
   order: number;
 }
 
+export interface ISeriesServices {
+  id: string;
+  seriesServiceUrl?: string;
+  lastScan?: string;
+}
+
 export interface ISeries {
   _id?: string;
   seriesName: string;
   description?: string;
   image?: string;
   credits?: Creator[];
-  services?: string[];
+  services?: ISeriesServices[];
   meta: {
     searches: number;
     clickOuts: number;

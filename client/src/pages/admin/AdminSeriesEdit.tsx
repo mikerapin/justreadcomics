@@ -1,6 +1,6 @@
 import { redirectDocument, useParams } from 'react-router-dom';
 import { useRef, useState } from 'react';
-import { Creator, ISeries, ISeriesWithImageUpload } from '../../types/series';
+import { ISeries, ISeriesWithImageUpload } from '../../types/series';
 import { createSeries, fetchSeriesById, updateSeriesById } from '../../data/series';
 import { Toast } from 'bootstrap';
 import { getCoverImage, getServiceImage } from '../../util/image';
@@ -8,14 +8,7 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { fetchAllServices } from '../../data/services';
 import { IService } from '../../types/service';
 import { ImageUploader } from './subcomponents/ImageUploader';
-
-interface ISeriesForm {
-  seriesName?: string;
-  description?: string;
-  services?: string[];
-  credits?: Creator[];
-  imageBlob?: File[];
-}
+import { ISeriesForm } from './types/series';
 
 export const AdminSeriesEdit = () => {
   let { id } = useParams();
@@ -32,9 +25,13 @@ export const AdminSeriesEdit = () => {
           const [fetchedSeries, fetchedServices] = result;
           setSeries(fetchedSeries.series);
           setServices(fetchedServices.data);
-          const { seriesName, credits, services, description } = fetchedSeries.series;
-          const foundServices = services || [];
-          return { seriesName, credits, services: foundServices, description };
+
+          const seriesServices =
+            fetchedSeries.series.services?.map((service) => {
+              return service.id;
+            }) || [];
+          const { seriesName, credits, description } = fetchedSeries.series;
+          return { seriesName, credits, services: seriesServices, description };
         });
       }
       fetchAllServices().then((fetchedServices) => {
@@ -44,10 +41,18 @@ export const AdminSeriesEdit = () => {
     }
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const {
+    fields: creditsFields,
+    append: appendCredit,
+    remove: removeCredit
+  } = useFieldArray({
     name: 'credits',
     control
   });
+
+  if (!series) {
+    return <span>'Loading'</span>;
+  }
 
   const showToast = () => {
     if (successToastRef.current) {
@@ -62,9 +67,19 @@ export const AdminSeriesEdit = () => {
     if (seriesForm.imageBlob?.length) {
       file = seriesForm.imageBlob[0];
     }
+
+    const newServices = seriesForm.services?.map((serviceId) => {
+      const existingService = series.services?.filter((s) => s.id === serviceId);
+      if (existingService?.[0]) {
+        return existingService[0];
+      }
+      return { id: serviceId };
+    });
+
     const updatedSeries: Partial<ISeriesWithImageUpload> = {
       ...series,
       ...seriesForm,
+      services: newServices,
       imageBlob: file
     };
 
@@ -119,23 +134,23 @@ export const AdminSeriesEdit = () => {
             </div>
             <div className="d-flex align-items-center gap-2 mb-2">
               <span>Credits</span>
-              <button type="button" className="btn btn-sm btn-secondary" onClick={() => append({ role: '', name: '', order: getNextOrder() })}>
+              <button type="button" className="btn btn-sm btn-secondary" onClick={() => appendCredit({ role: '', name: '', order: getNextOrder() })}>
                 Add
               </button>
             </div>
-            {fields.map((field, index) => (
-              <div className="row g-2 align-items-center" key={field.id}>
+            {creditsFields.map((credits, index) => (
+              <div className="row g-2 align-items-center" key={credits.id}>
                 <div className="col-md form-floating mb-3">
-                  <input className="form-control" id={`name-${field.id}`} {...register(`credits.${index}.name` as const)} />
-                  <label htmlFor={`name-${field.id}`}>Name</label>
+                  <input className="form-control" id={`name-${credits.id}`} {...register(`credits.${index}.name` as const)} />
+                  <label htmlFor={`name-${credits.id}`}>Name</label>
                 </div>
                 <div className="col-md form-floating mb-3">
-                  <input className="form-control" id={`role-${field.id}`} {...register(`credits.${index}.role` as const)} />
-                  <label htmlFor={`role-${field.id}`}>Role</label>
+                  <input className="form-control" id={`role-${credits.id}`} {...register(`credits.${index}.role` as const)} />
+                  <label htmlFor={`role-${credits.id}`}>Role</label>
                 </div>
                 <input type="hidden" {...register(`credits.${index}.order` as const)} />
                 <div className="col-1 d-flex align-items-center">
-                  <button type="button" className="btn btn-danger btn-sm" onClick={() => remove(index)}>
+                  <button type="button" className="btn btn-danger btn-sm" onClick={() => removeCredit(index)}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style={{ width: '28px' }}>
                       <path d="M268 416h24a12 12 0 0 0 12-12V188a12 12 0 0 0-12-12h-24a12 12 0 0 0-12 12v216a12 12 0 0 0 12 12zM432 80h-82.41l-34-56.7A48 48 0 0 0 274.41 0H173.59a48 48 0 0 0-41.16 23.3L98.41 80H16A16 16 0 0 0 0 96v16a16 16 0 0 0 16 16h16v336a48 48 0 0 0 48 48h288a48 48 0 0 0 48-48V128h16a16 16 0 0 0 16-16V96a16 16 0 0 0-16-16zM171.84 50.91A6 6 0 0 1 177 48h94a6 6 0 0 1 5.15 2.91L293.61 80H154.39zM368 464H80V128h288zm-212-48h24a12 12 0 0 0 12-12V188a12 12 0 0 0-12-12h-24a12 12 0 0 0-12 12v216a12 12 0 0 0 12 12z" />
                     </svg>
@@ -148,7 +163,7 @@ export const AdminSeriesEdit = () => {
         <div className="container">
           <h3>Services</h3>
           <div className="row">
-            {services?.map((service) => {
+            {services?.map((service, index) => {
               return (
                 <div key={service.serviceName} className="col-2">
                   <label className="form-check-label" htmlFor={`service${service._id}`}>
@@ -159,7 +174,7 @@ export const AdminSeriesEdit = () => {
                       <div className="card-body">
                         <p className="card-title text-center">{service.serviceName}</p>
                         <p className="text-center">
-                          <input {...register('services')} id={`service${service._id}`} className="form-check-input" type="checkbox" value={service._id} />
+                          <input {...register(`services`)} id={`service${service._id}`} className="form-check-input" type="checkbox" value={service._id} />
                         </p>
                       </div>
                     </div>

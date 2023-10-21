@@ -2,7 +2,7 @@ import express = require('express');
 import { Request, Response } from 'express';
 import { Types } from 'mongoose';
 
-import { CreateSeriesRequest, IHydratedSeries, ISeries, ISeriesServices } from '../types/series';
+import { CreateSeriesRequest, IHydratedSeries, ISeriesServices } from '../types/series';
 
 import { seriesModel } from '../model/series';
 import { escapeRegex } from '../util/util';
@@ -13,11 +13,11 @@ import { IService } from '../types/services';
 
 const seriesRouter = express.Router();
 
-const lookupServicesForSeries = async (serviceIds?: ISeriesServices[]): Promise<IService[] | object> => {
-  if (!serviceIds) {
+const lookupServicesForSeries = async (seriesServices?: ISeriesServices[]): Promise<IService[] | object> => {
+  if (!seriesServices) {
     return {};
   }
-  const ids = serviceIds.map((seriesService) => seriesService.id);
+  const ids = seriesServices.map((seriesService) => seriesService.id);
   return servicesModel.find({ _id: { $in: ids } });
 };
 
