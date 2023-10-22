@@ -18,8 +18,9 @@ export const fetchSeriesById = async (seriesId: string): Promise<IHydratedSeries
 
 const uploadSeriesImage = async (series: IHydratedSeries, imageBlob: File) => {
   const formData = new FormData();
+  const cleanedFileName = series.series.seriesName.split(' ').join('');
 
-  const filename = `${series.series.seriesName}.${imageBlob.name.split('.').pop()}`.toLowerCase();
+  const filename = `${cleanedFileName}.${imageBlob.name.split('.').pop()}`.toLowerCase();
 
   formData.append('imageBlob', imageBlob, filename);
 

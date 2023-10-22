@@ -5,7 +5,7 @@ import sanitize from 'sanitize-filename';
 const s3Bucket = process.env.AWS_S3_BUCKET_NAME || '';
 
 interface IUploadToS3 {
-  image: any;
+  image: Buffer | ReadableStream<Uint8Array>;
   filename: string;
   path?: string;
 }
@@ -36,4 +36,29 @@ export const uploadImageToS3 = async ({ image, filename, path }: IUploadToS3) =>
     console.log(e);
     throw new Error(e);
   }
+};
+
+export const uploadSeriesImageFromUrlToS3 = async (seriesName: string, seriesImage: string) => {
+  if (seriesImage.length) {
+    const imageFetch = await fetch(seriesImage)
+      .then((res) => res.arrayBuffer())
+      .catch((err) => {
+        console.log(err);
+        return null;
+      });
+    if (imageFetch) {
+      const imageBlob = Buffer.from(imageFetch);
+      const imageExtension = seriesImage.split('.').pop();
+      const filename = sanitize(seriesName).split(' ').join('').toLowerCase();
+
+      if (imageBlob) {
+        return await uploadImageToS3({
+          image: imageBlob,
+          path: 'series/',
+          filename: `${filename}.${imageExtension}`
+        });
+      }
+    }
+  }
+  return '';
 };

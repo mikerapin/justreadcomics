@@ -26,7 +26,7 @@ app.use('/api/services', servicesRouter);
 // scraper services
 app.use('/scraper', scraperRouter);
 
-app.listen(port, async () => {
+const server = app.listen(port, async () => {
   try {
     await connectToServer();
   } catch (e: any) {
@@ -34,3 +34,4 @@ app.listen(port, async () => {
   }
   console.log(`Server is running on port: ${port}`);
 });
+server.timeout = 120000;

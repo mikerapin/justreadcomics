@@ -1,4 +1,5 @@
 import { initScraperPage } from './util';
+import sanitize from 'sanitize-filename';
 
 export const searchMarvel = async (search: string, headless?: boolean) => {
   const { page, browser } = await initScraperPage(headless);
@@ -63,6 +64,7 @@ interface IMassMarvelImport {
   link: string;
   ongoing: boolean;
 }
+
 export const massImportMarvel = async (headless: boolean) => {
   const { page, browser } = await initScraperPage(headless);
 
@@ -78,7 +80,7 @@ export const massImportMarvel = async (headless: boolean) => {
       const documentSelector = document.querySelectorAll(selector);
       documentSelector.forEach((item) => {
         item.querySelectorAll('li a').forEach((el) => {
-          const text = el.textContent;
+          const text = sanitize(el.textContent || '');
           const link = el.getAttribute('href');
           const ongoing = el.parentElement?.tagName.toLowerCase() === 'b';
 
