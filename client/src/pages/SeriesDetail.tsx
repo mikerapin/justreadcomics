@@ -35,7 +35,7 @@ export const SeriesDetail = () => {
             <h1 className="title">{series?.seriesName}</h1>
             <p>{series?.description}</p>
           </div>
-          <Services services={services} />
+          <Services services={services} seriesServices={series.services} />
         </div>
       </div>
     </div>

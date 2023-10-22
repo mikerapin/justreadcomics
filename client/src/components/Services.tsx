@@ -1,7 +1,8 @@
 import { IService, ServiceType } from '../types/service';
 import { getServiceImage } from '../util/image';
+import { ISeriesServices } from '../types/series';
 
-export const Services = ({ services }: { services?: IService[] }) => {
+export const Services = ({ seriesServices, services }: { seriesServices?: ISeriesServices[]; services?: IService[] }) => {
   if (!services || services.length === 0) {
     return null;
   }
@@ -9,13 +10,20 @@ export const Services = ({ services }: { services?: IService[] }) => {
     const subscriptionServices = services.filter((service) => {
       return service.type === type;
     });
-    return subscriptionServices.map((service) => (
-      <div key={service.serviceName} className="col-3 col-md-2">
-        <a target="_blank" rel="noreferrer" href={service.siteUrl}>
-          <img className="img-thumbnail rounded-2 bg-white" src={getServiceImage(service)} alt={service.serviceName} title={service.serviceName} />
-        </a>
-      </div>
-    ));
+    return subscriptionServices.map((service) => {
+      const matchedSeriesService = seriesServices?.find((seriesService) => seriesService.id === service._id);
+      let siteUrl = service.siteUrl;
+      if (matchedSeriesService && matchedSeriesService.seriesServiceUrl) {
+        siteUrl = matchedSeriesService.seriesServiceUrl;
+      }
+      return (
+        <div key={service.serviceName} className="col-3 col-md-2">
+          <a target="_blank" rel="noreferrer" href={siteUrl}>
+            <img className="img-thumbnail rounded-2 bg-white" src={getServiceImage(service)} alt={service.serviceName} title={service.serviceName} />
+          </a>
+        </div>
+      );
+    });
   };
 
   const getSubscriptionServices = () => {
