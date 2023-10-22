@@ -1,11 +1,11 @@
-import { getCoverImage } from '../util/image';
+import { getSeriesImage } from '../util/image';
 
 export const LoadingSeries = () => {
   return (
     <div className="container">
       <div className="row">
         <div className="col-4">
-          <img className="img-fluid" src={getCoverImage(undefined)} alt="Loading" />
+          <img className="img-fluid" src={getSeriesImage(undefined)} alt="Loading" />
         </div>
         <div className="col-8">
           <div className="text-content">

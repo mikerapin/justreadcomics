@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import { ISeries } from '../types/series';
 import { Services } from '../components/Services';
 import { IService } from '../types/service';
-import { getCoverImage } from '../util/image';
+import { getSeriesImage } from '../util/image';
 import { LoadingSeries } from './LoadingSeries';
 
 export const SeriesDetail = () => {
@@ -28,7 +28,7 @@ export const SeriesDetail = () => {
     <div className="container">
       <div className="row">
         <div className="col-4">
-          <img className="img-fluid" src={getCoverImage(series)} alt={series?.seriesName} />
+          <img className="img-fluid" src={getSeriesImage(series)} alt={series?.seriesName} />
         </div>
         <div className="col-8">
           <div className="text-content">

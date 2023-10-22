@@ -2,7 +2,7 @@ import { ISeries } from '../types/series';
 import { DEFAULT_COVER_IMAGE, DEFAULT_SERVICE_IMAGE } from '../static/const';
 import { IService } from '../types/service';
 
-export const getCoverImage = (series?: ISeries) => {
+export const getSeriesImage = (series?: ISeries) => {
   return series?.image || DEFAULT_COVER_IMAGE;
 };
 

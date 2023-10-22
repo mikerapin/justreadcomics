@@ -36,6 +36,10 @@ export interface IHydratedSeries {
   msg?: string;
 }
 
+export interface IGetThreeRandomSeries {
+  data: IHydratedSeries[];
+}
+
 export interface IGetAllSeriesWithCursor {
   data: IHydratedSeries[];
   hasNextPage: boolean;

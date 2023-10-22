@@ -3,7 +3,7 @@ import { useRef, useState } from 'react';
 import { ISeries, ISeriesWithImageUpload } from '../../types/series';
 import { createSeries, fetchSeriesById, updateSeriesById } from '../../data/series';
 import { Toast } from 'bootstrap';
-import { getCoverImage, getServiceImage } from '../../util/image';
+import { getSeriesImage, getServiceImage } from '../../util/image';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { fetchAllServices } from '../../data/services';
 import { IService } from '../../types/service';
@@ -137,7 +137,7 @@ export const AdminSeriesEdit = () => {
         <div className="row">
           <div className="col-4 mb-3">
             {/* add click to view in modal \/\/\/ */}
-            <img alt={series?.seriesName} className="img-fluid" src={getCoverImage(series)} />
+            <img alt={series?.seriesName} className="img-fluid" src={getSeriesImage(series)} />
             <ImageUploader register={register} fieldName={'imageBlob'} />
           </div>
           <div ref={rightColumnRef} className="col-md-8">

@@ -178,4 +178,18 @@ seriesRouter.get('/get-name/:name', async (req: Request, res: Response) => {
   res.status(200).json(names);
 });
 
+seriesRouter.get('/get-3', async (req: Request, res: Response) => {
+  // Get the count of all users
+  const random3 = await seriesModel.aggregate([{ $sample: { size: 3 } }]);
+
+  const hydratedSeries: Promise<IHydratedSeries>[] = random3.map(async (s) => {
+    const hydratedServices = await lookupServicesForSeries(s?.services);
+    return {
+      series: s,
+      services: hydratedServices
+    };
+  });
+  res.status(200).json({ data: await Promise.all(hydratedSeries) });
+});
+
 export { getSeriesById, seriesRouter };

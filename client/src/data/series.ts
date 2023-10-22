@@ -1,5 +1,5 @@
 import { API_BASE_URL } from '../static/const';
-import { IGetAllSeriesWithCursor, IHydratedSeries, ISeries, ISeriesWithImageUpload } from '../types/series';
+import { IGetAllSeriesWithCursor, IGetThreeRandomSeries, IHydratedSeries, ISeries, ISeriesWithImageUpload } from '../types/series';
 
 export const fetchAllSeries = async (cursor = 0): Promise<IGetAllSeriesWithCursor> => {
   const res = await fetch(`${API_BASE_URL}/series/get/all?cursor=${cursor}`);
@@ -13,6 +13,11 @@ export const fetchSeriesByName = async (seriesName: string): Promise<ISeries[]> 
 
 export const fetchSeriesById = async (seriesId: string): Promise<IHydratedSeries> => {
   const res = await fetch(`${API_BASE_URL}/series/get/${seriesId}`);
+  return await res.json();
+};
+
+export const fetchRandomThreeSeries = async (): Promise<IGetThreeRandomSeries> => {
+  const res = await fetch(`${API_BASE_URL}/series/get-3`);
   return await res.json();
 };
 
