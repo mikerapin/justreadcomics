@@ -40,7 +40,7 @@ export interface IGetThreeRandomSeries {
   data: IHydratedSeries[];
 }
 
-export interface IGetAllSeriesWithCursor {
+export interface IFetchMultipleSeriesWithCursor {
   data: IHydratedSeries[];
   hasNextPage: boolean;
   hasPrevPage: boolean;

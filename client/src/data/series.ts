@@ -1,14 +1,30 @@
 import { API_BASE_URL } from '../static/const';
-import { IGetAllSeriesWithCursor, IGetThreeRandomSeries, IHydratedSeries, ISeries, ISeriesWithImageUpload } from '../types/series';
+import { IFetchMultipleSeriesWithCursor, IGetThreeRandomSeries, IHydratedSeries, ISeriesWithImageUpload } from '../types/series';
 
-export const fetchAllSeries = async (cursor = 0): Promise<IGetAllSeriesWithCursor> => {
+export const fetchAllSeries = async (cursor = 0): Promise<IFetchMultipleSeriesWithCursor> => {
   const res = await fetch(`${API_BASE_URL}/series/get/all?cursor=${cursor}`);
   return await res.json();
 };
 
-export const fetchSeriesByName = async (seriesName: string): Promise<ISeries[]> => {
-  const res = await fetch(`${API_BASE_URL}/series/get-name/${seriesName}`);
-  return await res.json();
+interface IFetchSeriesSearchOptions {
+  seriesName: string;
+  isLargeSearch?: boolean;
+  cursor?: number;
+}
+
+export const fetchSeriesByName = async (options: IFetchSeriesSearchOptions): Promise<IFetchMultipleSeriesWithCursor> => {
+  const { seriesName, isLargeSearch, cursor } = options;
+  const fetchUrl = new URL(`${API_BASE_URL}/series/get-name/${seriesName}`);
+  if (isLargeSearch) {
+    fetchUrl.searchParams.append('isLargeSearch', '1');
+  }
+  if (cursor && cursor > 0) {
+    fetchUrl.searchParams.append('cursor', `${cursor}`);
+  }
+  const res = await fetch(fetchUrl);
+  const results = await res.json();
+  console.log(results);
+  return results;
 };
 
 export const fetchSeriesById = async (seriesId: string): Promise<IHydratedSeries> => {

@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { fetchSeriesById } from '../data/series';
 import { useParams } from 'react-router-dom';
 import { ISeries } from '../types/series';
 import { Services } from '../components/Services';
 import { IService } from '../types/service';
-import { getSeriesImage } from '../util/image';
 import { LoadingSeries } from './LoadingSeries';
+import { SeriesImage } from '../components/SeriesImage';
 
 export const SeriesDetail = () => {
   let { id } = useParams();
@@ -28,7 +28,7 @@ export const SeriesDetail = () => {
     <div className="container">
       <div className="row">
         <div className="col-4">
-          <img className="img-fluid" src={getSeriesImage(series)} alt={series?.seriesName} />
+          <SeriesImage series={series} alt={series.seriesName} />
         </div>
         <div className="col-8">
           <div className="text-content">

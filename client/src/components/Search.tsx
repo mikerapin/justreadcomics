@@ -1,15 +1,16 @@
 import React, { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react';
 
 import { Dropdown } from 'bootstrap';
-import { ISeries } from '../types/series';
+import { IHydratedSeries } from '../types/series';
 import { fetchSeriesByName } from '../data/series';
-import { Link } from 'react-router-dom';
+import { Form, Link } from 'react-router-dom';
+import { SeriesImage } from './SeriesImage';
 
 export const Search = () => {
   const dropdownElementRef = useRef<HTMLDivElement>(null);
   const dropdown = useRef<Dropdown | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
-  const [seriesResults, setSeriesResults] = useState<ISeries[]>();
+  const [seriesResults, setSeriesResults] = useState<IHydratedSeries[]>();
 
   useEffect(() => {
     if (dropdownElementRef.current) {
@@ -22,8 +23,8 @@ export const Search = () => {
       closeMenu();
       return;
     }
-    fetchSeriesByName(val).then((res) => {
-      setSeriesResults(res);
+    fetchSeriesByName({ seriesName: val }).then((res) => {
+      setSeriesResults(res.data);
     });
     dropdown.current?.show();
   };
@@ -40,13 +41,6 @@ export const Search = () => {
     dropdown.current?.hide();
   };
 
-  const formSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    if (searchRef.current) {
-      searchInMenu(searchRef.current.value);
-    }
-  };
-
   /* Todo: not sure if I like this, so commenting for now */
   // const arrowCheck = (e: React.KeyboardEvent) => {
   //   if (dropdownElementRef.current && e.key === 'ArrowDown') {
@@ -56,10 +50,12 @@ export const Search = () => {
   // };
 
   return (
-    <form className="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search" onSubmit={formSubmit}>
+    <Form className="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search" action="/search">
       <div className="btn-group dropdown">
         <input
+          ref={searchRef}
           type="search"
+          name="s"
           className="form-control dropdown-toggle"
           data-bs-toggle="dropdown"
           data-bs-auto-close="outside"
@@ -67,17 +63,25 @@ export const Search = () => {
           aria-label="Search"
           onChange={typeToSearch}
         />
-        <div className="dropdown-menu" ref={dropdownElementRef}>
+        <div className="dropdown-menu" ref={dropdownElementRef} data-bs-auto-close="outside">
           <h6 className=" dropdown-header">Series</h6>
-          {seriesResults?.map((series) => {
+          {seriesResults?.map((hydratedSeries) => {
+            const { series } = hydratedSeries;
             return (
               <Link key={series._id} to={`/series/${series._id}`} className="dropdown-item" onClick={closeMenu}>
-                {series.seriesName}
+                <div className="d-flex g-2 align-items-center">
+                  <div className="d-flex align-items-center" style={{ marginRight: 10, minWidth: 48, maxHeight: 48, overflow: 'hidden' }}>
+                    <SeriesImage series={series} style={{ width: 48 }} alt={series.seriesName} />
+                  </div>
+                  <div className="text-truncate" style={{ maxWidth: 320 }}>
+                    {series.seriesName}
+                  </div>
+                </div>
               </Link>
             );
           })}
         </div>
       </div>
-    </form>
+    </Form>
   );
 };

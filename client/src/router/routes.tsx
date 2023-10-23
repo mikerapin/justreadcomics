@@ -10,6 +10,7 @@ import { AdminSeries } from '../pages/admin/AdminSeries';
 import { AdminSeriesEdit } from '../pages/admin/AdminSeriesEdit';
 import { AdminService } from '../pages/admin/AdminService';
 import { AdminServiceEdit } from '../pages/admin/AdminServiceEdit';
+import { SearchPage } from '../pages/SearchPage';
 
 export const siteRouter = [
   {
@@ -24,6 +25,10 @@ export const siteRouter = [
       {
         path: '/series/:id',
         element: <SeriesDetail />
+      },
+      {
+        path: '/search',
+        element: <SearchPage />
       }
     ]
   },

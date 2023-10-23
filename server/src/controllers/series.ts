@@ -173,9 +173,33 @@ seriesRouter.get('/get-name/:name', async (req: Request, res: Response) => {
   if (name.length < 2) {
     res.status(200).json();
   }
+
+  const isLargeSearch = req.query.isLargeSearch || false;
+  const limit = isLargeSearch ? 50 : 10;
+  const skipCount = req.query.cursor && isLargeSearch ? limit * parseInt(req.query.cursor as string, 10) : 0;
+
   const regex = new RegExp(escapeRegex(name), 'gi');
-  const names = await seriesModel.find({ seriesName: regex }).limit(10);
-  res.status(200).json(names);
+  const series = await seriesModel
+    .find({ seriesName: regex })
+    .limit(limit + 1)
+    .skip(skipCount);
+
+  const hasPrevPage = skipCount > 0;
+  let hasNextPage = false;
+  if (series.length === limit + 1) {
+    series.pop();
+    hasNextPage = true;
+  }
+
+  const hydratedSeries: Promise<IHydratedSeries>[] = series.map(async (s) => {
+    const hydratedServices = await lookupServicesForSeries(s?.services);
+    return {
+      series: s,
+      services: hydratedServices
+    };
+  });
+
+  res.status(200).json({ data: await Promise.all(hydratedSeries), hasPrevPage, hasNextPage });
 });
 
 seriesRouter.get('/get-3', async (req: Request, res: Response) => {

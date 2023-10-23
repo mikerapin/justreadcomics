@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { IGetAllSeriesWithCursor } from '../../types/series';
+import { IFetchMultipleSeriesWithCursor } from '../../types/series';
 import { fetchAllSeries } from '../../data/series';
 import { Link } from 'react-router-dom';
 import { getServiceImage } from '../../util/image';
 
 export const AdminSeries = () => {
-  const [seriesList, setSeriesList] = useState<IGetAllSeriesWithCursor>();
+  const [seriesList, setSeriesList] = useState<IFetchMultipleSeriesWithCursor>();
   const [cursor, setCursor] = useState(0);
 
   useEffect(() => {
