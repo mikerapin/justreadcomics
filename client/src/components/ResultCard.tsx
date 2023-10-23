@@ -9,7 +9,7 @@ export const ResultCard = ({ hydratedSeries }: { hydratedSeries: IHydratedSeries
   return (
     <div className="col">
       <div className="card shadow-sm">
-        <div className="d-flex align-items-center" style={{ maxHeight: 420, overflow: 'hidden' }}>
+        <div className="d-flex align-items-center" style={{ minHeight: 420, maxHeight: 420, overflow: 'hidden' }}>
           <SeriesImage series={series} alt={series.seriesName} className="bd-placeholder-img card-img-top" />
         </div>
         <div className="card-body">

@@ -62,6 +62,7 @@ export const Search = () => {
           placeholder="Search..."
           aria-label="Search"
           onChange={typeToSearch}
+          autoComplete="off"
         />
         <div className="dropdown-menu" ref={dropdownElementRef} data-bs-auto-close="outside">
           <h6 className=" dropdown-header">Series</h6>

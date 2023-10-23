@@ -9,7 +9,6 @@ export const SearchPage = () => {
   const [searchResults, setSearchResults] = useState<IFetchMultipleSeriesWithCursor>();
   const search = searchParams.get('s');
 
-  console.log(searchParams.get('s'), search);
   useEffect(() => {
     if (search) {
       fetchSeriesByName({ seriesName: search, isLargeSearch: true, cursor: 0 }).then((results) => {
@@ -37,7 +36,6 @@ export const SearchPage = () => {
     const input = e.currentTarget.querySelector('#page-search') as HTMLInputElement;
     if (input && input.value.length) {
       searchParams.set('s', input.value);
-      console.log(searchParams.get('s'));
       setSearchParams(searchParams);
     }
   };
@@ -49,7 +47,15 @@ export const SearchPage = () => {
           <div>
             <h2 className="me-2">Search:</h2>
           </div>
-          <input className="form-control" name="search" id="page-search" type="text" defaultValue={search ?? undefined} aria-label="Search..." />
+          <input
+            className="form-control"
+            autoComplete="off"
+            name="search"
+            id="page-search"
+            type="text"
+            defaultValue={search ?? undefined}
+            aria-label="Search..."
+          />
         </div>
       </Form>
       <div className="mt-3 row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">

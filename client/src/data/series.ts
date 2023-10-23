@@ -22,9 +22,7 @@ export const fetchSeriesByName = async (options: IFetchSeriesSearchOptions): Pro
     fetchUrl.searchParams.append('cursor', `${cursor}`);
   }
   const res = await fetch(fetchUrl);
-  const results = await res.json();
-  console.log(results);
-  return results;
+  return await res.json();
 };
 
 export const fetchSeriesById = async (seriesId: string): Promise<IHydratedSeries> => {

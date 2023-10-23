@@ -11,10 +11,10 @@ interface ISeriesImage {
 
 export const SeriesImage = ({ series, style, alt, className }: ISeriesImage) => {
   const imgRef = useRef<HTMLImageElement>(null);
-  const onError = () => {
+  const onError = (e: any) => {
     if (imgRef.current) {
       imgRef.current.src = getSeriesImage();
     }
   };
-  return <img src={getSeriesImage(series)} alt={alt} className={`img-fluid${className ? ' ' + className : ''}`} style={style} onError={onError} />;
+  return <img ref={imgRef} src={getSeriesImage(series)} alt={alt} className={`img-fluid${className ? ' ' + className : ''}`} style={style} onError={onError} />;
 };
