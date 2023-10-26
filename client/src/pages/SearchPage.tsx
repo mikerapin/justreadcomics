@@ -3,33 +3,21 @@ import { Form, useSearchParams } from 'react-router-dom';
 import { fetchSeriesByName } from '../data/series';
 import { IFetchMultipleSeriesWithCursor } from '../types/series';
 import { ResultCard } from '../components/ResultCard';
+import { Pagination } from '../components/Pagination';
 
 export const SearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [cursor, setCursor] = useState<number>(parseInt(searchParams?.get('cursor') ?? '0'));
   const [searchResults, setSearchResults] = useState<IFetchMultipleSeriesWithCursor>();
   const search = searchParams.get('s');
 
   useEffect(() => {
     if (search) {
-      fetchSeriesByName({ seriesName: search, isLargeSearch: true, cursor: 0 }).then((results) => {
+      fetchSeriesByName({ seriesName: search, isLargeSearch: true, cursor: cursor }).then((results) => {
         setSearchResults(results);
       });
     }
-  }, [search, searchParams]);
-
-  const getNavigation = () => {
-    if (!searchResults) {
-      return <></>;
-    }
-    const { hasNextPage, hasPrevPage } = searchResults;
-
-    return (
-      <div className="row">
-        {hasPrevPage ?? <div>prev</div>}
-        {hasNextPage ?? <div>next</div>}
-      </div>
-    );
-  };
+  }, [search, cursor, searchParams]);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,6 +25,26 @@ export const SearchPage = () => {
     if (input && input.value.length) {
       searchParams.set('s', input.value);
       setSearchParams(searchParams);
+    }
+  };
+
+  const updateCursor = (newCursor: number) => {
+    setCursor(newCursor);
+    searchParams.set('cursor', `${newCursor}`);
+    setSearchParams(searchParams);
+  };
+
+  const nextPage = () => {
+    if (searchResults?.hasNextPage) {
+      setCursor(cursor + 1);
+      updateCursor(cursor + 1);
+    }
+  };
+
+  const prevPage = () => {
+    if (searchResults?.hasPrevPage) {
+      const newCursor = cursor - 1;
+      updateCursor(newCursor);
     }
   };
 
@@ -63,7 +71,7 @@ export const SearchPage = () => {
           <ResultCard key={hydratedSeries.series._id} hydratedSeries={hydratedSeries} />
         ))}
       </div>
-      {getNavigation()}
+      <Pagination hasNext={searchResults?.hasNextPage} hasPrev={searchResults?.hasPrevPage} nextAction={nextPage} prevAction={prevPage} />
     </div>
   );
 };
