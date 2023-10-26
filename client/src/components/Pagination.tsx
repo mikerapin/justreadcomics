@@ -18,7 +18,7 @@ export const Pagination = ({
     <div className="d-flex justify-content-center">
       <div className="btn-group mt-5" role="group">
         <button className={classNames('btn btn-primary', { invisible: !hasPrev })} onClick={prevAction}>
-          <i className="bi bi-arrow-left-square-fill"></i>Prev
+          <i className="bi bi-arrow-left-square-fill"></i>&nbsp;Prev
         </button>
         <button className={classNames('btn btn-primary', { invisible: !hasNext })} type="button" onClick={nextAction}>
           Next&nbsp;

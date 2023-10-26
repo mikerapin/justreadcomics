@@ -35,11 +35,11 @@ const getSeriesById = async (id: string) => {
 // GetAll Method
 seriesRouter.get('/get/all', async (req: Request, res: Response) => {
   let skip = 0;
-  const cursor = parseInt(req.params.cursor, 10) || 0;
+  const cursor = parseInt(req.query.cursor as string, 10) || 0;
   if (cursor > 0) {
-    skip = cursor * 25;
+    skip = cursor * 50;
   }
-  const seriesLookup = await seriesModel.find().sort('seriesName').limit(51).skip(skip);
+  const seriesLookup = await seriesModel.find().sort('seriesName').skip(skip).limit(51);
   let hasNextPage = false;
   if (seriesLookup.length === 51) {
     hasNextPage = true;
@@ -62,7 +62,7 @@ seriesRouter.get('/get/all', async (req: Request, res: Response) => {
   const findResults = {
     data: await Promise.all(hydratedSeries),
     hasNextPage,
-    hasPreviousPage: cursor !== 0
+    hasPrevPage: cursor > 0
   };
   res.status(200).json(findResults);
 });

@@ -1,18 +1,40 @@
 import { useEffect, useState } from 'react';
 import { IFetchMultipleSeriesWithCursor } from '../../types/series';
 import { fetchAllSeries } from '../../data/series';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { getServiceImage } from '../../util/image';
+import { Pagination } from '../../components/Pagination';
 
 export const AdminSeries = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [cursor, setCursor] = useState<number>(parseInt(searchParams?.get('cursor') ?? '0'));
   const [seriesList, setSeriesList] = useState<IFetchMultipleSeriesWithCursor>();
-  const [cursor, setCursor] = useState(0);
 
   useEffect(() => {
     fetchAllSeries(cursor).then((res) => {
       setSeriesList(res);
     });
-  }, [cursor]);
+  }, [cursor, searchParams]);
+
+  const updateCursor = (newCursor: number) => {
+    setCursor(newCursor);
+    searchParams.set('cursor', `${newCursor}`);
+    setSearchParams(searchParams);
+  };
+
+  const nextPage = () => {
+    if (seriesList?.hasNextPage) {
+      setCursor(cursor + 1);
+      updateCursor(cursor + 1);
+    }
+  };
+
+  const prevPage = () => {
+    if (seriesList?.hasPrevPage) {
+      const newCursor = cursor - 1;
+      updateCursor(newCursor);
+    }
+  };
 
   const renderSeries = () => {
     if (!seriesList?.data) {
@@ -72,6 +94,7 @@ export const AdminSeries = () => {
           <tbody>{renderSeries()}</tbody>
         </table>
       </div>
+      <Pagination hasPrev={seriesList?.hasPrevPage} hasNext={seriesList?.hasNextPage} nextAction={nextPage} prevAction={prevPage} />
     </div>
   );
 };
