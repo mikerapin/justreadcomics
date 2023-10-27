@@ -1,7 +1,8 @@
 export enum ServiceType {
   FREE = 'free',
   PAID = 'paid',
-  SUBSCRIPTION = ' subscription'
+  SUBSCRIPTION = 'subscription',
+  NONE = 'none'
 }
 
 export interface IService {

@@ -4,3 +4,7 @@ export interface IMassDcImport {
   ongoing?: boolean;
   seriesImage: string;
 }
+export interface IMassImageImport {
+  seriesName: string;
+  seriesLink: string;
+}

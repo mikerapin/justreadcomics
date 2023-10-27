@@ -95,6 +95,7 @@ export const AdminServiceEdit = () => {
                 <option value={ServiceType.FREE}>Free</option>
                 <option value={ServiceType.PAID}>Paid</option>
                 <option value={ServiceType.SUBSCRIPTION}>Subscription</option>
+                <option value={ServiceType.NONE}>None</option>
               </select>
               <label htmlFor="type">Service Type</label>
             </div>
