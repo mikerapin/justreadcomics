@@ -1,7 +1,46 @@
 import { initScraperPage } from './util';
 import sanitize from 'sanitize-filename';
 
-export const searchMarvel = async (search: string, headless?: boolean) => {
+export const scrapeMarvelSeries = async (seriesUrl: string, headless?: boolean) => {
+  const { page, browser } = await initScraperPage(headless);
+
+  page.goto(seriesUrl, { waitUntil: 'domcontentloaded' });
+
+  const imageUrlSelector = 'meta[name="twitter:image"]';
+
+  const descriptionSelector = '.featured-item-text .featured-item-desc p';
+
+  await page.waitForSelector(descriptionSelector);
+
+  const imageUrl = await page.evaluate((selector) => {
+    const url = document.querySelector(selector)?.getAttribute('content');
+    // !imageHref.match('image_not_available')
+    return url?.match('image_not_available') ? undefined : url;
+  }, imageUrlSelector);
+
+  const description = await page.evaluate((selector) => {
+    const featuredTexts = document.querySelectorAll(selector);
+    if (featuredTexts?.length > 1) {
+      return (featuredTexts?.[1] as HTMLParagraphElement)?.innerText.trim().slice(0, -5).trim();
+    }
+    return (featuredTexts?.[0] as HTMLParagraphElement)?.innerText.trim();
+  }, descriptionSelector);
+
+  await browser.close();
+
+  return {
+    date: new Date().toJSON(),
+    imageUrl,
+    description
+  };
+};
+
+/**
+ * This is overkill, probably not usable
+ * @param search
+ * @param headless
+ */
+export const scrapeAndSearchMarvel = async (search: string, headless?: boolean) => {
   const { page, browser } = await initScraperPage(headless);
 
   const searchQuery = 'https://www.marvel.com/search?limit=1&query=%s&offset=0&content_type=comics'.replace('%s', encodeURIComponent(search));
