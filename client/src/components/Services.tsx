@@ -62,6 +62,18 @@ export const Services = ({ seriesServices, services }: { seriesServices?: ISerie
     }
   };
 
+  const getOtherServices = () => {
+    const filteredServices = getServices(ServiceType.NONE);
+    if (filteredServices.length) {
+      return (
+        <div className="row border-top border-bottom p-3">
+          <h5>Publisher / Other:</h5>
+          {filteredServices}
+        </div>
+      );
+    }
+  };
+
   if (!services) {
     return <></>;
   }
@@ -72,6 +84,7 @@ export const Services = ({ seriesServices, services }: { seriesServices?: ISerie
       {getFreeServices()}
       {getSubscriptionServices()}
       {getPaidServices()}
+      {getOtherServices()}
     </div>
   );
 };
