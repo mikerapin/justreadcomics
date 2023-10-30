@@ -6,6 +6,7 @@ import { CreateServiceRequest, FindServicesRequest, IService } from '../types/se
 import { Types } from 'mongoose';
 import { upload } from '../util/multer';
 import { uploadImageToS3 } from '../s3/s3';
+import { verifyTokenMiddleware } from '../middleware/auth';
 
 const servicesRouter = express.Router();
 
@@ -50,7 +51,7 @@ servicesRouter.get('/get/:id', async (req: Request, res: Response) => {
   res.status(200).json(service);
 });
 
-servicesRouter.post('/create', upload.single('imageBlob'), async (req: CreateServiceRequest, res: Response) => {
+servicesRouter.post('/create', [verifyTokenMiddleware], upload.single('imageBlob'), async (req: CreateServiceRequest, res: Response) => {
   const { serviceName, siteUrl, searchUrl, type } = req.body;
   try {
     let fileUrl;
@@ -81,7 +82,7 @@ servicesRouter.post('/create', upload.single('imageBlob'), async (req: CreateSer
   }
 });
 
-servicesRouter.patch('/update-image/:id', upload.single('imageBlob'), async (req, res) => {
+servicesRouter.patch('/update-image/:id', [verifyTokenMiddleware], upload.single('imageBlob'), async (req: Request, res: Response) => {
   try {
     let fileUrl;
     if (req.file) {
@@ -112,7 +113,7 @@ servicesRouter.patch('/update-image/:id', upload.single('imageBlob'), async (req
   }
 });
 
-servicesRouter.patch('/update/:id', async (req: CreateServiceRequest, res: Response) => {
+servicesRouter.patch('/update/:id', [verifyTokenMiddleware], async (req: CreateServiceRequest, res: Response) => {
   const { serviceName, siteUrl, image, type, searchUrl } = req.body;
   try {
     const updatedService = await servicesModel.findOneAndUpdate(

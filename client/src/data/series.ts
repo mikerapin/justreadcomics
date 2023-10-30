@@ -1,5 +1,6 @@
 import { API_BASE_URL } from '../static/const';
 import { IFetchMultipleSeriesWithCursor, IGetThreeRandomSeries, IHydratedSeries, ISeriesWithImageUpload } from '../types/series';
+import { authFetch } from './fetch';
 
 export const fetchAllSeries = async (cursor = 0): Promise<IFetchMultipleSeriesWithCursor> => {
   const res = await fetch(`${API_BASE_URL}/series/get/all?cursor=${cursor}`);
@@ -43,7 +44,7 @@ const uploadSeriesImage = async (series: IHydratedSeries, imageBlob: File) => {
 
   formData.append('imageBlob', imageBlob, filename);
 
-  const res = await fetch(`${API_BASE_URL}/series/update-image/${series.series._id}`, {
+  const res = await authFetch(`${API_BASE_URL}/series/update-image/${series.series._id}`, {
     method: 'PATCH',
     body: formData
   });
@@ -54,7 +55,7 @@ const uploadSeriesImage = async (series: IHydratedSeries, imageBlob: File) => {
 };
 
 export const updateSeriesById = async (series: Partial<ISeriesWithImageUpload>): Promise<IHydratedSeries> => {
-  const res = await fetch(`${API_BASE_URL}/series/update/${series._id}`, {
+  const res = await authFetch(`${API_BASE_URL}/series/update/${series._id}`, {
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json'
@@ -70,7 +71,7 @@ export const updateSeriesById = async (series: Partial<ISeriesWithImageUpload>):
 };
 
 export const createSeries = async (series: Partial<ISeriesWithImageUpload>) => {
-  const res = await fetch(`${API_BASE_URL}/series/create`, {
+  const res = await authFetch(`${API_BASE_URL}/series/create`, {
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json'

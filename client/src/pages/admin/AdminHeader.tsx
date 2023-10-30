@@ -1,12 +1,18 @@
 import React from 'react';
 import Logo from '../../components/Logo';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { getRoutePath } from '../../util/getRoutePath';
 
 export const AdminHeader = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const params = useParams();
   const path = getRoutePath(location, params);
+
+  const logoutAction = () => {
+    window.localStorage.removeItem('token');
+    navigate('/');
+  };
 
   return (
     <header className="p-3 mb-3 border-bottom">
@@ -45,6 +51,10 @@ export const AdminHeader = () => {
             </li>
             {/*<li><a href="#" className="nav-link px-2 link-body-emphasis">Products</a></li>*/}
           </ul>
+
+          <button type="button" className="btn btn-toolbar" onClick={logoutAction}>
+            Logout
+          </button>
 
           <form className="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
             <input type="search" className="form-control" placeholder="Search..." aria-label="Search" />

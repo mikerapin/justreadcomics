@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { massImportMarvel, scrapeMarvelSeries } from '../scrape/marvel';
 import { getSeriesById } from './series';
 import { seriesModel } from '../model/series';
-import { keyChecker } from '../middleware/scraper';
+import { keyChecker, verifyTokenMiddleware } from '../middleware/auth';
 import { massDcImport } from '../scrape/dc';
 import { uploadSeriesImageFromUrlToS3 } from '../s3/s3';
 import sanitize from 'sanitize-filename';
@@ -14,7 +14,7 @@ import { massImageImport } from '../scrape/image';
 const MARVEL_UNLIMITED_SERVICE_ID = '65314ab18afab97567984de1';
 
 const scraperRouter = express.Router();
-scraperRouter.get('/marvel/:id', [keyChecker], async (req: Request, res: Response) => {
+scraperRouter.get('/marvel/:id', [verifyTokenMiddleware, keyChecker], async (req: Request, res: Response) => {
   const id = req.params.id;
   const { series } = await getSeriesById(id);
 
@@ -56,7 +56,7 @@ scraperRouter.get('/marvel/:id', [keyChecker], async (req: Request, res: Respons
   res.status(200).json({ msg: `${series.seriesName} updated!`, series });
 });
 
-scraperRouter.get('/corpo/:id', [keyChecker], async (req: Request, res: Response) => {
+scraperRouter.get('/corpo/:id', [verifyTokenMiddleware, keyChecker], async (req: Request, res: Response) => {
   const id = req.params.id;
   const { series } = await getSeriesById(id);
   if (!series) {
@@ -78,7 +78,7 @@ scraperRouter.get('/corpo/:id', [keyChecker], async (req: Request, res: Response
 });
 
 // honestly, the following controllers should only need to be done once.
-scraperRouter.get('/mass/marvel', [keyChecker], async (req: Request, res: Response) => {
+scraperRouter.get('/mass/marvel', [verifyTokenMiddleware, keyChecker], async (req: Request, res: Response) => {
   const result = await massImportMarvel(false);
   if (result.error) {
     res.status(400).json(result.error);
@@ -115,7 +115,7 @@ scraperRouter.get('/mass/marvel', [keyChecker], async (req: Request, res: Respon
   }
 });
 
-scraperRouter.get('/mass/dc', [keyChecker], async (req: Request, res: Response) => {
+scraperRouter.get('/mass/dc', [verifyTokenMiddleware, keyChecker], async (req: Request, res: Response) => {
   const result = await massDcImport(false);
   const includeImages = req.query.includeImages;
 
@@ -164,7 +164,7 @@ scraperRouter.get('/mass/dc', [keyChecker], async (req: Request, res: Response) 
   }
 });
 
-scraperRouter.get('/mass/image', [keyChecker], async (req: Request, res: Response) => {
+scraperRouter.get('/mass/image', [verifyTokenMiddleware, keyChecker], async (req: Request, res: Response) => {
   const result = await massImageImport(false);
 
   if (result.error) {

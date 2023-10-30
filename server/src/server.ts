@@ -8,6 +8,7 @@ import { connectToServer } from './db/conn';
 import { seriesRouter } from './controllers/series';
 import { servicesRouter } from './controllers/services';
 import { scraperRouter } from './controllers/scraper';
+import { authRouter } from './controllers/auth';
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use(cors());
 app.use(express.json());
 app.use('/api/series', seriesRouter);
 app.use('/api/services', servicesRouter);
+app.use('/api/auth', authRouter);
 
 // scraper services
 app.use('/scraper', scraperRouter);

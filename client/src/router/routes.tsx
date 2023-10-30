@@ -11,6 +11,8 @@ import { AdminSeriesEdit } from '../pages/admin/AdminSeriesEdit';
 import { AdminService } from '../pages/admin/AdminService';
 import { AdminServiceEdit } from '../pages/admin/AdminServiceEdit';
 import { SearchPage } from '../pages/SearchPage';
+import { AdminLogin } from '../pages/admin/AdminLogin';
+import { authenticate } from '../data/auth';
 
 export const siteRouter = [
   {
@@ -33,9 +35,17 @@ export const siteRouter = [
     ]
   },
   {
+    path: '/a/login',
+    element: <AdminLogin />,
+    errorElement: <ErrorPage />
+  },
+  {
     path: '/admin',
     element: <AdminTemplate />,
     errorElement: <ErrorPage />,
+    loader: async () => {
+      return await authenticate();
+    },
     children: [
       {
         path: '/admin',

@@ -1,5 +1,6 @@
 import { IGetAllServicesWithCursor, IService, IServiceWithImageUpload } from '../types/service';
 import { API_BASE_URL } from '../static/const';
+import { authFetch } from './fetch';
 
 export const fetchAllServices = async (cursor?: number): Promise<IGetAllServicesWithCursor> => {
   const c = cursor || 0;
@@ -19,7 +20,7 @@ const uploadServiceImage = async (service: IService, imageBlob: File) => {
 
   formData.append('imageBlob', imageBlob, filename);
 
-  const res = await fetch(`${API_BASE_URL}/services/update-image/${service._id}`, {
+  const res = await authFetch(`${API_BASE_URL}/services/update-image/${service._id}`, {
     method: 'PATCH',
     body: formData
   });
@@ -29,7 +30,7 @@ const uploadServiceImage = async (service: IService, imageBlob: File) => {
 };
 
 export const updateServiceById = async (service: Partial<IServiceWithImageUpload>) => {
-  const res = await fetch(`${API_BASE_URL}/services/update/${service._id}`, {
+  const res = await authFetch(`${API_BASE_URL}/services/update/${service._id}`, {
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json'
@@ -46,7 +47,7 @@ export const updateServiceById = async (service: Partial<IServiceWithImageUpload
 };
 
 export const createService = async (service: Partial<IServiceWithImageUpload>) => {
-  const res = await fetch(`${API_BASE_URL}/services/create`, {
+  const res = await authFetch(`${API_BASE_URL}/services/create`, {
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json'

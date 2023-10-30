@@ -10,6 +10,7 @@ import { upload } from '../util/multer';
 import { uploadImageToS3 } from '../s3/s3';
 import { servicesModel } from '../model/services';
 import { IService } from '../types/services';
+import { verifyTokenMiddleware } from '../middleware/auth';
 
 const seriesRouter = express.Router();
 
@@ -80,7 +81,7 @@ seriesRouter.get('/get/:id', async (req: Request, res: Response) => {
   res.status(200).json(results);
 });
 
-seriesRouter.post('/create', async (req: CreateSeriesRequest, res: Response) => {
+seriesRouter.post('/create', [verifyTokenMiddleware], async (req: CreateSeriesRequest, res: Response) => {
   const { seriesName, description, image, credits, services, meta, lastScan } = req.body;
   try {
     const newSeries = new seriesModel({
@@ -104,7 +105,7 @@ seriesRouter.post('/create', async (req: CreateSeriesRequest, res: Response) => 
   }
 });
 
-seriesRouter.patch('/update-image/:id', upload.single('imageBlob'), async (req, res) => {
+seriesRouter.patch('/update-image/:id', [verifyTokenMiddleware, upload.single('imageBlob')], async (req: Request, res: Response) => {
   try {
     let fileUrl;
     if (req.file) {
@@ -135,7 +136,7 @@ seriesRouter.patch('/update-image/:id', upload.single('imageBlob'), async (req, 
   }
 });
 
-seriesRouter.patch('/update/:id', async (req: CreateSeriesRequest, res: Response) => {
+seriesRouter.patch('/update/:id', [verifyTokenMiddleware], async (req: CreateSeriesRequest, res: Response) => {
   const { seriesName, description, image, credits, services, meta, lastScan } = req.body;
   try {
     const series = await seriesModel.findOneAndUpdate(
