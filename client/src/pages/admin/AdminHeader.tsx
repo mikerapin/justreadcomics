@@ -1,18 +1,14 @@
 import React from 'react';
 import Logo from '../../components/Logo';
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { getRoutePath } from '../../util/getRoutePath';
+import { useAuth } from '../../providers/AuthProvider';
 
 export const AdminHeader = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const params = useParams();
   const path = getRoutePath(location, params);
-
-  const logoutAction = () => {
-    window.localStorage.removeItem('token');
-    navigate('/');
-  };
+  const { logout } = useAuth();
 
   return (
     <header className="p-3 mb-3 border-bottom">
@@ -52,7 +48,7 @@ export const AdminHeader = () => {
             {/*<li><a href="#" className="nav-link px-2 link-body-emphasis">Products</a></li>*/}
           </ul>
 
-          <button type="button" className="btn btn-toolbar" onClick={logoutAction}>
+          <button type="button" className="btn btn-toolbar" onClick={logout}>
             Logout
           </button>
 
