@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { IHydratedSeries } from '../types/series';
 import { fetchRandomThreeSeries } from '../data/series';
 import { ResultCard } from '../components/ResultCard';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 
 const Home = () => {
   const [randomSeries, setRandomSeries] = useState<IHydratedSeries[]>();

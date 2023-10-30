@@ -6,7 +6,7 @@ import { Services } from '../components/Services';
 import { IService } from '../types/service';
 import { LoadingSeries } from './LoadingSeries';
 import { SeriesImage } from '../components/SeriesImage';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 
 export const SeriesDetail = () => {
   let { id } = useParams();

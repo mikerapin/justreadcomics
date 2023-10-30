@@ -1,5 +1,5 @@
 import { getSeriesImage } from '../util/image';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import React from 'react';
 
 export const LoadingSeries = () => {

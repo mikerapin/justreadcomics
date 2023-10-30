@@ -4,7 +4,7 @@ import { fetchSeriesByName } from '../data/series';
 import { IFetchMultipleSeriesWithCursor } from '../types/series';
 import { ResultCard } from '../components/ResultCard';
 import { Pagination } from '../components/Pagination';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 
 export const SearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
