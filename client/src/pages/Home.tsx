@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { IHydratedSeries } from '../types/series';
 import { fetchRandomThreeSeries } from '../data/series';
 import { ResultCard } from '../components/ResultCard';
+import { Helmet } from 'react-helmet';
 
 const Home = () => {
   const [randomSeries, setRandomSeries] = useState<IHydratedSeries[]>();
@@ -12,6 +13,9 @@ const Home = () => {
   }, []);
   return (
     <main>
+      <Helmet>
+        <title>just read comics</title>
+      </Helmet>
       <section className="py-5 text-center container">
         <div className="row py-lg-5">
           <div className="col-lg-6 col-md-8 mx-auto">

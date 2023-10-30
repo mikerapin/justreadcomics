@@ -1,8 +1,13 @@
 import { getSeriesImage } from '../util/image';
+import { Helmet } from 'react-helmet';
+import React from 'react';
 
 export const LoadingSeries = () => {
   return (
     <div className="container">
+      <Helmet>
+        <title>Loading | just read comics</title>
+      </Helmet>
       <div className="row">
         <div className="col-4">
           <img className="img-fluid" src={getSeriesImage()} alt="Loading" />

@@ -4,6 +4,7 @@ import { fetchSeriesByName } from '../data/series';
 import { IFetchMultipleSeriesWithCursor } from '../types/series';
 import { ResultCard } from '../components/ResultCard';
 import { Pagination } from '../components/Pagination';
+import { Helmet } from 'react-helmet';
 
 export const SearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -50,6 +51,9 @@ export const SearchPage = () => {
 
   return (
     <div className="container">
+      <Helmet>
+        <title>just read comics | Search</title>
+      </Helmet>
       <Form role="search" action="/search" onSubmit={onSubmit}>
         <div className="d-flex g-3">
           <div>

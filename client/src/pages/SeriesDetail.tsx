@@ -6,6 +6,7 @@ import { Services } from '../components/Services';
 import { IService } from '../types/service';
 import { LoadingSeries } from './LoadingSeries';
 import { SeriesImage } from '../components/SeriesImage';
+import { Helmet } from 'react-helmet';
 
 export const SeriesDetail = () => {
   let { id } = useParams();
@@ -26,6 +27,9 @@ export const SeriesDetail = () => {
 
   return (
     <div className="container">
+      <Helmet>
+        <title>Where to read {series.seriesName} | just read comics</title>
+      </Helmet>
       <div className="row">
         <div className="col-4">
           <SeriesImage series={series} alt={series.seriesName} />
