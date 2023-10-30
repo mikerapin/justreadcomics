@@ -1,7 +1,9 @@
 import express = require('express');
 import { Request, Response } from 'express';
 import { sign, verify } from 'jsonwebtoken';
-import { verifyTokenMiddleware } from '../middleware/auth';
+
+// most of the auth business here was taken from this guide:
+//   https://hackernoon.com/how-to-add-authentication-to-a-full-stack-mern-web-application
 
 const authRouter = express.Router();
 
