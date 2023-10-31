@@ -11,7 +11,7 @@ scraperRouter.get('/marvel/:id', [verifyTokenMiddleware, keyChecker], scrapeInde
 scraperRouter.get('/image/:id', [verifyTokenMiddleware, keyChecker], scrapeIndexedImageSeriesAction);
 
 // search and scrape callers
-scraperRouter.get('/corpo/:id', [verifyTokenMiddleware, keyChecker], searchAndScrapeCorpoAction);
+scraperRouter.get('/corpo/:id', [verifyTokenMiddleware], searchAndScrapeCorpoAction);
 
 // mass import scrapers (very primitive)
 // honestly, the following controllers should only need to be done once.

@@ -10,6 +10,7 @@ import { IService } from '../../types/service';
 import { ImageUploader } from './subcomponents/ImageUploader';
 import { ISeriesForm } from './types/series';
 import { SeriesImage } from '../../components/SeriesImage';
+import { Scanner } from './series-service/Scanner';
 
 export const AdminSeriesEdit = () => {
   let { id } = useParams();
@@ -104,8 +105,12 @@ export const AdminSeriesEdit = () => {
     return 2;
   };
 
+  const getSeriesServiceById = (serviceId?: string) => {
+    return series.services?.find((service) => service.id === serviceId);
+  };
+
   const getSeriesServiceInfo = (serviceId: string) => {
-    const service = series.services?.find((service) => service.id === serviceId);
+    const service = getSeriesServiceById(serviceId);
     if (service) {
       return (
         <div>
@@ -182,7 +187,7 @@ export const AdminSeriesEdit = () => {
         <div className="container">
           <h3>Services</h3>
           <div className="row">
-            {services?.map((service, index) => {
+            {services?.map((service) => {
               return (
                 <div key={service.serviceName} className="col-2">
                   <label className="form-check-label" htmlFor={`service${service._id}`}>
@@ -200,6 +205,10 @@ export const AdminSeriesEdit = () => {
                       </div>
                     </div>
                   </label>
+
+                  <div className="text-center">
+                    <Scanner seriesService={getSeriesServiceById(service._id)} seriesId={series._id} />
+                  </div>
                 </div>
               );
             })}

@@ -16,7 +16,7 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
 
   const seriesName = series.seriesName;
 
-  const { imageUrl, seriesPageUrl, withinCU } = await searchScrapeCorpo(seriesName, false);
+  const { imageUrl, seriesPageUrl, withinCU } = await searchScrapeCorpo(seriesName, true);
 
   if (seriesPageUrl) {
     // if we have services
