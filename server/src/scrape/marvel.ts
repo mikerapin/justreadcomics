@@ -4,7 +4,7 @@ import sanitize from 'sanitize-filename';
 export const scrapeMarvelSeries = async (seriesUrl: string, headless?: boolean) => {
   const { page, browser } = await initScraperPage(headless);
 
-  page.goto(seriesUrl, { waitUntil: 'domcontentloaded' });
+  await page.goto(seriesUrl, { waitUntil: 'domcontentloaded' });
 
   const imageUrlSelector = 'meta[name="twitter:image"]';
 
