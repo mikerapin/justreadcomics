@@ -42,7 +42,7 @@ export const scrapeIndexedMarvelSeriesAction = async (req: Request, res: Respons
     series.services[muIndex].lastScan = new Date().toJSON();
   }
 
-  series.save();
+  await series.save();
 
   res.status(200).json({ msg: `${series.seriesName} updated!`, series });
 };
@@ -88,7 +88,7 @@ export const scrapeIndexedImageSeriesAction = async (req: Request, res: Response
     series.services[imageIndex].lastScan = new Date().toJSON();
   }
 
-  series.save();
+  await series.save();
 
   // res.status(200).json({ msg: `${series.seriesName} updated!`, series });
   res.status(200).json({ msg: `${series.seriesName} updated!`, series });

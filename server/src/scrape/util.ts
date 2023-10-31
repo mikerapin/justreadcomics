@@ -16,3 +16,7 @@ export const initScraperPage = async (headless = true) => {
   });
   return { page, browser };
 };
+
+export const cleanSearch = (search: string) => {
+  return search.replace(/ *\([^)]*\) */g, '');
+};

@@ -2,7 +2,7 @@ import express = require('express');
 import { keyChecker, verifyTokenMiddleware } from '../middleware/auth';
 import { massImportDcAction, massImportImageAction, massImportMarvelAction } from './scraper/mass';
 import { scrapeIndexedImageSeriesAction, scrapeIndexedMarvelSeriesAction } from './scraper/indexed';
-import { scrapeAndSearchCorpoAction } from './scraper/search';
+import { searchAndScrapeCorpoAction } from './scraper/search';
 
 const scraperRouter = express.Router();
 
@@ -11,7 +11,7 @@ scraperRouter.get('/marvel/:id', [verifyTokenMiddleware, keyChecker], scrapeInde
 scraperRouter.get('/image/:id', [verifyTokenMiddleware, keyChecker], scrapeIndexedImageSeriesAction);
 
 // search and scrape callers
-scraperRouter.get('/corpo/:id', [verifyTokenMiddleware, keyChecker], scrapeAndSearchCorpoAction);
+scraperRouter.get('/corpo/:id', [verifyTokenMiddleware, keyChecker], searchAndScrapeCorpoAction);
 
 // mass import scrapers (very primitive)
 // honestly, the following controllers should only need to be done once.
