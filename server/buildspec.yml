@@ -8,11 +8,13 @@ phases:
   pre_build:
     commands:
       - echo Installing source NPM dependencies...
+      - cd server
       - npm install
   build:
     commands:
       - echo Build started on `date`
       - echo Compiling the Node.js code
+      - cd server
       - npm run build
   post_build:
     commands:
