@@ -1,5 +1,6 @@
 import { initScraperPage } from './util';
 import { IMassImageImport } from '../types/scraper';
+import { logError } from '../util/logger';
 
 /**
  * This only gets series description and a (bad) creator list
@@ -113,7 +114,7 @@ export const massImageImport = async (headless: boolean) => {
       series: snaggedTitles
     };
   } catch (e: any) {
-    console.log(e);
+    logError(e);
     return {
       series: [],
       error: e

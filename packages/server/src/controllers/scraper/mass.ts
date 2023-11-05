@@ -8,6 +8,7 @@ import { massImportMarvel } from '../../scrape/marvel';
 import { promiseAllSequence } from '../../util/scraper';
 import { seriesModel } from '../../model/series';
 import { uploadSeriesImageFromUrlToS3 } from '../../s3/s3';
+import { logError } from '../../util/logger';
 
 export const massImportMarvelAction = async (req: Request, res: Response) => {
   const result = await massImportMarvel(false);
@@ -41,7 +42,7 @@ export const massImportMarvelAction = async (req: Request, res: Response) => {
     }
     res.status(200).json({ size: finalResults.length, finalResults });
   } catch (e: any) {
-    console.log(e);
+    logError(e);
     res.status(400).json({ e });
   }
 };
@@ -90,7 +91,7 @@ export const massImportDcAction = async (req: Request, res: Response) => {
     }
     res.status(200).json({ size: finalResults.length, finalResults });
   } catch (e: any) {
-    console.log(e);
+    logError(e);
     res.status(400).json({ e });
   }
 };
@@ -127,7 +128,7 @@ export const massImportImageAction = async (req: Request, res: Response) => {
     }
     res.status(200).json({ size: finalResults.length, finalResults });
   } catch (e: any) {
-    console.log(e);
+    logError(e);
     res.status(400).json({ e });
   }
 };

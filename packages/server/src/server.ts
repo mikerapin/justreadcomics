@@ -9,6 +9,7 @@ import { seriesRouter } from './controllers/series';
 import { servicesRouter } from './controllers/services';
 import { scraperRouter } from './controllers/scraper';
 import { authRouter } from './controllers/auth';
+import { logError, logFatal, loggerMiddleware, logInfo } from './util/logger';
 
 const app = express();
 
@@ -16,11 +17,12 @@ const port = process.env.PORT || 8080;
 
 process.on('uncaughtException', function (err) {
   console.error(err);
-  console.log('Node NOT Exiting...');
+  logFatal('Node NOT Exiting...');
 });
 
 app.use(cors());
 app.use(express.json());
+app.use(loggerMiddleware);
 app.use('/api/series', seriesRouter);
 app.use('/api/services', servicesRouter);
 app.use('/api/auth', authRouter);
@@ -32,8 +34,8 @@ const server = app.listen(port, async () => {
   try {
     await connectToServer();
   } catch (e: any) {
-    console.error(e);
+    logError(e);
   }
-  console.log(`Server is running on port: ${port}`);
+  logInfo(`Server is running on port: ${port}`);
 });
 server.timeout = 120000;

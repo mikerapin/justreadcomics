@@ -1,5 +1,6 @@
 import { initScraperPage } from './util';
 import sanitize from 'sanitize-filename';
+import { logError } from '../util/logger';
 
 export const scrapeMarvelSeries = async (seriesUrl: string, headless?: boolean) => {
   const { page, browser } = await initScraperPage(headless);
@@ -137,7 +138,7 @@ export const massImportMarvel = async (headless: boolean) => {
       series: snaggedTitles
     };
   } catch (e: any) {
-    console.log(e);
+    logError(e);
     return {
       series: [],
       error: e

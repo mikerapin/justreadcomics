@@ -1,5 +1,6 @@
 import { initScraperPage } from './util';
 import { IMassDcImport } from '../types/scraper';
+import { logError } from '../util/logger';
 
 export const massDcImport = async (headless: boolean) => {
   const { page, browser } = await initScraperPage(headless);
@@ -65,7 +66,7 @@ export const massDcImport = async (headless: boolean) => {
       series: snaggedTitles
     };
   } catch (e: any) {
-    console.log(e);
+    logError(e);
     return {
       series: [],
       error: e

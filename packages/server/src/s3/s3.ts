@@ -1,6 +1,7 @@
 import { fromEnv } from '@aws-sdk/credential-providers'; // ES6 import
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import sanitize from 'sanitize-filename';
+import { logError } from '../util/logger';
 
 const s3Bucket = process.env.AWS_S3_BUCKET_NAME || '';
 
@@ -33,7 +34,7 @@ export const uploadImageToS3 = async ({ image, filename, path }: IUploadToS3) =>
     await s3.send(command);
     return generateS3BucketUrl(cleanedFilename);
   } catch (e: any) {
-    console.log(e);
+    logError(e);
     throw new Error(e);
   }
 };
@@ -43,7 +44,7 @@ export const uploadSeriesImageFromUrlToS3 = async (seriesName: string, seriesIma
     const imageFetch = await fetch(seriesImage)
       .then((res) => res.arrayBuffer())
       .catch((err) => {
-        console.log(err);
+        logError(err);
         return null;
       });
     if (imageFetch) {
