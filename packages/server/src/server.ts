@@ -2,7 +2,7 @@ import cors = require('cors');
 import express = require('express');
 import dotenv from 'dotenv';
 // don't move this line down or the DB won't connect correctly
-dotenv.config({ path: `./config/.env.${process.env.NODE_ENV}` });
+dotenv.config({ path: `./config/.env.${process.env.NODE_ENV}.local` });
 
 import { connectToServer } from './db/conn';
 import { seriesRouter } from './controllers/series';
@@ -12,11 +12,11 @@ import { authRouter } from './controllers/auth';
 
 const app = express();
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 8080;
 
 process.on('uncaughtException', function (err) {
   console.error(err);
-  console.log(`./config/.env.${process.env.NODE_ENV}`);
+  console.log(`./config/.env.${process.env.NODE_ENV}.local`);
   console.log('Node NOT Exiting...');
 });
 

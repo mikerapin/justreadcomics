@@ -4,6 +4,9 @@ export const getBaseUrl = () => {
     case 'production':
       url = 'https://www.justreadcomics.com';
       break;
+    case 'test':
+      url = 'http://localhost:8080';
+      break;
     case 'development':
     default:
       url = 'http://localhost:8090';
