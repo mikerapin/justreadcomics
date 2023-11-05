@@ -4,11 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node ./src/server.ts",
-    "start:prod": "npm run build && node ./dist/src/server.js",
     "build": "npx tsc",
-    "start:nodemon": "NODE_ENV=local ./node_modules/nodemon/bin/nodemon.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "NODE_ENV=local nodemon"
   },
   "keywords": [],
   "author": "",

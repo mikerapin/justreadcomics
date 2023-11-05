@@ -16,6 +16,7 @@ const port = process.env.PORT || 5000;
 
 process.on('uncaughtException', function (err) {
   console.error(err);
+  console.log(`./config/.env.${process.env.NODE_ENV}`);
   console.log('Node NOT Exiting...');
 });
 

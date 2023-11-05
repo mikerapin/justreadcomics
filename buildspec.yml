@@ -1,0 +1,22 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 18
+    on-failure: ABORT
+    commands:
+      - cd client
+      - npm ci
+      - npm run build
+      - cd ../server
+      - npm ci
+      - npm run build
+  build:
+    on-failure: ABORT
+    commands:
+      # Build the front-end and the back-end
+      - npm run build
+      # Push FE to S3
+      - aws s3 sync dist/apps/frontend/ s3://$FRONT_END_BUCKET --delete
+      # TODO: Push API to Elastic beanstalk
