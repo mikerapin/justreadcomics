@@ -17,6 +17,7 @@ phases:
       - aws s3 sync packages/client/build/ s3://$AWS_S3_BUCKET_NAME
       # Invalidate cloudfront caches to immediately serve the new front-end files (variable is defined in the CodeBuild Environment settings)
       - aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_DISTRO --paths "/index.html" "/static/*"
+      - mv node_modules packages/server
 artifacts:
   type: zip
   base-directory: 'packages/server'
