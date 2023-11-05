@@ -6,7 +6,8 @@
     "packages/*"
   ],
   "scripts": {
-    "start": "lerna run --parallel --stream start"
+    "start": "lerna run --parallel --stream start",
+    "build": "lerna run --parallel --stream build"
   },
   "dependencies": {},
   "devDependencies": {

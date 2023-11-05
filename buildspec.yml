@@ -6,17 +6,21 @@ phases:
       nodejs: 18
     on-failure: ABORT
     commands:
-      - cd client
+      - API_ZIP_KEY=$COMMIT_ID-api.zip
       - npm ci
-      - npm run build
-      - cd ../server
-      - npm ci
-      - npm run build
   build:
     on-failure: ABORT
     commands:
       # Build the front-end and the back-end
       - npm run build
-      # Push FE to S3
-      - aws s3 sync dist/apps/frontend/ s3://$FRONT_END_BUCKET --delete
-      # TODO: Push API to Elastic beanstalk
+      # Push FE to S3 (variable is defined in the CodeBuild Environment settings)
+      - aws s3 sync packages/client/build/ s3://public/$AWS_S3_BUCKET_NAME --delete
+      # Invalidate cloudfront caches to immediately serve the new front-end files (variable is defined in the CodeBuild Environment settings)
+      - aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_DISTRO --paths "/index.html /static/*"
+  artifacts:
+    type: zip
+    files:
+      - 'packages/server/dist/**/*'
+  cache:
+    paths:
+      - node_modules
