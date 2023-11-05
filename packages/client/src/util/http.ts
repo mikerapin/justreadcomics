@@ -2,7 +2,7 @@ export const getBaseUrl = () => {
   let url;
   switch (process.env.NODE_ENV) {
     case 'production':
-      url = 'https://www.justreadcomics.com/';
+      url = 'https://www.justreadcomics.com';
       break;
     case 'development':
     default:

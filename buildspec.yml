@@ -20,7 +20,7 @@ phases:
 artifacts:
   type: zip
   files:
-    - 'packages/server/dist/**/*'
+    - 'packages/server/**/*'
 cache:
   paths:
     - node_modules
