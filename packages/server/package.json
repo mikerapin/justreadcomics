@@ -2,11 +2,13 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/server.js",
+  "private": true,
   "scripts": {
     "build": "npx tsc",
     "start:dev": "NODE_ENV=development nodemon",
-    "start": "npm run build && NODE_ENV=production node dist/server.js"
+    "start:build-run-prod": "npm run build && NODE_ENV=production node dist/server.js",
+    "start": "NODE_ENV=production node dist/server.js"
   },
   "keywords": [],
   "author": "",
