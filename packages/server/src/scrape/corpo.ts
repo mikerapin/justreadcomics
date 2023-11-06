@@ -37,7 +37,7 @@ export const searchScrapeCorpo = async (search: string, headless?: boolean) => {
       return document.querySelector(selector)?.getAttribute('href');
     }, seriesUrlSelector);
 
-    const cuSelector = '#series-childAsin-item_1 .cuBadge';
+    const cuSelector = '#series-childAsin-item_1 ::-p-text(Read for Free)';
     try {
       const cuItem = await page.waitForSelector(cuSelector);
       if (cuItem) {

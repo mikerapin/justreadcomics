@@ -16,7 +16,7 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
 
   const seriesName = series.seriesName;
 
-  const { imageUrl, seriesPageUrl, withinCU } = await searchScrapeCorpo(seriesName, true);
+  const { imageUrl, seriesPageUrl, withinCU } = await searchScrapeCorpo(seriesName);
 
   if (seriesPageUrl) {
     // if we have services
@@ -46,11 +46,11 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
       ];
     }
 
-    if (withinCU) {
-      const cuIndex = series.services.findIndex((service) => {
-        return service.id === CU_SERVICE_ID;
-      });
+    const cuIndex = series.services.findIndex((service) => {
+      return service.id === CU_SERVICE_ID;
+    });
 
+    if (withinCU) {
       if (cuIndex > -1) {
         series.services[cuIndex].seriesServiceUrl = seriesPageUrl;
         series.services[cuIndex].lastScan = new Date().toJSON();
@@ -61,9 +61,13 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
           lastScan: new Date().toJSON()
         });
       }
+    } else {
+      if (cuIndex > -1) {
+        series.services.splice(cuIndex, 1);
+      }
     }
 
-    if (imageUrl && series.image === '') {
+    if (imageUrl) {
       series.image = await uploadSeriesImageFromUrlToS3(series.seriesName, imageUrl);
     }
 

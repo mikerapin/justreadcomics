@@ -11,7 +11,7 @@ interface IUploadToS3 {
   path?: string;
 }
 
-const BUCKET_URL = 'https://justreadcomics.s3.amazonaws.com/';
+const BUCKET_URL = 'https://justreadcomics.com/';
 
 const generateS3BucketUrl = (filename: string) => {
   return `${BUCKET_URL}${filename}`;
