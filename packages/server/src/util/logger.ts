@@ -31,7 +31,8 @@ const logger = pino(
         return { level: label.toUpperCase() };
       }
     },
-    timestamp: pino.stdTimeFunctions.isoTime
+    timestamp: pino.stdTimeFunctions.isoTime,
+    ignore: 'pid'
   },
   fileTransport
 );

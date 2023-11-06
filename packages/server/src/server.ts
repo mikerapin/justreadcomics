@@ -16,8 +16,8 @@ const app = express();
 const port = process.env.PORT || 8080;
 
 process.on('uncaughtException', function (err) {
-  console.error(err);
-  logFatal('Node NOT Exiting...');
+  logFatal(err);
+  logInfo('Node NOT Exiting...');
 });
 
 app.use(cors());
@@ -33,7 +33,7 @@ app.use('/scraper', scraperRouter);
 const server = app.listen(port, async () => {
   try {
     logInfo(`Attempting to connect to db on ${process.env.NODE_ENV}`);
-    await connectToServer();
+    await connectToServer()
   } catch (e: any) {
     logError(e);
   }
