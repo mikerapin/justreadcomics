@@ -13,5 +13,10 @@ export const seriesScanners = [
   {
     seriesServiceId: '652ea8fd905191bc5f8c34bd',
     action: `${SCRAPER_BASE_URL}/corpo/`
+  },
+  // image scanner
+  {
+    seriesServiceId: '653afb1e23027c9826267cb8',
+    action: `${SCRAPER_BASE_URL}/image/`
   }
 ];
