@@ -1,20 +1,31 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import React from 'react';
 import Header from '../components/Header';
-import Footer from '../components/Footer';
 import { Helmet } from 'react-helmet-async';
+import { ComingSoon } from './ComingSoon';
+import Footer from '../components/Footer';
 
 export default function PageTemplate() {
+  const location = useLocation();
+
+  const hideSite = process.env.NODE_ENV === 'development' && !location.search.includes('cool_guy_override');
+
   return (
     <>
       <Helmet>
         <title>just read comics</title>
       </Helmet>
-      <Header />
-      <div id="content">
-        <Outlet />
-      </div>
-      <Footer />
+      {hideSite ? (
+        <ComingSoon />
+      ) : (
+        <>
+          <Header />
+          <div id="content">
+            <Outlet />
+          </div>
+          <Footer />
+        </>
+      )}
     </>
   );
 }
