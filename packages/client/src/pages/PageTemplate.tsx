@@ -8,7 +8,7 @@ import Footer from '../components/Footer';
 export default function PageTemplate() {
   const location = useLocation();
 
-  const hideSite = process.env.NODE_ENV === 'development' && !location.search.includes('cool_guy_override');
+  const hideSite = process.env.NODE_ENV === 'production' && !location.search.includes('cool_guy_override');
 
   return (
     <>
