@@ -3,6 +3,7 @@ import { IHydratedSeries } from '../types/series';
 import { fetchRandomThreeSeries } from '../data/series';
 import { ResultCard } from '../components/ResultCard';
 import { Helmet } from 'react-helmet-async';
+import { PlaceholderResultCard } from '../components/placeholders/PlaceholderResultCard';
 
 const Home = () => {
   const [randomSeries, setRandomSeries] = useState<IHydratedSeries[]>();
@@ -11,6 +12,20 @@ const Home = () => {
       setRandomSeries(res.data);
     });
   }, []);
+
+  const getRandomSeriesCards = () => {
+    if (!randomSeries) {
+      return (
+        <>
+          <PlaceholderResultCard />
+          <PlaceholderResultCard />
+          <PlaceholderResultCard />
+        </>
+      );
+    }
+    return randomSeries?.map((hydratedSeries) => <ResultCard key={hydratedSeries.series._id} hydratedSeries={hydratedSeries} />);
+  };
+
   return (
     <main>
       <Helmet>
@@ -27,11 +42,7 @@ const Home = () => {
 
       <div className="album py-5 bg-body-tertiary">
         <div className="container">
-          <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-            {randomSeries?.map((hydratedSeries) => (
-              <ResultCard key={hydratedSeries.series._id} hydratedSeries={hydratedSeries} />
-            ))}
-          </div>
+          <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">{getRandomSeriesCards()}</div>
         </div>
       </div>
     </main>
