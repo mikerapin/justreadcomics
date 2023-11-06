@@ -1,9 +1,8 @@
 import { IHydratedSeries } from '../types/series';
 import React from 'react';
-import { getServiceImage } from '../util/image';
 import { Link } from 'react-router-dom';
 import { SeriesImage } from './SeriesImage';
-import { PlaceholderResultCard } from './placeholders/PlaceholderResultCard';
+import { getServiceImage } from '../util/image';
 
 export const ResultCard = ({ hydratedSeries }: { hydratedSeries: IHydratedSeries }) => {
   const { series, services } = hydratedSeries;
@@ -23,6 +22,18 @@ export const ResultCard = ({ hydratedSeries }: { hydratedSeries: IHydratedSeries
                 View
               </Link>
             </div>
+            {services?.map((service) => {
+              return (
+                <img
+                  key={service._id}
+                  style={{ maxHeight: '30px' }}
+                  className="img-thumbnail rounded-2 bg-white"
+                  src={getServiceImage(service)}
+                  alt={service.serviceName}
+                  title={service.serviceName}
+                />
+              );
+            })}
           </div>
         </div>
       </div>
