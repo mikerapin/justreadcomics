@@ -16,7 +16,7 @@ const PINO_CONFIG = {
 };
 
 const PINO_LOG_FILENAME = 'pino-logger.log';
-const PINO_LOG_FILE = process.env.NODE_ENV === 'production' ? `/var/log/nodejs/${PINO_LOG_FILENAME}` : `./${PINO_LOG_FILENAME}`;
+const PINO_LOG_FILE = `./${PINO_LOG_FILENAME}`;
 
 const fileTransport = pino.transport({
   target: 'pino/file',
@@ -31,11 +31,7 @@ const logger = pino(
         return { level: label.toUpperCase() };
       }
     },
-    timestamp: pino.stdTimeFunctions.isoTime,
-    target: 'pino-pretty',
-    options: {
-      colorize: true
-    }
+    timestamp: pino.stdTimeFunctions.isoTime
   },
   fileTransport
 );
