@@ -25,7 +25,7 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
         return service.id === CORPO_SERVICE_ID;
       });
 
-      if (corpoIndex && corpoIndex > -1) {
+      if (corpoIndex > -1) {
         series.services[corpoIndex].seriesServiceUrl = seriesPageUrl;
         series.services[corpoIndex].lastScan = new Date().toJSON();
       } else {
@@ -51,7 +51,7 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
         return service.id === CU_SERVICE_ID;
       });
 
-      if (cuIndex && cuIndex > -1) {
+      if (cuIndex > -1) {
         series.services[cuIndex].seriesServiceUrl = seriesPageUrl;
         series.services[cuIndex].lastScan = new Date().toJSON();
       } else {

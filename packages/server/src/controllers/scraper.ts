@@ -8,7 +8,7 @@ const scraperRouter = express.Router();
 
 // indexed scrape callers
 scraperRouter.get('/marvel/:id', [verifyTokenMiddleware, keyChecker], scrapeIndexedMarvelSeriesAction);
-scraperRouter.get('/image/:id', [verifyTokenMiddleware, keyChecker], scrapeIndexedImageSeriesAction);
+scraperRouter.get('/image/:id', [verifyTokenMiddleware], scrapeIndexedImageSeriesAction);
 
 // search and scrape callers
 scraperRouter.get('/corpo/:id', [verifyTokenMiddleware], searchAndScrapeCorpoAction);

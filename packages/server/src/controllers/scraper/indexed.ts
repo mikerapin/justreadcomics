@@ -23,7 +23,7 @@ export const scrapeIndexedMarvelSeriesAction = async (req: Request, res: Respons
     return;
   }
 
-  const { imageUrl, description, date } = await scrapeMarvelSeries(muService.seriesServiceUrl, false);
+  const { imageUrl, description, date } = await scrapeMarvelSeries(muService.seriesServiceUrl);
 
   // TODO: add the data to the db
   if (imageUrl) {
@@ -64,7 +64,7 @@ export const scrapeIndexedImageSeriesAction = async (req: Request, res: Response
     return;
   }
 
-  const { description, creators, date } = await scrapeImageSeries(imageService.seriesServiceUrl, false);
+  const { description, creators, date } = await scrapeImageSeries(imageService.seriesServiceUrl);
 
   if (description?.length) {
     series.description = description;
