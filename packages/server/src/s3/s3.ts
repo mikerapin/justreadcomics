@@ -11,10 +11,10 @@ interface IUploadToS3 {
   path?: string;
 }
 
-const BUCKET_URL = 'https://justreadcomics.com/';
+const BASE_URL = 'https://www.justreadcomics.com/';
 
 const generateS3BucketUrl = (filename: string) => {
-  return `${BUCKET_URL}${filename}`;
+  return `${BASE_URL}${filename}`;
 };
 
 export const uploadImageToS3 = async ({ image, filename, path }: IUploadToS3) => {
