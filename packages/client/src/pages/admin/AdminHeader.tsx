@@ -3,6 +3,7 @@ import Logo from '../../components/Logo';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { getRoutePath } from '../../util/getRoutePath';
 import { useAuth } from '../../providers/AuthProvider';
+import { Search } from '../../components/Search';
 
 export const AdminHeader = () => {
   const location = useLocation();
@@ -52,9 +53,7 @@ export const AdminHeader = () => {
             Logout
           </button>
 
-          <form className="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
-            <input type="search" className="form-control" placeholder="Search..." aria-label="Search" />
-          </form>
+          <Search isAdmin />
         </div>
       </div>
     </header>

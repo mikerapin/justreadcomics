@@ -6,7 +6,7 @@ import { fetchSeriesByName } from '../data/series';
 import { Form, Link } from 'react-router-dom';
 import { SeriesImage } from './SeriesImage';
 
-export const Search = () => {
+export const Search = ({ isAdmin }: { isAdmin?: boolean }) => {
   const dropdownElementRef = useRef<HTMLDivElement>(null);
   const dropdown = useRef<Dropdown | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
@@ -69,7 +69,7 @@ export const Search = () => {
           {seriesResults?.map((hydratedSeries) => {
             const { series } = hydratedSeries;
             return (
-              <Link key={series._id} to={`/series/${series._id}`} className="dropdown-item" onClick={closeMenu}>
+              <Link key={series._id} to={`${isAdmin ? '/admin' : ''}/series/${series._id}`} className="dropdown-item" onClick={closeMenu}>
                 <div className="d-flex g-2 align-items-center">
                   <div className="d-flex align-items-center" style={{ marginRight: 10, minWidth: 48, maxHeight: 48, overflow: 'hidden' }}>
                     <SeriesImage series={series} style={{ width: 48 }} alt={series.seriesName} />
