@@ -7,7 +7,7 @@ export const fetchAllSeries = async (cursor = 0): Promise<IFetchMultipleSeriesWi
   return await res.json();
 };
 
-interface IFetchSeriesSearchOptions {
+export interface IFetchSeriesSearchOptions {
   seriesName: string;
   isLargeSearch?: boolean;
   cursor?: number;

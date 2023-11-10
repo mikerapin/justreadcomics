@@ -5,12 +5,13 @@ import { IHydratedSeries } from '../types/series';
 import { fetchSeriesByName } from '../data/series';
 import { Form, Link } from 'react-router-dom';
 import { SeriesImage } from './SeriesImage';
+import { useSearch } from '../hooks/search';
 
 export const Search = () => {
   const dropdownElementRef = useRef<HTMLDivElement>(null);
   const dropdown = useRef<Dropdown | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
-  const [seriesResults, setSeriesResults] = useState<IHydratedSeries[]>();
+  const { searchResults, setSearchTerm } = useSearch(fetchSeriesByName);
 
   useEffect(() => {
     if (dropdownElementRef.current) {
@@ -23,9 +24,7 @@ export const Search = () => {
       closeMenu();
       return;
     }
-    fetchSeriesByName({ seriesName: val }).then((res) => {
-      setSeriesResults(res.data);
-    });
+    setSearchTerm(val);
     dropdown.current?.show();
   };
 
@@ -66,7 +65,7 @@ export const Search = () => {
         />
         <div className="dropdown-menu" ref={dropdownElementRef} data-bs-auto-close="outside">
           <h6 className=" dropdown-header">Series</h6>
-          {seriesResults?.map((hydratedSeries) => {
+          {searchResults?.map((hydratedSeries) => {
             const { series } = hydratedSeries;
             return (
               <Link key={series._id} to={`/series/${series._id}`} className="dropdown-item" onClick={closeMenu}>

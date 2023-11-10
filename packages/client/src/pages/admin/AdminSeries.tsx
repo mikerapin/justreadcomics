@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import React, { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react';
 import { IFetchMultipleSeriesWithCursor } from '../../types/series';
-import { fetchAllSeries } from '../../data/series';
-import { Link, useSearchParams } from 'react-router-dom';
+import { fetchAllSeries, fetchSeriesByName } from '../../data/series';
+import { Form, Link, useSearchParams } from 'react-router-dom';
 import { getServiceImage } from '../../util/image';
 import { Pagination } from '../../components/Pagination';
 
@@ -9,12 +9,37 @@ export const AdminSeries = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [cursor, setCursor] = useState<number>(parseInt(searchParams?.get('cursor') ?? '0'));
   const [seriesList, setSeriesList] = useState<IFetchMultipleSeriesWithCursor>();
+  const searchRef = useRef<HTMLInputElement>(null);
+  const search = searchParams.get('s');
 
   useEffect(() => {
-    fetchAllSeries(cursor).then((res) => {
-      setSeriesList(res);
-    });
-  }, [cursor, searchParams]);
+    if (search) {
+      fetchSeriesByName({ seriesName: search, isLargeSearch: true, cursor: cursor }).then((results) => {
+        setSeriesList(results);
+      });
+    } else {
+      fetchAllSeries(cursor).then((res) => {
+        setSeriesList(res);
+      });
+    }
+  }, [search, cursor, searchParams]);
+
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const input = e.currentTarget.querySelector('#page-search') as HTMLInputElement;
+    if (input && input.value.length > 2) {
+      searchParams.set('s', input.value);
+      setSearchParams(searchParams);
+    }
+  };
+
+  const clearSearch = () => {
+    searchParams.delete('s');
+    if (searchRef.current) {
+      searchRef.current.value = '';
+    }
+    setSearchParams(searchParams);
+  };
 
   const updateCursor = (newCursor: number) => {
     setCursor(newCursor);
@@ -81,6 +106,28 @@ export const AdminSeries = () => {
           + Add
         </Link>
       </div>
+      <Form role="search" action="/search" onSubmit={onSubmit}>
+        <div className="d-flex g-3 mt-3">
+          <div>
+            <h2 className="me-2">Search:</h2>
+          </div>
+          <div className="input-group">
+            <input
+              ref={searchRef}
+              className="form-control"
+              autoComplete="off"
+              name="search"
+              id="page-search"
+              type="text"
+              defaultValue={search ?? undefined}
+              aria-label="Search..."
+            />
+            <button name="clear" type="button" className="btn btn-secondary" onClick={clearSearch}>
+              Clear
+            </button>
+          </div>
+        </div>
+      </Form>
       <div className="series content">
         <table className="table table-striped table-hover table-responsive align-middle">
           <thead>

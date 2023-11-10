@@ -26,7 +26,7 @@ const fileTransport = pino.transport({
       options: { destination: PINO_LOG_FILE }
     },
     {
-      level: process.env.PINO_LOG_LEVEL || 'info',
+      level: process.env.PINO_LOG_LEVEL || 'error',
       target: 'pino-pretty',
       options: {}
     }

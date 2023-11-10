@@ -23,7 +23,7 @@ export const SearchPage = () => {
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const input = e.currentTarget.querySelector('#page-search') as HTMLInputElement;
-    if (input && input.value.length) {
+    if (input && input.value.length > 2) {
       searchParams.set('s', input.value);
       setSearchParams(searchParams);
     }
