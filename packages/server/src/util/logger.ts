@@ -19,25 +19,23 @@ const PINO_LOG_FILENAME = 'pino-logger.log';
 const PINO_LOG_FILE = `./${PINO_LOG_FILENAME}`;
 
 const fileTransport = pino.transport({
-  target: 'pino/file',
-  options: { destination: PINO_LOG_FILE }
+  targets: [
+    {
+      level: process.env.PINO_LOG_LEVEL || 'info',
+      target: 'pino/file',
+      options: { destination: PINO_LOG_FILE }
+    },
+    {
+      level: process.env.PINO_LOG_LEVEL || 'info',
+      target: 'pino-pretty',
+      options: {}
+    }
+  ]
 });
 
-const logger = pino(
-  {
-    level: process.env.PINO_LOG_LEVEL || 'info',
-    formatters: {
-      level: (label) => {
-        return { level: label.toUpperCase() };
-      }
-    },
-    timestamp: pino.stdTimeFunctions.isoTime,
-    ignore: 'pid'
-  },
-  fileTransport
-);
+const logger = pino({}, fileTransport);
 
-export const loggerMiddleware = pinoHttp(PINO_CONFIG, fileTransport);
+export const loggerMiddleware = pinoHttp({}, fileTransport);
 export const logFatal = (data: any) => {
   logger.fatal(data);
 };

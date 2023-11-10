@@ -3,7 +3,6 @@ import Logo from '../../components/Logo';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { getRoutePath } from '../../util/getRoutePath';
 import { useAuth } from '../../providers/AuthProvider';
-import { Search } from '../../components/Search';
 
 export const AdminHeader = () => {
   const location = useLocation();
@@ -19,41 +18,21 @@ export const AdminHeader = () => {
             <Logo admin />
           </a>
 
-          <ul className="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0 ">
-            <li className="btn-group">
-              <Link to="/admin" className={`btn ${path === '/admin' ? 'btn-danger' : 'btn-secondary'}`}>
-                Dashboard
-              </Link>
-            </li>
-            <li className={'btn-group'}>
-              <Link to="/admin/series" className={`btn ${path.match('/admin/series') ? 'btn-danger' : 'btn-secondary'}`}>
-                Series
-              </Link>
-              <button type="button" className="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                <span className="visually-hidden">Toggle Dropdown</span>
-              </button>
-
-              <ul className="dropdown-menu">
-                <li>
-                  <a className="dropdown-item" href="/admin/series/add">
-                    Add
-                  </a>
-                </li>
-              </ul>
-            </li>
-            <li>
-              <Link to="/admin/services" className={`btn ${path.match('/admin/service') ? 'btn-danger' : 'btn-secondary'}`}>
-                Services
-              </Link>
-            </li>
-            {/*<li><a href="#" className="nav-link px-2 link-body-emphasis">Products</a></li>*/}
-          </ul>
+          <div className="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0 btn-group ">
+            <Link to="/admin" className={`btn ${path === '/admin' ? 'btn-danger' : 'btn-secondary'}`}>
+              Dashboard
+            </Link>
+            <Link to="/admin/series" className={`btn ${path.match('/admin/series') ? 'btn-danger' : 'btn-secondary'}`}>
+              Series
+            </Link>
+            <Link to="/admin/services" className={`btn ${path.match('/admin/service') ? 'btn-danger' : 'btn-secondary'}`}>
+              Services
+            </Link>
+          </div>
 
           <button type="button" className="btn btn-toolbar" onClick={logout}>
             Logout
           </button>
-
-          <Search isAdmin />
         </div>
       </div>
     </header>

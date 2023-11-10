@@ -33,7 +33,7 @@ app.use('/scraper', scraperRouter);
 const server = app.listen(port, async () => {
   try {
     logInfo(`Attempting to connect to db on ${process.env.NODE_ENV}`);
-    await connectToServer()
+    await connectToServer();
   } catch (e: any) {
     logError(e);
   }
