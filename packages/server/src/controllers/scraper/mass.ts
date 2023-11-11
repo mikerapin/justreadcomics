@@ -9,6 +9,7 @@ import { promiseAllSequence } from '../../util/scraper';
 import { seriesModel } from '../../model/series';
 import { uploadSeriesImageFromUrlToS3 } from '../../s3/s3';
 import { logError } from '../../util/logger';
+import { massImportIdw } from '../../scrape/idw';
 
 export const massImportMarvelAction = async (req: Request, res: Response) => {
   const result = await massImportMarvel(false);
@@ -119,6 +120,49 @@ export const massImportImageAction = async (req: Request, res: Response) => {
         ]
       };
     });
+
+    if (!req.query.test) {
+      const newSeries = await seriesModel.insertMany(finalResults, { throwOnValidationError: false, ordered: false });
+
+      res.status(200).json({ size: finalResults.length, series: newSeries });
+      return;
+    }
+    res.status(200).json({ size: finalResults.length, finalResults });
+  } catch (e: any) {
+    logError(e);
+    res.status(400).json({ e });
+  }
+};
+
+// DELETE
+// await seriesModel.deleteMany({ createdAt: { $gt: '2023-11-10T00:00:00Z' } });
+// res.status(200).json('done');
+
+export const massImportIdwAction = async (req: Request, res: Response) => {
+  const result = await massImportIdw();
+  try {
+    const finalResults = await promiseAllSequence(chunk(result.series, 20), (chunk) =>
+      Promise.all(
+        chunk.map(async (series) => {
+          const date = new Date().toJSON();
+          const { seriesName, seriesLink, seriesImage, description } = series;
+          const imageLocation = await uploadSeriesImageFromUrlToS3(series.seriesName, seriesImage);
+
+          return {
+            image: imageLocation,
+            seriesName: sanitize(seriesName),
+            description,
+            services: [
+              {
+                id: '654fe4e31bb87e8d78f10d9c', // IDW Site for storage
+                seriesServiceUrl: seriesLink,
+                lastScan: date
+              }
+            ]
+          };
+        })
+      )
+    ).then((chunkedResults) => chunkedResults.flat());
 
     if (!req.query.test) {
       const newSeries = await seriesModel.insertMany(finalResults, { throwOnValidationError: false, ordered: false });

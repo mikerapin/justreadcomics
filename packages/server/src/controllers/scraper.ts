@@ -1,6 +1,6 @@
-import express = require('express');
+import express from 'express';
 import { keyChecker, verifyTokenMiddleware } from '../middleware/auth';
-import { massImportDcAction, massImportImageAction, massImportMarvelAction } from './scraper/mass';
+import { massImportDcAction, massImportIdwAction, massImportImageAction, massImportMarvelAction } from './scraper/mass';
 import { scrapeIndexedImageSeriesAction, scrapeIndexedMarvelSeriesAction } from './scraper/indexed';
 import { searchAndScrapeCorpoAction } from './scraper/search';
 
@@ -18,5 +18,6 @@ scraperRouter.get('/corpo/:id', [verifyTokenMiddleware], searchAndScrapeCorpoAct
 scraperRouter.get('/mass/marvel', [verifyTokenMiddleware, keyChecker], massImportMarvelAction);
 scraperRouter.get('/mass/dc', [verifyTokenMiddleware, keyChecker], massImportDcAction);
 scraperRouter.get('/mass/image', [verifyTokenMiddleware, keyChecker], massImportImageAction);
+scraperRouter.get('/mass/idw', [verifyTokenMiddleware], massImportIdwAction);
 
 export { scraperRouter };

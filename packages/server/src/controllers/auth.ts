@@ -1,4 +1,4 @@
-import express = require('express');
+import express from 'express';
 import { Request, Response } from 'express';
 import { sign, verify } from 'jsonwebtoken';
 
