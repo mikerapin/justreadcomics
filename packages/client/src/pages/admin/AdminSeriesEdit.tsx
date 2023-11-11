@@ -1,4 +1,4 @@
-import { redirectDocument, useParams } from 'react-router-dom';
+import { Link, redirectDocument, useParams } from 'react-router-dom';
 import React, { useRef, useState } from 'react';
 import { ISeries, ISeriesWithImageUpload } from '../../types/series';
 import { createSeries, fetchSeriesById, updateSeriesById } from '../../data/series';
@@ -11,9 +11,10 @@ import { ImageUploader } from './subcomponents/ImageUploader';
 import { ISeriesForm } from './types/series';
 import { SeriesImage } from '../../components/SeriesImage';
 import { Scanner } from './series-service/Scanner';
+import { useAdmin } from '../../hooks/admin';
 
 export const AdminSeriesEdit = () => {
-  let { id } = useParams();
+  const { id } = useParams();
 
   const [series, setSeries] = useState<ISeries>();
   const [services, setServices] = useState<IService[]>();
@@ -148,7 +149,13 @@ export const AdminSeriesEdit = () => {
           </div>
           <div ref={rightColumnRef} className="col-md-8">
             <div className="mb-3">
-              Last Scan: <strong>{series?.lastScan ? new Date(series.lastScan).toLocaleString() : 'Unknown'}</strong>
+              <Link to={`/series/${series._id}`}>Public Page</Link>
+            </div>
+            <div className="mb-3">
+              ID: <code>{series._id}</code>
+            </div>
+            <div className="mb-3">
+              Last Scan: <code>{series?.lastScan ? new Date(series.lastScan).toLocaleString() : 'Unknown'}</code>
             </div>
             <div className="form-floating mb-3">
               <input {...register('seriesName')} className="form-control" id="seriesName" placeholder="X-Men (2023)" />

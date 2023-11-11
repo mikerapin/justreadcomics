@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { fetchSeriesById } from '../data/series';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { ISeries } from '../types/series';
 import { Services } from '../components/Services';
 import { IService } from '../types/service';
 import { LoadingSeries } from './LoadingSeries';
 import { SeriesImage } from '../components/SeriesImage';
 import { Helmet } from 'react-helmet-async';
+import { useAdmin } from '../hooks/admin';
 
 export const SeriesDetail = () => {
-  let { id } = useParams();
+  const { id } = useParams();
+  const isAdmin = useAdmin();
   const [series, setSeries] = useState<ISeries>();
   const [services, setServices] = useState<IService[]>();
   useEffect(() => {
@@ -36,7 +38,9 @@ export const SeriesDetail = () => {
         </div>
         <div className="col-8">
           <div className="text-content">
+            {isAdmin ? <Link to={`/admin/series/${series?._id}`}>Edit</Link> : ''}
             <h1 className="title">{series?.seriesName}</h1>
+
             <p>{series?.description}</p>
           </div>
           <Services services={services} seriesServices={series.services} />
