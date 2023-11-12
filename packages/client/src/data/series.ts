@@ -63,14 +63,18 @@ export const updateSeriesById = async (series: Partial<ISeriesWithImageUpload>):
     method: 'PATCH',
     body: JSON.stringify(series)
   });
+
   if (series.imageBlob) {
-    const updatedSeries: IHydratedSeries = await res.json();
-    return uploadSeriesImage(updatedSeries, series.imageBlob);
+    const updatedHydratedSeries: IHydratedSeries = await res.json();
+    const updatedSeries = await uploadSeriesImage(updatedHydratedSeries, series.imageBlob);
+    updatedHydratedSeries.series = updatedSeries;
+    return updatedHydratedSeries;
+  } else {
+    return res.json();
   }
-  return res.json();
 };
 
-export const createSeries = async (series: Partial<ISeriesWithImageUpload>) => {
+export const createSeries = async (series: Partial<ISeriesWithImageUpload>): Promise<IHydratedSeries> => {
   const res = await authFetch(`${API_BASE_URL}/series/create`, {
     headers: {
       Accept: 'application/json',

@@ -126,8 +126,8 @@ seriesRouter.patch('/update-image/:id', [verifyTokenMiddleware, upload.single('i
 
     if (updatedSeries) {
       await updatedSeries.validate();
-      const savedService = await updatedSeries.save();
-      res.status(200).json(savedService);
+      const savedSeries = await updatedSeries.save();
+      res.status(200).json(savedSeries);
     } else {
       res.status(404).json({ message: 'series with id:' + req.params.id + ' not found, sorry dude' });
     }

@@ -29,6 +29,7 @@ export const AdminSeries = () => {
     const input = e.currentTarget.querySelector('#page-search') as HTMLInputElement;
     if (input && input.value.length > 2) {
       searchParams.set('s', input.value);
+      updateCursor(0);
       setSearchParams(searchParams);
     }
   };

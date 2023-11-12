@@ -1,4 +1,4 @@
-import { Link, redirectDocument, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import React, { useRef, useState } from 'react';
 import { ISeries, ISeriesWithImageUpload } from '../../types/series';
 import { createSeries, fetchSeriesById, updateSeriesById } from '../../data/series';
@@ -11,7 +11,6 @@ import { ImageUploader } from './subcomponents/ImageUploader';
 import { ISeriesForm } from './types/series';
 import { SeriesImage } from '../../components/SeriesImage';
 import { Scanner } from './series-service/Scanner';
-import { useAdmin } from '../../hooks/admin';
 
 export const AdminSeriesEdit = () => {
   const { id } = useParams();
@@ -94,7 +93,7 @@ export const AdminSeriesEdit = () => {
     }
     promise.then((res) => {
       showToast();
-      redirectDocument(`/admin/series/${res._id}`);
+      setSeries(res.series);
     });
   });
 
