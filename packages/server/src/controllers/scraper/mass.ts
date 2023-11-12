@@ -138,6 +138,11 @@ export const massImportImageAction = async (req: Request, res: Response) => {
 // await seriesModel.deleteMany({ createdAt: { $gt: '2023-11-10T00:00:00Z' } });
 // res.status(200).json('done');
 
+/**
+ * WARNING - THIS DOES NOT ACTUALLY DO WHAT WE WANT. IT IMPORTS ALL THE GODDAMN SINGLE ISSUE AND VOLUMES UGGHFGHGHGHGHGHGHGHH
+ * @param req
+ * @param res
+ */
 export const massImportIdwAction = async (req: Request, res: Response) => {
   const result = await massImportIdw();
   try {

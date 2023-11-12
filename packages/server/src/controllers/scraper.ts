@@ -18,6 +18,8 @@ scraperRouter.get('/corpo/:id', [verifyTokenMiddleware], searchAndScrapeCorpoAct
 scraperRouter.get('/mass/marvel', [verifyTokenMiddleware, keyChecker], massImportMarvelAction);
 scraperRouter.get('/mass/dc', [verifyTokenMiddleware, keyChecker], massImportDcAction);
 scraperRouter.get('/mass/image', [verifyTokenMiddleware, keyChecker], massImportImageAction);
-scraperRouter.get('/mass/idw', [verifyTokenMiddleware], massImportIdwAction);
+
+// DISABLING THIS BECAUSE IDW DOESN'T INDEX THEIR SHIT LIKE EVERYONE ELSE
+// scraperRouter.get('/mass/idw', [verifyTokenMiddleware], massImportIdwAction);
 
 export { scraperRouter };
