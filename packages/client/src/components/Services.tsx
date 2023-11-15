@@ -1,8 +1,8 @@
 import { IService, ServiceType } from '../types/service';
 import { getServiceImage } from '../util/image';
-import { ISeriesServices } from '../types/series';
+import { ISeriesService } from '../types/series';
 
-export const Services = ({ seriesServices, services }: { seriesServices?: ISeriesServices[]; services?: IService[] }) => {
+export const Services = ({ seriesServices, services }: { seriesServices?: ISeriesService[]; services?: IService[] }) => {
   if (!services || services.length === 0) {
     return null;
   }
@@ -11,7 +11,7 @@ export const Services = ({ seriesServices, services }: { seriesServices?: ISerie
       return service.type === type;
     });
     return subscriptionServices.map((service) => {
-      const matchedSeriesService = seriesServices?.find((seriesService) => seriesService.id === service._id);
+      const matchedSeriesService = seriesServices?.find((seriesService) => seriesService._id === service._id);
       let siteUrl = service.siteUrl;
       if (matchedSeriesService && matchedSeriesService.seriesServiceUrl) {
         siteUrl = matchedSeriesService.seriesServiceUrl;

@@ -14,7 +14,7 @@ export const scrapeIndexedMarvelSeriesAction = async (req: Request, res: Respons
   // This may be done using the `scrapeAndSearchMarvel` function in the scraper/marvel.ts... but it's imprecise
 
   const muService = series?.services?.find((service) => {
-    return service.id === MARVEL_UNLIMITED_SERVICE_ID;
+    return service._id === MARVEL_UNLIMITED_SERVICE_ID;
   });
   if (!series || !series.services || !muService || !muService.seriesServiceUrl) {
     res.status(400).json({
@@ -35,7 +35,7 @@ export const scrapeIndexedMarvelSeriesAction = async (req: Request, res: Respons
   }
 
   const muIndex = series.services.findIndex((service) => {
-    return service.id === MARVEL_UNLIMITED_SERVICE_ID;
+    return service._id === MARVEL_UNLIMITED_SERVICE_ID;
   });
 
   if (muIndex > -1) {
@@ -55,7 +55,7 @@ export const scrapeIndexedImageSeriesAction = async (req: Request, res: Response
   const { series } = await getSeriesById(id);
 
   const imageService = series?.services?.find((service) => {
-    return service.id === IMAGE_SERVICE_ID;
+    return service._id === IMAGE_SERVICE_ID;
   });
   if (!series || !series.services || !imageService || !imageService.seriesServiceUrl) {
     res.status(400).json({
@@ -81,7 +81,7 @@ export const scrapeIndexedImageSeriesAction = async (req: Request, res: Response
   }
 
   const imageIndex = series.services.findIndex((service) => {
-    return service.id === IMAGE_SERVICE_ID;
+    return service._id === IMAGE_SERVICE_ID;
   });
 
   if (imageIndex > -1) {

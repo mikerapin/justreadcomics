@@ -70,7 +70,7 @@ export const updateSeriesById = async (series: Partial<ISeriesWithImageUpload>):
     updatedHydratedSeries.series = updatedSeries;
     return updatedHydratedSeries;
   } else {
-    return res.json();
+    return await res.json();
   }
 };
 

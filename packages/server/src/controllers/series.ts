@@ -2,7 +2,7 @@ import express from 'express';
 import { Request, Response } from 'express';
 import { Types } from 'mongoose';
 
-import { CreateSeriesRequest, IHydratedSeries, ISeriesServices } from '../types/series';
+import { CreateSeriesRequest, IHydratedSeries, ISeriesService } from '../types/series';
 
 import { seriesModel } from '../model/series';
 import { escapeRegex } from '../util/util';
@@ -11,14 +11,15 @@ import { uploadImageToS3 } from '../s3/s3';
 import { servicesModel } from '../model/services';
 import { IService } from '../types/services';
 import { verifyTokenMiddleware } from '../middleware/auth';
+import { logInfo } from '../util/logger';
 
 const seriesRouter = express.Router();
 
-const lookupServicesForSeries = async (seriesServices?: ISeriesServices[]): Promise<IService[] | object> => {
+const lookupServicesForSeries = async (seriesServices?: ISeriesService[]): Promise<IService[] | object> => {
   if (!seriesServices) {
     return {};
   }
-  const ids = seriesServices.map((seriesService) => seriesService.id);
+  const ids = seriesServices.map((seriesService) => seriesService._id);
   return servicesModel.find({ _id: { $in: ids } });
 };
 
@@ -152,12 +153,10 @@ seriesRouter.patch('/update/:id', [verifyTokenMiddleware], async (req: CreateSer
       }
     );
     if (series) {
-      await series.validate();
-      const updatedSeries = await series.save();
+      const hydratedServices = await lookupServicesForSeries(series.services);
+      logInfo(series);
 
-      const hydratedServices = await lookupServicesForSeries(updatedSeries.services);
-
-      res.status(200).json({ series: updatedSeries, services: hydratedServices });
+      res.status(200).json({ series: series, services: hydratedServices });
     } else {
       res.status(404).json({ message: 'series with id:' + req.params.id + ' not found, sorry dude' });
     }

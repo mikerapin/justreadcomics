@@ -3,14 +3,14 @@ import { seriesScanners } from '../../../static/const';
 import { useState } from 'react';
 import classNames from 'classnames';
 import { triggerScanner } from '../../../data/scanner';
-import { ISeriesServices } from '../../../types/series';
+import { ISeriesService } from '../../../types/series';
 
-export const Scanner = ({ seriesService, seriesId }: { seriesService?: ISeriesServices; seriesId?: string }) => {
+export const Scanner = ({ seriesService, seriesId }: { seriesService?: ISeriesService; seriesId?: string }) => {
   const [inProgress, setInProgress] = useState(false);
   if (!seriesService || !seriesId) {
     return <></>;
   }
-  const service = seriesScanners.find((s) => s.seriesServiceId === seriesService.id);
+  const service = seriesScanners.find((s) => s.seriesServiceId === seriesService._id);
 
   if (service) {
     const lastScan = seriesService.lastScan;

@@ -21,7 +21,7 @@ process.on('uncaughtException', function (err) {
 
 app.use(cors());
 app.use(express.json());
-app.use(loggerMiddleware);
+// app.use(loggerMiddleware);
 app.use('/api/series', seriesRouter);
 app.use('/api/services', servicesRouter);
 app.use('/api/auth', authRouter);

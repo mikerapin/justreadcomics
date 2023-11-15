@@ -1,5 +1,13 @@
 import { model, Schema } from 'mongoose';
-import { ISeries } from '../types/series';
+import { ISeries, ISeriesService } from '../types/series';
+
+const seriesServiceSchema = new Schema<ISeriesService>({
+  seriesServiceUrl: String,
+  lastScan: {
+    type: Date,
+    default: null
+  }
+});
 
 const seriesSchema = new Schema<ISeries>(
   {
@@ -17,7 +25,7 @@ const seriesSchema = new Schema<ISeries>(
       type: Array
     },
     ongoingSeries: Boolean,
-    services: Array,
+    services: seriesServiceSchema,
     meta: {
       searches: {
         type: Number,

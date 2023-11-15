@@ -1,4 +1,3 @@
-import sanitize from 'sanitize-filename';
 import { MARVEL_UNLIMITED_SERVICE_ID } from '../../static/const';
 import { Request, Response } from 'express';
 import { chunk } from 'lodash';
@@ -10,6 +9,7 @@ import { seriesModel } from '../../model/series';
 import { uploadSeriesImageFromUrlToS3 } from '../../s3/s3';
 import { logError } from '../../util/logger';
 import { massImportIdw } from '../../scrape/idw';
+import { cleanFileName, cleanSeriesName } from '../../util/string';
 
 export const massImportMarvelAction = async (req: Request, res: Response) => {
   const result = await massImportMarvel(false);
@@ -70,7 +70,7 @@ export const massImportDcAction = async (req: Request, res: Response) => {
 
           return {
             image: imageLocation,
-            seriesName: sanitize(seriesName),
+            seriesName: cleanSeriesName(seriesName),
             ongoing,
             services: [
               {
@@ -155,7 +155,7 @@ export const massImportIdwAction = async (req: Request, res: Response) => {
 
           return {
             image: imageLocation,
-            seriesName: sanitize(seriesName),
+            seriesName: cleanFileName(seriesName),
             description,
             services: [
               {

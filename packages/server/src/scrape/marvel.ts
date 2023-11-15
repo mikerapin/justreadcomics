@@ -1,6 +1,6 @@
 import { initScraperPage } from './util';
-import sanitize from 'sanitize-filename';
-import { logError } from '../util/logger';
+import { logError, logInfo } from '../util/logger';
+import { cleanSeriesName } from '../util/string';
 
 export const scrapeMarvelSeries = async (seriesUrl: string, headless?: boolean) => {
   const { page, browser } = await initScraperPage(headless);
@@ -120,7 +120,7 @@ export const massImportMarvel = async (headless: boolean) => {
       const documentSelector = document.querySelectorAll(selector);
       documentSelector.forEach((item) => {
         item.querySelectorAll('li a').forEach((el) => {
-          const text = sanitize(el.textContent || '');
+          const text = cleanSeriesName(el.textContent || '');
           const link = el.getAttribute('href');
           const ongoing = el.parentElement?.tagName.toLowerCase() === 'b';
 
@@ -138,7 +138,8 @@ export const massImportMarvel = async (headless: boolean) => {
       series: snaggedTitles
     };
   } catch (e: any) {
-    logError(e);
+    console.log(e);
+    // logError(e);
     return {
       series: [],
       error: e

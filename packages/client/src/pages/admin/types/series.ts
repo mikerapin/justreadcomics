@@ -1,4 +1,4 @@
-import { Creator, ISeriesServices } from '../../../types/series';
+import { Creator, ISeriesService } from '../../../types/series';
 
 export interface ISeriesForm {
   seriesName?: string;

@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router-dom';
 import React, { useRef, useState } from 'react';
-import { ISeries, ISeriesWithImageUpload } from '../../types/series';
+import { ISeries, ISeriesService, ISeriesWithImageUpload } from '../../types/series';
 import { createSeries, fetchSeriesById, updateSeriesById } from '../../data/series';
 import { Toast } from 'bootstrap';
 import { getServiceImage } from '../../util/image';
@@ -12,6 +12,13 @@ import { ISeriesForm } from './types/series';
 import { SeriesImage } from '../../components/SeriesImage';
 import { Scanner } from './series-service/Scanner';
 
+const getSeriesServiceStringArray = (seriesServices?: ISeriesService[]) => {
+  return (
+    seriesServices?.map((service) => {
+      return service._id;
+    }) || []
+  );
+};
 export const AdminSeriesEdit = () => {
   const { id } = useParams();
 
@@ -20,7 +27,14 @@ export const AdminSeriesEdit = () => {
 
   const rightColumnRef = useRef<HTMLDivElement>(null);
   const successToastRef = useRef<HTMLDivElement>(null);
-  const { register, handleSubmit, control, getValues } = useForm<ISeriesForm>({
+  const {
+    register,
+    handleSubmit,
+    control,
+    getValues,
+    setValue,
+    formState: { isDirty }
+  } = useForm<ISeriesForm>({
     defaultValues: async () => {
       if (id) {
         return Promise.all([fetchSeriesById(id), fetchAllServices()]).then((result) => {
@@ -28,10 +42,7 @@ export const AdminSeriesEdit = () => {
           setSeries(fetchedSeries.series);
           setServices(fetchedServices.data);
 
-          const seriesServices =
-            fetchedSeries.series.services?.map((service) => {
-              return service.id;
-            }) || [];
+          const seriesServices = getSeriesServiceStringArray(fetchedSeries.series.services);
           const { seriesName, credits, description } = fetchedSeries.series;
           return { seriesName, credits, services: seriesServices, description };
         });
@@ -71,11 +82,11 @@ export const AdminSeriesEdit = () => {
     }
 
     const newServices = seriesForm.services?.map((serviceId) => {
-      const existingService = series.services?.filter((s) => s.id === serviceId);
+      const existingService = series.services?.filter((s) => s._id === serviceId);
       if (existingService?.[0]) {
         return existingService[0];
       }
-      return { id: serviceId };
+      return { _id: serviceId };
     });
 
     const updatedSeries: Partial<ISeriesWithImageUpload> = {
@@ -94,6 +105,7 @@ export const AdminSeriesEdit = () => {
     promise.then((res) => {
       showToast();
       setSeries(res.series);
+      setValue('services', getSeriesServiceStringArray(res.series.services));
     });
   });
 
@@ -106,24 +118,16 @@ export const AdminSeriesEdit = () => {
   };
 
   const getSeriesServiceById = (serviceId?: string) => {
-    return series.services?.find((service) => service.id === serviceId);
+    return series.services?.find((service) => service._id === serviceId);
   };
 
-  const getSeriesServiceInfo = (serviceId: string) => {
-    const service = getSeriesServiceById(serviceId);
-    if (service) {
+  const getSeriesPageUrl = (serviceId?: string) => {
+    const seriesService = getSeriesServiceById(serviceId);
+    if (seriesService && seriesService.seriesServiceUrl) {
       return (
-        <div>
-          <small>
-            <a target="_blank" rel="nofollow noreferrer" href={service.seriesServiceUrl}>
-              Series Page
-            </a>
-          </small>
-
-          <div style={{ fontSize: '10px' }}>
-            Last Scan: <pre>{service.lastScan}</pre>
-          </div>
-        </div>
+        <a target="_blank" rel="nofollow noreferrer" href={seriesService.seriesServiceUrl}>
+          Series Page
+        </a>
       );
     }
     return <></>;
@@ -135,7 +139,7 @@ export const AdminSeriesEdit = () => {
         <div className="d-flex justify-content-between align-items-center">
           <h3 className="mt-3 mb-3">Editing {series?.seriesName}</h3>
           <div>
-            <button type="submit" className="btn btn-primary">
+            <button type="submit" className="btn btn-primary" disabled={!isDirty}>
               Save
             </button>
           </div>
@@ -192,33 +196,39 @@ export const AdminSeriesEdit = () => {
         </div>
         <div className="container">
           <h3>Services</h3>
-          <div className="row">
-            {services?.map((service) => {
-              return (
-                <div key={service.serviceName} className="col-2">
-                  <label className="form-check-label" htmlFor={`service${service._id}`}>
-                    <div className={`card`}>
-                      <div className="m-3">
-                        <img className="card-img-top bg-white" alt={service?.serviceName} src={getServiceImage(service)} />
-                      </div>
-                      <div className="card-body">
+          <table className="table table-striped table-hover table-responsive align-middle">
+            <tbody>
+              {services?.map((service) => {
+                return (
+                  <tr key={service.serviceName}>
+                    <td>
+                      <input {...register(`services`)} id={`service${service._id}`} className="form-check-input" type="checkbox" value={service._id} />
+                    </td>
+                    <td>
+                      <label className="form-check-label" htmlFor={`service${service._id}`}>
+                        <img className="bg-white img-thumbnail" alt={service?.serviceName} style={{ maxWidth: '32px' }} src={getServiceImage(service)} />
+                      </label>
+                    </td>
+                    <td>
+                      <label className="form-check-label" htmlFor={`service${service._id}`}>
                         <p className="card-title text-center">{service.serviceName}</p>
-                        <div className="text-center">
-                          <input {...register(`services`)} id={`service${service._id}`} className="form-check-input" type="checkbox" value={service._id} />
-                          {getSeriesServiceInfo(service._id || '')}
-                          {/* todo: add scan now button to update series metadata */}
-                        </div>
-                      </div>
-                    </div>
-                  </label>
-
-                  <div className="text-center">
-                    <Scanner seriesService={getSeriesServiceById(service._id)} seriesId={series._id} />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                      </label>
+                      {/*<label className="form-check-label" htmlFor={`service${service._id}`}>*/}
+                      {/*  <div className="text-center"></div>*/}
+                      {/*</label>*/}
+                    </td>
+                    <td>{getSeriesPageUrl(service._id)}</td>
+                    <td style={{ fontSize: '12px' }}>
+                      Last Scan: <code>{getSeriesServiceById(service._id)?.lastScan}</code>
+                    </td>
+                    <td>
+                      <Scanner seriesService={getSeriesServiceById(service._id)} seriesId={series._id} />
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       </form>
       <div className="toast-container position-fixed bottom-0 end-0 p-3">

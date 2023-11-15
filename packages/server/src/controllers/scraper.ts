@@ -1,6 +1,6 @@
 import express from 'express';
 import { keyChecker, verifyTokenMiddleware } from '../middleware/auth';
-import { massImportDcAction, massImportIdwAction, massImportImageAction, massImportMarvelAction } from './scraper/mass';
+import { massImportDcAction, massImportImageAction, massImportMarvelAction } from './scraper/mass';
 import { scrapeIndexedImageSeriesAction, scrapeIndexedMarvelSeriesAction } from './scraper/indexed';
 import { searchAndScrapeCorpoAction } from './scraper/search';
 

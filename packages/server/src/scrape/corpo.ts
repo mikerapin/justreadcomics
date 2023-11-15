@@ -39,7 +39,7 @@ export const searchScrapeCorpo = async (search: string, headless?: boolean) => {
 
     const cuSelector = '#series-childAsin-item_1 ::-p-text(Read for Free)';
     try {
-      const cuItem = await page.waitForSelector(cuSelector);
+      const cuItem = await page.waitForSelector(cuSelector, { timeout: 1000 });
       if (cuItem) {
         withinCU = true;
       }

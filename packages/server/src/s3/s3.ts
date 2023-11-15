@@ -1,13 +1,14 @@
 import { fromEnv } from '@aws-sdk/credential-providers'; // ES6 import
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import sanitize from 'sanitize-filename';
 import { logError } from '../util/logger';
+import { cleanFileName } from '../util/string';
 
 const s3Bucket = process.env.AWS_S3_BUCKET_NAME || '';
 
 interface IUploadToS3 {
   image: Buffer | ReadableStream<Uint8Array>;
   filename: string;
+  fileExtension?: string;
   path?: string;
 }
 
@@ -17,9 +18,12 @@ const generateS3BucketUrl = (filename: string) => {
   return `${BASE_URL}${filename}`;
 };
 
-export const uploadImageToS3 = async ({ image, filename, path }: IUploadToS3) => {
+export const uploadImageToS3 = async ({ image, filename, fileExtension, path }: IUploadToS3) => {
   const s3 = new S3Client({ region: 'us-east-1', credentials: fromEnv() });
-  let cleanedFilename = sanitize(filename);
+  let cleanedFilename = cleanFileName(filename);
+  if (fileExtension) {
+    cleanedFilename = `${cleanedFilename}.${fileExtension}`;
+  }
   if (path) {
     cleanedFilename = `${path}${cleanedFilename}`;
   }
@@ -50,13 +54,14 @@ export const uploadSeriesImageFromUrlToS3 = async (seriesName: string, seriesIma
     if (imageFetch) {
       const imageBlob = Buffer.from(imageFetch);
       const imageExtension = seriesImage.split('.').pop();
-      const filename = sanitize(seriesName).split(' ').join('').toLowerCase();
+      const filename = cleanFileName(seriesName).split(' ').join('').toLowerCase();
 
       if (imageBlob) {
         return await uploadImageToS3({
           image: imageBlob,
           path: 'series/',
-          filename: `${filename}.${imageExtension}`
+          filename,
+          fileExtension: imageExtension || '.jpg'
         });
       }
     }

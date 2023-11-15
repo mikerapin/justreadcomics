@@ -3,6 +3,7 @@ import { getSeriesById } from '../series';
 import { searchScrapeCorpo } from '../../scrape/corpo';
 import { uploadSeriesImageFromUrlToS3 } from '../../s3/s3';
 import { CORPO_SERVICE_ID, CU_SERVICE_ID } from '../../static/const';
+import { logInfo } from '../../util/logger';
 
 export const searchAndScrapeCorpoAction = async (req: Request, res: Response) => {
   const id = req.params.id;
@@ -16,13 +17,13 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
 
   const seriesName = series.seriesName;
 
-  const { imageUrl, seriesPageUrl, withinCU } = await searchScrapeCorpo(seriesName);
+  const { imageUrl, seriesPageUrl, withinCU } = await searchScrapeCorpo(seriesName, false);
 
   if (seriesPageUrl) {
     // if we have services
     if (series.services) {
-      const corpoIndex = series.services?.findIndex((service) => {
-        return service.id === CORPO_SERVICE_ID;
+      const corpoIndex = series.services.findIndex((service) => {
+        return service._id === CORPO_SERVICE_ID;
       });
 
       if (corpoIndex > -1) {
@@ -30,7 +31,7 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
         series.services[corpoIndex].lastScan = new Date().toJSON();
       } else {
         series.services.push({
-          id: CORPO_SERVICE_ID,
+          _id: CORPO_SERVICE_ID,
           seriesServiceUrl: seriesPageUrl,
           lastScan: new Date().toJSON()
         });
@@ -39,7 +40,7 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
       // if there are no services, add the corpo service
       series.services = [
         {
-          id: CORPO_SERVICE_ID,
+          _id: CORPO_SERVICE_ID,
           seriesServiceUrl: seriesPageUrl,
           lastScan: new Date().toJSON()
         }
@@ -47,7 +48,7 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
     }
 
     const cuIndex = series.services.findIndex((service) => {
-      return service.id === CU_SERVICE_ID;
+      return service._id === CU_SERVICE_ID;
     });
 
     if (withinCU) {
@@ -56,7 +57,7 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
         series.services[cuIndex].lastScan = new Date().toJSON();
       } else {
         series.services.push({
-          id: CU_SERVICE_ID,
+          _id: CU_SERVICE_ID,
           seriesServiceUrl: seriesPageUrl,
           lastScan: new Date().toJSON()
         });
@@ -70,6 +71,8 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
     if (imageUrl) {
       series.image = await uploadSeriesImageFromUrlToS3(series.seriesName, imageUrl);
     }
+
+    console.log({ services: series.services });
 
     await series.save();
 
