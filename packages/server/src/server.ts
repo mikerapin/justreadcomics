@@ -38,4 +38,4 @@ const server = app.listen(port, async () => {
   }
   logInfo(`Server is running on port: ${port}`);
 });
-server.timeout = 120000;
+server.timeout = 180000;

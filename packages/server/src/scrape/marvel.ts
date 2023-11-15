@@ -120,7 +120,7 @@ export const massImportMarvel = async (headless: boolean) => {
       const documentSelector = document.querySelectorAll(selector);
       documentSelector.forEach((item) => {
         item.querySelectorAll('li a').forEach((el) => {
-          const text = cleanSeriesName(el.textContent || '');
+          const text = el.textContent;
           const link = el.getAttribute('href');
           const ongoing = el.parentElement?.tagName.toLowerCase() === 'b';
 

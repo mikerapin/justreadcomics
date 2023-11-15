@@ -25,7 +25,7 @@ const seriesSchema = new Schema<ISeries>(
       type: Array
     },
     ongoingSeries: Boolean,
-    services: seriesServiceSchema,
+    services: [seriesServiceSchema],
     meta: {
       searches: {
         type: Number,

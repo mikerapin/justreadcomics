@@ -6,5 +6,5 @@ export const cleanFileName = (s: string) => {
 };
 
 export const cleanSeriesName = (s: string) => {
-  return s.replace(/[^a-z0-9()\-_ .&#]/gi, '').trim();
+  return s.replace(/[^a-z0-9()\-_ .&#'"]/gi, '').trim();
 };

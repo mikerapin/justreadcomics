@@ -9,7 +9,8 @@ import { seriesModel } from '../../model/series';
 import { uploadSeriesImageFromUrlToS3 } from '../../s3/s3';
 import { logError } from '../../util/logger';
 import { massImportIdw } from '../../scrape/idw';
-import { cleanFileName, cleanSeriesName } from '../../util/string';
+import { cleanSeriesName } from '../../util/string';
+import { Types } from 'mongoose';
 
 export const massImportMarvelAction = async (req: Request, res: Response) => {
   const result = await massImportMarvel(false);
@@ -23,11 +24,11 @@ export const massImportMarvelAction = async (req: Request, res: Response) => {
       const date = new Date().toJSON();
       const { seriesName, link, ongoing } = series;
       return {
-        seriesName,
+        seriesName: cleanSeriesName(seriesName),
         ongoing,
         services: [
           {
-            id: MARVEL_UNLIMITED_SERVICE_ID, // Marvel Unlimited service
+            _id: new Types.ObjectId(MARVEL_UNLIMITED_SERVICE_ID), // Marvel Unlimited service
             seriesServiceUrl: link,
             lastScan: date
           }
@@ -36,7 +37,10 @@ export const massImportMarvelAction = async (req: Request, res: Response) => {
     });
 
     if (!req.query.test) {
-      const newSeries = await seriesModel.insertMany(finalResults, { throwOnValidationError: false, ordered: false });
+      const newSeries = await seriesModel.insertMany(finalResults, {
+        throwOnValidationError: false,
+        ordered: false
+      });
 
       res.status(200).json({ size: finalResults.length, series: newSeries });
       return;
@@ -74,7 +78,7 @@ export const massImportDcAction = async (req: Request, res: Response) => {
             ongoing,
             services: [
               {
-                id: '65314bb94223c7aefc0027ce', // DC UniverseInfinite service
+                _id: new Types.ObjectId('65314bb94223c7aefc0027ce'), // DC UniverseInfinite service
                 seriesServiceUrl: seriesLink,
                 lastScan: date
               }
@@ -85,7 +89,10 @@ export const massImportDcAction = async (req: Request, res: Response) => {
     ).then((chunkedResults) => chunkedResults.flat());
 
     if (!req.query.test) {
-      const newSeries = await seriesModel.insertMany(finalResults, { throwOnValidationError: false, ordered: false });
+      const newSeries = await seriesModel.insertMany(finalResults, {
+        throwOnValidationError: false,
+        ordered: false
+      });
 
       res.status(200).json({ size: finalResults.length, series: newSeries });
       return;
@@ -113,7 +120,7 @@ export const massImportImageAction = async (req: Request, res: Response) => {
         seriesName,
         services: [
           {
-            id: '653afb1e23027c9826267cb8', // Image (storage for later scraping)
+            _id: new Types.ObjectId('653afb1e23027c9826267cb8'), // Image (storage for later scraping)
             seriesServiceUrl: seriesLink,
             lastScan: date
           }
@@ -122,7 +129,10 @@ export const massImportImageAction = async (req: Request, res: Response) => {
     });
 
     if (!req.query.test) {
-      const newSeries = await seriesModel.insertMany(finalResults, { throwOnValidationError: false, ordered: false });
+      const newSeries = await seriesModel.insertMany(finalResults, {
+        throwOnValidationError: false,
+        ordered: false
+      });
 
       res.status(200).json({ size: finalResults.length, series: newSeries });
       return;
@@ -155,11 +165,11 @@ export const massImportIdwAction = async (req: Request, res: Response) => {
 
           return {
             image: imageLocation,
-            seriesName: cleanFileName(seriesName),
+            seriesName: cleanSeriesName(seriesName),
             description,
             services: [
               {
-                id: '654fe4e31bb87e8d78f10d9c', // IDW Site for storage
+                _id: new Types.ObjectId('654fe4e31bb87e8d78f10d9c'), // IDW Site for storage
                 seriesServiceUrl: seriesLink,
                 lastScan: date
               }
@@ -170,7 +180,10 @@ export const massImportIdwAction = async (req: Request, res: Response) => {
     ).then((chunkedResults) => chunkedResults.flat());
 
     if (!req.query.test) {
-      const newSeries = await seriesModel.insertMany(finalResults, { throwOnValidationError: false, ordered: false });
+      const newSeries = await seriesModel.insertMany(finalResults, {
+        throwOnValidationError: false,
+        ordered: false
+      });
 
       res.status(200).json({ size: finalResults.length, series: newSeries });
       return;

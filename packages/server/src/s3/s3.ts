@@ -52,9 +52,17 @@ export const uploadSeriesImageFromUrlToS3 = async (seriesName: string, seriesIma
         return null;
       });
     if (imageFetch) {
+      // remove any variables that may be attached
+      const imageUrl = seriesImage.split('?')[0];
+
+      // create a buffer of the image to make S3 happy
       const imageBlob = Buffer.from(imageFetch);
-      const imageExtension = seriesImage.split('.').pop();
-      const filename = cleanFileName(seriesName).split(' ').join('').toLowerCase();
+
+      // make sure we have the right file extension
+      const imageExtension = imageUrl.split('.').pop();
+
+      // simplify the filename (uploader will clean the filename)
+      const filename = seriesName.split(' ').join('').toLowerCase();
 
       if (imageBlob) {
         return await uploadImageToS3({
