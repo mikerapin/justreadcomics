@@ -1,4 +1,5 @@
 import { cleanSearch, initScraperPage } from './util';
+import { Creator } from 'client/src/types/series';
 
 export const searchScrapeCorpo = async (search: string, headless?: boolean) => {
   const { page, browser } = await initScraperPage(headless);
@@ -16,6 +17,8 @@ export const searchScrapeCorpo = async (search: string, headless?: boolean) => {
 
   let imageUrl;
   let seriesPageUrl;
+  let seriesDescription;
+  let seriesCreators;
   let withinCU;
 
   const partOfLinkSelector = '.s-search-results .s-widget-container ::-p-text(Part of)';
@@ -27,6 +30,8 @@ export const searchScrapeCorpo = async (search: string, headless?: boolean) => {
 
     const imageUrlSelector = 'meta[property="og:image"]';
     const seriesUrlSelector = 'link[rel="canonical"]';
+    const seriesDescriptionSelector = '#collection_description';
+    const seriesCreatorsSelector = '.series-common-atf .a-column.a-span8 a';
 
     imageUrl = await page.evaluate((selector) => {
       const url = document.querySelector(selector)?.getAttribute('content');
@@ -36,6 +41,22 @@ export const searchScrapeCorpo = async (search: string, headless?: boolean) => {
     seriesPageUrl = await page.evaluate((selector) => {
       return document.querySelector(selector)?.getAttribute('href');
     }, seriesUrlSelector);
+
+    seriesDescription = await page.evaluate((selector) => {
+      return document.querySelector(selector)?.textContent;
+    }, seriesDescriptionSelector);
+
+    seriesCreators = await page.evaluate((selector) => {
+      const creators = document.querySelectorAll(selector);
+      const creatorsArray: Creator[] = [];
+      creators.forEach((c, index) => {
+        const creator = c?.textContent?.split(' (')[0];
+        if (creator) {
+          creatorsArray.push({ name: creator, role: '', order: index });
+        }
+      });
+      return creatorsArray;
+    }, seriesCreatorsSelector);
 
     const cuSelector = '#series-childAsin-item_1 ::-p-text(Read for Free)';
     try {
@@ -50,5 +71,5 @@ export const searchScrapeCorpo = async (search: string, headless?: boolean) => {
 
   await browser.close();
 
-  return { imageUrl, seriesPageUrl, withinCU };
+  return { imageUrl, seriesPageUrl, withinCU, seriesDescription, seriesCreators };
 };

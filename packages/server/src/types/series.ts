@@ -1,8 +1,8 @@
 import { Request } from 'express';
-import { ObjectId } from 'mongoose';
+import { HydratedSingleSubdocument, Types } from 'mongoose';
 import { IService } from './services';
 
-interface Creator {
+export interface Creator {
   name: string;
   role: string;
   order?: number;
@@ -14,13 +14,18 @@ export interface ISeriesService {
   lastScan?: string;
 }
 
-interface ISeries {
+export type ISeriesServiceType = ISeriesService[] & {
+  id: (id: string) => HydratedSingleSubdocument<ISeriesService>;
+};
+
+export interface ISeries {
+  _id: Types.ObjectId;
   seriesName: string;
   description?: string;
   image?: string;
   ongoingSeries?: boolean;
   credits?: Creator[];
-  services?: ISeriesService[];
+  services?: ISeriesServiceType;
   meta: {
     searches: number;
     clickOuts: number;
@@ -28,14 +33,12 @@ interface ISeries {
   lastScan?: string;
 }
 
-interface IHydratedSeries {
+export interface IHydratedSeries {
   series: ISeries;
   services: IService[] | object;
   msg?: string;
 }
 
-interface CreateSeriesRequest extends Request {
+export interface CreateSeriesRequest extends Request {
   body: ISeries;
 }
-
-export { IHydratedSeries, ISeries, CreateSeriesRequest };

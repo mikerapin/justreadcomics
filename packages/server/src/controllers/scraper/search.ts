@@ -1,13 +1,15 @@
 import { Request, Response } from 'express';
-import { getSeriesById } from '../series';
+import { getSeriesModelById } from '../series';
 import { searchScrapeCorpo } from '../../scrape/corpo';
 import { uploadSeriesImageFromUrlToS3 } from '../../s3/s3';
 import { CORPO_SERVICE_ID, CU_SERVICE_ID } from '../../static/const';
 import { logInfo } from '../../util/logger';
+import { Types } from 'mongoose';
+import { ISeriesServiceType } from '../../types/series';
 
 export const searchAndScrapeCorpoAction = async (req: Request, res: Response) => {
   const id = req.params.id;
-  const { series } = await getSeriesById(id);
+  const series = await getSeriesModelById(id);
   if (!series) {
     res.status(400).json({
       msg: "series doesn't exist, bub"
@@ -17,62 +19,55 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
 
   const seriesName = series.seriesName;
 
-  const { imageUrl, seriesPageUrl, withinCU } = await searchScrapeCorpo(seriesName, false);
+  const { imageUrl, seriesPageUrl, withinCU, seriesCreators, seriesDescription } = await searchScrapeCorpo(seriesName, false);
 
   if (seriesPageUrl) {
-    // if we have services
-    if (series.services) {
-      const corpoIndex = series.services.findIndex((service) => {
-        return service._id === CORPO_SERVICE_ID;
-      });
+    const corpoResults = {
+      _id: CORPO_SERVICE_ID,
+      seriesServiceUrl: seriesPageUrl,
+      lastScan: new Date().toJSON()
+    };
 
-      if (corpoIndex > -1) {
-        series.services[corpoIndex].seriesServiceUrl = seriesPageUrl;
-        series.services[corpoIndex].lastScan = new Date().toJSON();
+    if (series.services) {
+      const corpoService = series.services.id(CORPO_SERVICE_ID);
+
+      if (corpoService) {
+        corpoService.seriesServiceUrl = corpoResults.seriesServiceUrl;
+        corpoService.lastScan = corpoResults.lastScan;
       } else {
-        series.services.push({
-          _id: CORPO_SERVICE_ID,
-          seriesServiceUrl: seriesPageUrl,
-          lastScan: new Date().toJSON()
-        });
+        series.services.push(corpoResults);
       }
     } else {
-      // if there are no services, add the corpo service
-      series.services = [
-        {
-          _id: CORPO_SERVICE_ID,
-          seriesServiceUrl: seriesPageUrl,
-          lastScan: new Date().toJSON()
-        }
-      ];
+      series.services = [corpoResults] as ISeriesServiceType;
     }
 
-    const cuIndex = series.services.findIndex((service) => {
-      return service._id === CU_SERVICE_ID;
-    });
+    const cuService = series.services.id(CU_SERVICE_ID);
+    const cuResults = {
+      _id: CU_SERVICE_ID,
+      seriesServiceUrl: seriesPageUrl,
+      lastScan: new Date().toJSON()
+    };
 
     if (withinCU) {
-      if (cuIndex > -1) {
-        series.services[cuIndex].seriesServiceUrl = seriesPageUrl;
-        series.services[cuIndex].lastScan = new Date().toJSON();
+      if (cuService) {
+        cuService.seriesServiceUrl = cuResults.seriesServiceUrl;
+        cuService.lastScan = cuResults.lastScan;
       } else {
-        series.services.push({
-          _id: CU_SERVICE_ID,
-          seriesServiceUrl: seriesPageUrl,
-          lastScan: new Date().toJSON()
-        });
+        series.services.push(cuResults);
       }
     } else {
-      if (cuIndex > -1) {
-        series.services.splice(cuIndex, 1);
-      }
+      series.services.id(CU_SERVICE_ID).deleteOne();
     }
 
     if (imageUrl) {
       series.image = await uploadSeriesImageFromUrlToS3(series.seriesName, imageUrl);
     }
-
-    console.log({ services: series.services });
+    if (seriesCreators) {
+      series.credits = seriesCreators;
+    }
+    if (seriesDescription) {
+      series.description = seriesDescription;
+    }
 
     await series.save();
 

@@ -1,4 +1,4 @@
-import { Link, useParams } from 'react-router-dom';
+import {Link, useLocation, useNavigate, useParams} from 'react-router-dom';
 import React, { useRef, useState } from 'react';
 import { ISeries, ISeriesService, ISeriesWithImageUpload } from '../../types/series';
 import { createSeries, fetchSeriesById, updateSeriesById } from '../../data/series';
@@ -21,6 +21,8 @@ const getSeriesServiceStringArray = (seriesServices?: ISeriesService[]) => {
 };
 export const AdminSeriesEdit = () => {
   const { id } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const [series, setSeries] = useState<ISeries>();
   const [services, setServices] = useState<IService[]>();
@@ -133,6 +135,10 @@ export const AdminSeriesEdit = () => {
     return <></>;
   };
 
+  const updateSeriesData = (series: ISeries) => {
+    navigate(location);
+  }
+
   return (
     <div className="container">
       <form onSubmit={saveSeries}>
@@ -222,7 +228,7 @@ export const AdminSeriesEdit = () => {
                       Last Scan: <code>{getSeriesServiceById(service._id)?.lastScan}</code>
                     </td>
                     <td>
-                      <Scanner seriesService={getSeriesServiceById(service._id)} seriesId={series._id} />
+                      <Scanner seriesService={getSeriesServiceById(service._id)} seriesId={series._id} scannerResultCallback={updateSeriesData} />
                     </td>
                   </tr>
                 );

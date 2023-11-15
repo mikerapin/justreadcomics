@@ -23,10 +23,14 @@ const lookupServicesForSeries = async (seriesServices?: ISeriesService[]): Promi
   return servicesModel.find({ _id: { $in: ids } });
 };
 
-const getSeriesById = async (id: string) => {
-  const series = await seriesModel.findOne({ _id: new Types.ObjectId(id) });
+const getSeriesModelById = async (id: string) => {
+  return seriesModel.findOne({ _id: new Types.ObjectId(id) });
+};
+
+const getHydratedSeriesById = async (id: string): Promise<IHydratedSeries | null> => {
+  const series = await getSeriesModelById(id);
   if (!series) {
-    return {};
+    return null;
   }
 
   const hydratedServices = await lookupServicesForSeries(series.services);
@@ -74,8 +78,8 @@ seriesRouter.get('/get/:id', async (req: Request, res: Response) => {
   if (!req.params.id) {
     res.status(400).json({ msg: 'no id? no data' });
   }
-  const results = await getSeriesById(req.params.id);
-  if (Object.keys(results).length === 0) {
+  const results = await getHydratedSeriesById(req.params.id);
+  if (!results) {
     res.status(404).json({ msg: 'nothing found, sorry', services: {}, series: {} });
     return;
   }
@@ -216,4 +220,4 @@ seriesRouter.get('/get-3', async (req: Request, res: Response) => {
   res.status(200).json({ data: await Promise.all(hydratedSeries) });
 });
 
-export { getSeriesById, seriesRouter };
+export { getHydratedSeriesById, getSeriesModelById, seriesRouter };

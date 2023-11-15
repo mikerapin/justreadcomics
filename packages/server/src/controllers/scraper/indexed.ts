@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { getSeriesById } from '../series';
+import { getSeriesModelById } from '../series';
 import { scrapeMarvelSeries } from '../../scrape/marvel';
 import { uploadSeriesImageFromUrlToS3 } from '../../s3/s3';
 import { IMAGE_SERVICE_ID, MARVEL_UNLIMITED_SERVICE_ID } from '../../static/const';
@@ -7,16 +7,20 @@ import { scrapeImageSeries } from '../../scrape/image';
 
 export const scrapeIndexedMarvelSeriesAction = async (req: Request, res: Response) => {
   const id = req.params.id;
-  const { series } = await getSeriesById(id);
+  const series = await getSeriesModelById(id);
+  if (!series) {
+    res.status(400).json({
+      msg: "series doesn't exist, bub"
+    });
+    return;
+  }
 
   // all of this below assumes the series has a series service URL, need to factor in the NOT
   //  indexed series eventually
   // This may be done using the `scrapeAndSearchMarvel` function in the scraper/marvel.ts... but it's imprecise
 
-  const muService = series?.services?.find((service) => {
-    return service._id === MARVEL_UNLIMITED_SERVICE_ID;
-  });
-  if (!series || !series.services || !muService || !muService.seriesServiceUrl) {
+  const muService = await series.services?.id(MARVEL_UNLIMITED_SERVICE_ID);
+  if (!series.services || !muService || !muService.seriesServiceUrl) {
     res.status(400).json({
       msg: "series doesn't exist or it ain't attached to Marvel, bub"
     });
@@ -34,13 +38,7 @@ export const scrapeIndexedMarvelSeriesAction = async (req: Request, res: Respons
     series.description = description;
   }
 
-  const muIndex = series.services.findIndex((service) => {
-    return service._id === MARVEL_UNLIMITED_SERVICE_ID;
-  });
-
-  if (muIndex > -1) {
-    series.services[muIndex].lastScan = new Date().toJSON();
-  }
+  muService.lastScan = new Date().toJSON();
 
   await series.save();
 
@@ -49,15 +47,17 @@ export const scrapeIndexedMarvelSeriesAction = async (req: Request, res: Respons
 
 // this action only really gets credits and description, it's not great
 export const scrapeIndexedImageSeriesAction = async (req: Request, res: Response) => {
-  // scrapeIndexedImageSeries
-
   const id = req.params.id;
-  const { series } = await getSeriesById(id);
+  const series = await getSeriesModelById(id);
+  if (!series) {
+    res.status(400).json({
+      msg: "series doesn't exist, bub"
+    });
+    return;
+  }
 
-  const imageService = series?.services?.find((service) => {
-    return service._id === IMAGE_SERVICE_ID;
-  });
-  if (!series || !series.services || !imageService || !imageService.seriesServiceUrl) {
+  const imageService = await series.services?.id(IMAGE_SERVICE_ID);
+  if (!series.services || !imageService || !imageService.seriesServiceUrl) {
     res.status(400).json({
       msg: "series doesn't exist or it ain't attached to Marvel, bub"
     });
@@ -80,13 +80,7 @@ export const scrapeIndexedImageSeriesAction = async (req: Request, res: Response
     });
   }
 
-  const imageIndex = series.services.findIndex((service) => {
-    return service._id === IMAGE_SERVICE_ID;
-  });
-
-  if (imageIndex > -1) {
-    series.services[imageIndex].lastScan = new Date().toJSON();
-  }
+  imageService.lastScan = new Date().toJSON();
 
   await series.save();
 
