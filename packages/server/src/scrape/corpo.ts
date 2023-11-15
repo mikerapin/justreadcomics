@@ -1,8 +1,9 @@
 import { cleanSearch, initScraperPage } from './util';
 import { Creator } from 'client/src/types/series';
+import { isProduction } from '../util/process';
 
-export const searchScrapeCorpo = async (search: string, headless?: boolean) => {
-  const { page, browser } = await initScraperPage(headless);
+export const searchScrapeCorpo = async (search: string, runHeadless?: boolean) => {
+  const { page, browser } = await initScraperPage(runHeadless || isProduction());
 
   const cleanedSearch = cleanSearch(search);
 

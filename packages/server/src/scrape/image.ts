@@ -1,14 +1,15 @@
 import { initScraperPage } from './util';
 import { IMassImageImport } from '../types/scraper';
 import { logError } from '../util/logger';
+import { isProduction } from '../util/process';
 
 /**
  * This only gets series description and a (bad) creator list
  * @param seriesUrl
  * @param headless
  */
-export const scrapeImageSeries = async (seriesUrl: string, headless?: boolean) => {
-  const { page, browser } = await initScraperPage(headless);
+export const scrapeImageSeries = async (seriesUrl: string, runHeadless?: boolean) => {
+  const { page, browser } = await initScraperPage(runHeadless || isProduction());
 
   await page.goto(seriesUrl, { waitUntil: 'domcontentloaded' });
 
@@ -72,9 +73,9 @@ export const scrapeImageSeries = async (seriesUrl: string, headless?: boolean) =
   };
 };
 
-export const massImageImport = async (headless: boolean) => {
+export const massImageImport = async (runHeadless: boolean) => {
   //
-  const { page, browser } = await initScraperPage(headless);
+  const { page, browser } = await initScraperPage(runHeadless || isProduction());
 
   // this is the DC series list page, but it's a search page?
   // either way, it's loading 100 pages of all comic series sorted by title

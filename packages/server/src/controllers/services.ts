@@ -123,6 +123,10 @@ servicesRouter.patch('/update/:id', [verifyTokenMiddleware], async (req: CreateS
         siteUrl,
         type,
         searchUrl
+      },
+      {
+        // this ensures we return the UPDATED document *sigh*
+        new: true
       }
     );
 

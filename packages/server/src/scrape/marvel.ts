@@ -1,9 +1,8 @@
 import { initScraperPage } from './util';
-import { logError, logInfo } from '../util/logger';
-import { cleanSeriesName } from '../util/string';
+import { isProduction } from '../util/process';
 
-export const scrapeMarvelSeries = async (seriesUrl: string, headless?: boolean) => {
-  const { page, browser } = await initScraperPage(headless);
+export const scrapeMarvelSeries = async (seriesUrl: string, runHeadless?: boolean) => {
+  const { page, browser } = await initScraperPage(runHeadless || isProduction());
 
   await page.goto(seriesUrl, { waitUntil: 'domcontentloaded' });
 
@@ -39,10 +38,10 @@ export const scrapeMarvelSeries = async (seriesUrl: string, headless?: boolean) 
 /**
  * This is overkill, probably not usable
  * @param search
- * @param headless
+ * @param runHeadless
  */
-export const scrapeAndSearchMarvel = async (search: string, headless?: boolean) => {
-  const { page, browser } = await initScraperPage(headless);
+export const scrapeAndSearchMarvel = async (search: string, runHeadless?: boolean) => {
+  const { page, browser } = await initScraperPage(runHeadless || isProduction());
 
   const searchQuery = 'https://www.marvel.com/search?limit=1&query=%s&offset=0&content_type=comics'.replace('%s', encodeURIComponent(search));
 
@@ -105,8 +104,8 @@ interface IMassMarvelImport {
   ongoing: boolean;
 }
 
-export const massImportMarvel = async (headless: boolean) => {
-  const { page, browser } = await initScraperPage(headless);
+export const massImportMarvel = async (runHeadless?: boolean) => {
+  const { page, browser } = await initScraperPage(runHeadless || isProduction());
 
   await page.goto('https://www.marvel.com/comics/series', { waitUntil: 'domcontentloaded' });
 

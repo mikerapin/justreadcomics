@@ -126,6 +126,10 @@ seriesRouter.patch('/update-image/:id', [verifyTokenMiddleware, upload.single('i
       { _id: new Types.ObjectId(req.params.id) },
       {
         image: fileUrl
+      },
+      {
+        // this ensures we return the UPDATED document *sigh*
+        new: true
       }
     );
 
@@ -154,11 +158,15 @@ seriesRouter.patch('/update/:id', [verifyTokenMiddleware], async (req: CreateSer
         services,
         meta,
         lastScan
+      },
+      {
+        // this ensures we return the UPDATED document *sigh*
+        new: true
       }
     );
     if (series) {
       const hydratedServices = await lookupServicesForSeries(series.services);
-      logInfo(series);
+      console.log(series);
 
       res.status(200).json({ series: series, services: hydratedServices });
     } else {

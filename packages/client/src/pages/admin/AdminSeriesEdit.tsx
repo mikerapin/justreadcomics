@@ -1,5 +1,5 @@
-import {Link, useLocation, useNavigate, useParams} from 'react-router-dom';
-import React, { useRef, useState } from 'react';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import React, { useCallback, useRef, useState } from 'react';
 import { ISeries, ISeriesService, ISeriesWithImageUpload } from '../../types/series';
 import { createSeries, fetchSeriesById, updateSeriesById } from '../../data/series';
 import { Toast } from 'bootstrap';
@@ -65,6 +65,13 @@ export const AdminSeriesEdit = () => {
     control
   });
 
+  const getSeriesServiceById = useCallback(
+    (serviceId?: string) => {
+      return series?.services?.find((service) => service._id === serviceId);
+    },
+    [series]
+  );
+
   if (!series) {
     return <span>'Loading'</span>;
   }
@@ -119,10 +126,6 @@ export const AdminSeriesEdit = () => {
     return 2;
   };
 
-  const getSeriesServiceById = (serviceId?: string) => {
-    return series.services?.find((service) => service._id === serviceId);
-  };
-
   const getSeriesPageUrl = (serviceId?: string) => {
     const seriesService = getSeriesServiceById(serviceId);
     if (seriesService && seriesService.seriesServiceUrl) {
@@ -137,7 +140,7 @@ export const AdminSeriesEdit = () => {
 
   const updateSeriesData = (series: ISeries) => {
     navigate(location);
-  }
+  };
 
   return (
     <div className="container">
@@ -219,9 +222,6 @@ export const AdminSeriesEdit = () => {
                       <label className="form-check-label" htmlFor={`service${service._id}`}>
                         <p className="card-title text-center">{service.serviceName}</p>
                       </label>
-                      {/*<label className="form-check-label" htmlFor={`service${service._id}`}>*/}
-                      {/*  <div className="text-center"></div>*/}
-                      {/*</label>*/}
                     </td>
                     <td>{getSeriesPageUrl(service._id)}</td>
                     <td style={{ fontSize: '12px' }}>

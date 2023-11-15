@@ -1,9 +1,10 @@
 import { initScraperPage } from './util';
 import { IMassDcImport } from '../types/scraper';
 import { logError } from '../util/logger';
+import { isProduction } from '../util/process';
 
-export const massDcImport = async (headless: boolean) => {
-  const { page, browser } = await initScraperPage(headless);
+export const massDcImport = async (runHeadless: boolean) => {
+  const { page, browser } = await initScraperPage(runHeadless || isProduction());
 
   // this is the DC series list page, but it's a search page?
   // either way, it's loading 100 pages of all comic series sorted by title

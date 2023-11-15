@@ -66,8 +66,7 @@ export const updateSeriesById = async (series: Partial<ISeriesWithImageUpload>):
 
   if (series.imageBlob) {
     const updatedHydratedSeries: IHydratedSeries = await res.json();
-    const updatedSeries = await uploadSeriesImage(updatedHydratedSeries, series.imageBlob);
-    updatedHydratedSeries.series = updatedSeries;
+    updatedHydratedSeries.series = await uploadSeriesImage(updatedHydratedSeries, series.imageBlob);;
     return updatedHydratedSeries;
   } else {
     return await res.json();

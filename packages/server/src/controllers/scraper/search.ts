@@ -3,8 +3,6 @@ import { getSeriesModelById } from '../series';
 import { searchScrapeCorpo } from '../../scrape/corpo';
 import { uploadSeriesImageFromUrlToS3 } from '../../s3/s3';
 import { CORPO_SERVICE_ID, CU_SERVICE_ID } from '../../static/const';
-import { logInfo } from '../../util/logger';
-import { Types } from 'mongoose';
 import { ISeriesServiceType } from '../../types/series';
 
 export const searchAndScrapeCorpoAction = async (req: Request, res: Response) => {
@@ -19,7 +17,7 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
 
   const seriesName = series.seriesName;
 
-  const { imageUrl, seriesPageUrl, withinCU, seriesCreators, seriesDescription } = await searchScrapeCorpo(seriesName, false);
+  const { imageUrl, seriesPageUrl, withinCU, seriesCreators, seriesDescription } = await searchScrapeCorpo(seriesName);
 
   if (seriesPageUrl) {
     const corpoResults = {
@@ -63,6 +61,7 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
       series.image = await uploadSeriesImageFromUrlToS3(series.seriesName, imageUrl);
     }
     if (seriesCreators) {
+      // TODO this isn't working great, maybe fix it up a bit
       series.credits = seriesCreators;
     }
     if (seriesDescription) {

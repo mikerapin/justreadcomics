@@ -19,7 +19,7 @@ export const scrapeIndexedMarvelSeriesAction = async (req: Request, res: Respons
   //  indexed series eventually
   // This may be done using the `scrapeAndSearchMarvel` function in the scraper/marvel.ts... but it's imprecise
 
-  const muService = await series.services?.id(MARVEL_UNLIMITED_SERVICE_ID);
+  const muService = series.services?.id(MARVEL_UNLIMITED_SERVICE_ID);
   if (!series.services || !muService || !muService.seriesServiceUrl) {
     res.status(400).json({
       msg: "series doesn't exist or it ain't attached to Marvel, bub"
@@ -56,7 +56,7 @@ export const scrapeIndexedImageSeriesAction = async (req: Request, res: Response
     return;
   }
 
-  const imageService = await series.services?.id(IMAGE_SERVICE_ID);
+  const imageService = series.services?.id(IMAGE_SERVICE_ID);
   if (!series.services || !imageService || !imageService.seriesServiceUrl) {
     res.status(400).json({
       msg: "series doesn't exist or it ain't attached to Marvel, bub"
