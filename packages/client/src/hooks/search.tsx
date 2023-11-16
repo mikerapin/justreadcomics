@@ -17,7 +17,7 @@ export const useSearch = (searchFunction: (options: IFetchSeriesSearchOptions) =
       setSearchResults([]);
       clearTimeout(delayDebounceFn);
     };
-  }, [searchTerm]);
+  }, [searchTerm, cursor, isLargeSearch, searchFunction]);
 
   return {
     searchTerm,

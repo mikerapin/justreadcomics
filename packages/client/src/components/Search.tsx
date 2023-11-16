@@ -1,7 +1,6 @@
-import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
+import React, { ChangeEvent, useEffect, useRef } from 'react';
 
 import { Dropdown } from 'bootstrap';
-import { IHydratedSeries } from '../types/series';
 import { fetchSeriesByName } from '../data/series';
 import { Form, Link } from 'react-router-dom';
 import { SeriesImage } from './SeriesImage';
