@@ -51,6 +51,7 @@ export const uploadSeriesImageFromUrlToS3 = async (seriesName: string, seriesIma
         logError(err);
         return null;
       });
+
     if (imageFetch) {
       // remove any variables that may be attached
       const imageUrl = seriesImage.split('?')[0];

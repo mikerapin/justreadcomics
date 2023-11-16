@@ -1,4 +1,4 @@
-import { MARVEL_UNLIMITED_SERVICE_ID } from '../../static/const';
+import { DC_INFINITE_UNIVERSE_SERVICE_ID, IMAGE_SERVICE_ID, MARVEL_UNLIMITED_SERVICE_ID, SHONEN_JUMP_SERVICE_ID } from '../../static/const';
 import { Request, Response } from 'express';
 import { chunk } from 'lodash';
 import { massDcImport } from '../../scrape/dc';
@@ -11,6 +11,7 @@ import { logError } from '../../util/logger';
 import { massImportIdw } from '../../scrape/idw';
 import { cleanSeriesName } from '../../util/string';
 import { Types } from 'mongoose';
+import { massImportShonenJump } from '../../scrape/shonen-jump';
 
 export const massImportMarvelAction = async (req: Request, res: Response) => {
   const result = await massImportMarvel(false);
@@ -68,17 +69,18 @@ export const massImportDcAction = async (req: Request, res: Response) => {
           const date = new Date().toJSON();
           const { seriesName, seriesLink, ongoing, seriesImage } = series;
           let imageLocation;
+          const finalSeriesName = cleanSeriesName(seriesName);
           if (!includeImages) {
-            imageLocation = await uploadSeriesImageFromUrlToS3(series.seriesName, seriesImage);
+            imageLocation = await uploadSeriesImageFromUrlToS3(finalSeriesName, seriesImage);
           }
 
           return {
             image: imageLocation,
-            seriesName: cleanSeriesName(seriesName),
+            seriesName: finalSeriesName,
             ongoing,
             services: [
               {
-                _id: new Types.ObjectId('65314bb94223c7aefc0027ce'), // DC UniverseInfinite service
+                _id: new Types.ObjectId(DC_INFINITE_UNIVERSE_SERVICE_ID),
                 seriesServiceUrl: seriesLink,
                 lastScan: date
               }
@@ -120,7 +122,7 @@ export const massImportImageAction = async (req: Request, res: Response) => {
         seriesName,
         services: [
           {
-            _id: new Types.ObjectId('653afb1e23027c9826267cb8'), // Image (storage for later scraping)
+            _id: new Types.ObjectId(IMAGE_SERVICE_ID), // Image (storage for later scraping)
             seriesServiceUrl: seriesLink,
             lastScan: date
           }
@@ -144,8 +146,51 @@ export const massImportImageAction = async (req: Request, res: Response) => {
   }
 };
 
+export const massImportShonenJumpAction = async (req: Request, res: Response) => {
+  const result = await massImportShonenJump(false);
+
+  try {
+    const finalResults = await promiseAllSequence(chunk(result.series, 20), (chunk) =>
+      Promise.all(
+        chunk.map(async (series) => {
+          const date = new Date().toJSON();
+          const { seriesName, seriesLink, imageUrl } = series;
+          const finalSeriesName = cleanSeriesName(seriesName);
+          const imageLocation = await uploadSeriesImageFromUrlToS3(finalSeriesName, imageUrl);
+
+          return {
+            image: imageLocation,
+            seriesName: finalSeriesName,
+            services: [
+              {
+                _id: new Types.ObjectId(SHONEN_JUMP_SERVICE_ID),
+                seriesServiceUrl: seriesLink,
+                lastScan: date
+              }
+            ]
+          };
+        })
+      )
+    ).then((chunkedResults) => chunkedResults.flat());
+
+    if (!req.query.test) {
+      const newSeries = await seriesModel.insertMany(finalResults, {
+        throwOnValidationError: false,
+        ordered: false
+      });
+
+      res.status(200).json({ size: finalResults.length, series: newSeries });
+      return;
+    }
+    res.status(200).json({ size: finalResults.length, finalResults });
+  } catch (e: any) {
+    logError(e);
+    res.status(400).json({ e });
+  }
+};
+
 // DELETE
-// await seriesModel.deleteMany({ createdAt: { $gt: '2023-11-10T00:00:00Z' } });
+// await seriesModel.deleteMany({ createdAt: { $gt: '2023-11-16T03:07:03.213+00:00' } });
 // res.status(200).json('done');
 
 /**
@@ -161,11 +206,12 @@ export const massImportIdwAction = async (req: Request, res: Response) => {
         chunk.map(async (series) => {
           const date = new Date().toJSON();
           const { seriesName, seriesLink, seriesImage, description } = series;
-          const imageLocation = await uploadSeriesImageFromUrlToS3(series.seriesName, seriesImage);
+          const finalSeriesName = cleanSeriesName(seriesName);
+          const imageLocation = await uploadSeriesImageFromUrlToS3(finalSeriesName, seriesImage);
 
           return {
             image: imageLocation,
-            seriesName: cleanSeriesName(seriesName),
+            seriesName: finalSeriesName,
             description,
             services: [
               {

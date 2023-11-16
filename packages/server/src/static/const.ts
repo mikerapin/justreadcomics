@@ -1,4 +1,8 @@
 export const MARVEL_UNLIMITED_SERVICE_ID = '65314ab18afab97567984de1';
+export const DC_INFINITE_UNIVERSE_SERVICE_ID = '65314bb94223c7aefc0027ce';
 export const IMAGE_SERVICE_ID = '653afb1e23027c9826267cb8';
 export const CORPO_SERVICE_ID = '652ea8fd905191bc5f8c34bd';
 export const CU_SERVICE_ID = '6540713a8519e326e33a8a11';
+
+export const VIZ_SERVICE_ID = '';
+export const SHONEN_JUMP_SERVICE_ID = '65557e9375b6fa18b0f413bb';

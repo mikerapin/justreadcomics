@@ -19,6 +19,9 @@ interface ReturnMassProducts {
   seriesLink: string;
 }
 
+/**
+ * @deprecated Don't use this
+ */
 export const massImportIdw = async () => {
   // this one won't even need to use puppeteer
 

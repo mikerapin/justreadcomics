@@ -9,6 +9,7 @@ import { servicesRouter } from './controllers/services';
 import { scraperRouter } from './controllers/scraper';
 import { authRouter } from './controllers/auth';
 import { logError, logFatal, loggerMiddleware, logInfo } from './util/logger';
+import { uploadSeriesImageFromUrlToS3 } from './s3/s3';
 
 const app = express();
 
@@ -28,6 +29,11 @@ app.use('/api/auth', authRouter);
 
 // scraper services
 app.use('/scraper', scraperRouter);
+
+app.get('/test', (req, res) => {
+  uploadSeriesImageFromUrlToS3('test', 'https://dw9to29mmj727.cloudfront.net/properties/2016/3081-628_th_mitamathumb_jpg.jpeg');
+  res.status(200).json('nice');
+});
 
 const server = app.listen(port, async () => {
   try {

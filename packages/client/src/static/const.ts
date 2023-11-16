@@ -1,4 +1,5 @@
 import { getBaseUrl } from '../util/http';
+import { CORPO_SERVICE_ID, IMAGE_SERVICE_ID, SHONEN_JUMP_SERVICE_ID } from 'server/src/static/const';
 
 export const API_BASE_URL = `${getBaseUrl()}/api`;
 export const SCRAPER_BASE_URL = `${getBaseUrl()}/scraper`;
@@ -11,12 +12,17 @@ export const USER_TOKEN_LOCAL_STORAGE_ID = 'token';
 export const seriesScanners = [
   // corpo scanner
   {
-    seriesServiceId: '652ea8fd905191bc5f8c34bd',
+    seriesServiceId: CORPO_SERVICE_ID,
     action: `${SCRAPER_BASE_URL}/corpo/`
   },
   // image scanner
   {
-    seriesServiceId: '653afb1e23027c9826267cb8',
+    seriesServiceId: IMAGE_SERVICE_ID,
     action: `${SCRAPER_BASE_URL}/image/`
+  },
+  // shonen jump scanner
+  {
+    seriesServiceId: SHONEN_JUMP_SERVICE_ID,
+    action: `${SCRAPER_BASE_URL}/shonen-jump/`
   }
 ];
