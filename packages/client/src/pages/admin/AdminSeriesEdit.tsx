@@ -2,8 +2,6 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import React, { useCallback, useRef, useState } from 'react';
 import { ISeries, ISeriesService, ISeriesWithImageUpload } from '../../types/series';
 import { createSeries, fetchSeriesById, updateSeriesById } from '../../data/series';
-import { Toast } from 'bootstrap';
-import { getServiceImage } from '../../util/image';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { fetchAllServices } from '../../data/services';
 import { IService } from '../../types/service';
@@ -11,6 +9,8 @@ import { ImageUploader } from './subcomponents/ImageUploader';
 import { ISeriesForm } from './types/series';
 import { SeriesImage } from '../../components/SeriesImage';
 import { Scanner } from './series-service/Scanner';
+import { Button, Col, Container, FloatingLabel, Form, Row, Stack, Table, ToastContainer, Toast } from 'react-bootstrap';
+import { ServiceImage } from '../../components/ServiceImage';
 
 const getSeriesServiceStringArray = (seriesServices?: ISeriesService[]) => {
   return (
@@ -28,7 +28,9 @@ export const AdminSeriesEdit = () => {
   const [services, setServices] = useState<IService[]>();
 
   const rightColumnRef = useRef<HTMLDivElement>(null);
-  const successToastRef = useRef<HTMLDivElement>(null);
+
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -77,10 +79,7 @@ export const AdminSeriesEdit = () => {
   }
 
   const showToast = () => {
-    if (successToastRef.current) {
-      const toastBootstrap = new Toast(successToastRef.current);
-      toastBootstrap.show();
-    }
+    setShowSuccessToast(true);
   };
 
   const saveSeries = handleSubmit((seriesForm) => {
@@ -143,23 +142,21 @@ export const AdminSeriesEdit = () => {
   };
 
   return (
-    <div className="container">
-      <form onSubmit={saveSeries}>
-        <div className="d-flex justify-content-between align-items-center">
+    <Container className="container">
+      <Form onSubmit={saveSeries}>
+        <Stack direction="horizontal" className="justify-content-between align-items-center">
           <h3 className="mt-3 mb-3">Editing {series?.seriesName}</h3>
-          <div>
-            <button type="submit" className="btn btn-primary" disabled={!isDirty}>
-              Save
-            </button>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-4 mb-3">
+          <Button variant="primary" type="submit" disabled={!isDirty}>
+            Save
+          </Button>
+        </Stack>
+        <Row className="row">
+          <Col xs={4} className="mb-3">
             {/* add click to view in modal \/\/\/ */}
             <SeriesImage series={series} alt={series.seriesName} />
             <ImageUploader register={register} fieldName={'imageBlob'} />
-          </div>
-          <div ref={rightColumnRef} className="col-md-8">
+          </Col>
+          <Col ref={rightColumnRef}>
             <div className="mb-3">
               <Link to={`/series/${series._id}`}>Public Page</Link>
             </div>
@@ -169,82 +166,86 @@ export const AdminSeriesEdit = () => {
             <div className="mb-3">
               Last Scan: <code>{series?.lastScan ? new Date(series.lastScan).toLocaleString() : 'Unknown'}</code>
             </div>
-            <div className="form-floating mb-3">
-              <input {...register('seriesName')} className="form-control" id="seriesName" placeholder="X-Men (2023)" />
-              <label htmlFor="seriesName">Series Name</label>
-            </div>
-            <div className="form-floating mb-3">
-              <textarea {...register('description')} id="description" className="form-control" style={{ height: '160px' }}></textarea>
-              <label htmlFor="description">Description</label>
-            </div>
-            <div className="d-flex align-items-center gap-2 mb-2">
+            <FloatingLabel controlId="seriesName" label="Series Name" className="mb-3">
+              <Form.Control {...register('seriesName')} id="seriesName" placeholder="X-Men (2023)" />
+            </FloatingLabel>
+            <FloatingLabel controlId="description" label="Description" className="mb-3">
+              <Form.Control as="textarea" {...register('description')} id="description" style={{ height: '160px' }} />
+            </FloatingLabel>
+            <Stack gap={2} direction="horizontal" className="align-items-center mb-2">
               <span>Credits</span>
-              <button type="button" className="btn btn-sm btn-secondary" onClick={() => appendCredit({ role: '', name: '', order: getNextOrder() })}>
+              <Button variant="secondary" size="sm" type="button" onClick={() => appendCredit({ role: '', name: '', order: getNextOrder() })}>
                 Add
-              </button>
-            </div>
+              </Button>
+            </Stack>
             {creditsFields.map((credits, index) => (
-              <div className="row g-2 align-items-center" key={credits.id}>
-                <div className="col-md form-floating mb-3">
-                  <input className="form-control" id={`name-${credits.id}`} {...register(`credits.${index}.name` as const)} />
-                  <label htmlFor={`name-${credits.id}`}>Name</label>
-                </div>
-                <div className="col-md form-floating mb-3">
-                  <input className="form-control" id={`role-${credits.id}`} {...register(`credits.${index}.role` as const)} />
-                  <label htmlFor={`role-${credits.id}`}>Role</label>
-                </div>
+              <Row className="row g-2 align-items-center" key={credits.id}>
+                <Col className="mb-3">
+                  <FloatingLabel controlId={`name-${credits.id}`} label="Name" className="mb-3">
+                    <Form.Control id={`name-${credits.id}`} {...register(`credits.${index}.name` as const)} autoComplete="off" />
+                  </FloatingLabel>
+                </Col>
+                <Col className="mb-3">
+                  <FloatingLabel controlId={`role-${credits.id}`} label="Role" className="mb-3">
+                    <Form.Control id={`role-${credits.id}`} {...register(`credits.${index}.name` as const)} autoComplete="off" />
+                  </FloatingLabel>
+                </Col>
                 <input type="hidden" {...register(`credits.${index}.order` as const)} />
-                <div className="col-1 d-flex align-items-center">
-                  <button type="button" className="btn btn-danger btn-sm" onClick={() => removeCredit(index)}>
+                <Col xs={1} className="text-center" style={{ marginTop: '-20px' }}>
+                  <Button variant="danger" type="button" size="sm" onClick={() => removeCredit(index)}>
                     <i className="bi bi-dash-circle"></i>
-                  </button>
-                </div>
-              </div>
+                  </Button>
+                </Col>
+              </Row>
             ))}
-          </div>
-        </div>
-        <div className="container">
-          <h3>Services</h3>
-          <table className="table table-striped table-hover table-responsive align-middle">
-            <tbody>
-              {services?.map((service) => {
-                return (
-                  <tr key={service.serviceName}>
-                    <td>
-                      <input {...register(`services`)} id={`service${service._id}`} className="form-check-input" type="checkbox" value={service._id} />
-                    </td>
-                    <td>
-                      <label className="form-check-label" htmlFor={`service${service._id}`}>
-                        <img className="bg-white img-thumbnail" alt={service?.serviceName} style={{ maxWidth: '32px' }} src={getServiceImage(service)} />
-                      </label>
-                    </td>
-                    <td>
-                      <label className="form-check-label" htmlFor={`service${service._id}`}>
-                        <p className="card-title text-center">{service.serviceName}</p>
-                      </label>
-                    </td>
-                    <td>{getSeriesPageUrl(service._id)}</td>
-                    <td style={{ fontSize: '12px' }}>
-                      Last Scan: <code>{getSeriesServiceById(service._id)?.lastScan}</code>
-                    </td>
-                    <td>
-                      <Scanner seriesService={getSeriesServiceById(service._id)} seriesId={series._id} scannerResultCallback={updateSeriesData} />
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </form>
-      <div className="toast-container position-fixed bottom-0 end-0 p-3">
-        <div ref={successToastRef} className="toast align-items-center text-bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
-          <div className="d-flex">
-            <div className="toast-body">Successfully saved!</div>
-            <button type="button" className="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-          </div>
-        </div>
-      </div>
-    </div>
+          </Col>
+        </Row>
+        <Row>
+          <Container>
+            <h3>Services</h3>
+            <Table striped hover responsive className="align-middle">
+              <tbody>
+                {services?.map((service) => {
+                  return (
+                    <tr key={service.serviceName}>
+                      <td>
+                        <Form.Check {...register(`services`)} id={`service${service._id}`} type="checkbox" value={service._id} />
+                      </td>
+                      <td>
+                        <Form.Label className="form-check-label" htmlFor={`service${service._id}`}>
+                          <ServiceImage service={service} size="xs" />
+                        </Form.Label>
+                      </td>
+                      <td>
+                        <Form.Label className="form-check-label" htmlFor={`service${service._id}`}>
+                          <p className="card-title text-center">{service.serviceName}</p>
+                        </Form.Label>
+                      </td>
+                      <td>{getSeriesPageUrl(service._id)}</td>
+                      <td style={{ fontSize: '12px' }}>
+                        Last Scan: <code>{getSeriesServiceById(service._id)?.lastScan}</code>
+                      </td>
+                      <td>
+                        <Scanner seriesService={getSeriesServiceById(service._id)} seriesId={series._id} scannerResultCallback={updateSeriesData} />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </Table>
+          </Container>
+        </Row>
+      </Form>
+      <ToastContainer position="bottom-end" className="p-3">
+        <Toast onClose={() => setShowSuccessToast(false)} show={showSuccessToast} autohide delay={3000} bg="primary">
+          <Toast.Body>
+            <Stack direction="horizontal" className="justify-content-between">
+              <span>Successfully saved!</span>
+              <Button type="button" className="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></Button>
+            </Stack>
+          </Toast.Body>
+        </Toast>
+      </ToastContainer>
+    </Container>
   );
 };

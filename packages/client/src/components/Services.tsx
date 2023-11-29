@@ -1,6 +1,7 @@
 import { IService, ServiceType } from '../types/service';
-import { getServiceImage } from '../util/image';
 import { ISeriesService } from '../types/series';
+import { ServiceImage } from './ServiceImage';
+import React from 'react';
 
 export const Services = ({ seriesServices, services }: { seriesServices?: ISeriesService[]; services?: IService[] }) => {
   if (!services || services.length === 0) {
@@ -19,7 +20,7 @@ export const Services = ({ seriesServices, services }: { seriesServices?: ISerie
       return (
         <div key={service.serviceName} className="col-3 col-md-2">
           <a target="_blank" rel="noreferrer" href={siteUrl}>
-            <img className="img-thumbnail rounded-2 bg-white" src={getServiceImage(service)} alt={service.serviceName} title={service.serviceName} />
+            <ServiceImage service={service} size="md" />
           </a>
         </div>
       );

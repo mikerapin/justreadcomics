@@ -2,6 +2,7 @@ import { seriesScanners } from '../../../static/const';
 import { useState } from 'react';
 import { triggerScanner } from '../../../data/scanner';
 import { ISeries, ISeriesService } from '../../../types/series';
+import { Button } from 'react-bootstrap';
 
 interface ScannerProps {
   seriesService?: ISeriesService;
@@ -29,7 +30,7 @@ export const Scanner = ({ seriesService, seriesId, scannerResultCallback }: Scan
       });
     };
     return (
-      <button type="button" className="btn btn-secondary" onClick={handleClick} disabled={disableButton || inProgress}>
+      <Button variant="secondary" type="button" onClick={handleClick} disabled={disableButton || inProgress}>
         {inProgress ? (
           <div className="spinner-border spinner-border-sm" role="status">
             <span className="visually-hidden">Loading...</span>
@@ -37,7 +38,7 @@ export const Scanner = ({ seriesService, seriesId, scannerResultCallback }: Scan
         ) : (
           'Scan Now'
         )}
-      </button>
+      </Button>
     );
   }
   return <></>;

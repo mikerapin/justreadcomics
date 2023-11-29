@@ -1,9 +1,10 @@
-import React, { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { IFetchMultipleSeriesWithCursor } from '../../types/series';
 import { fetchAllSeries, fetchSeriesByName } from '../../data/series';
 import { Form, Link, useSearchParams } from 'react-router-dom';
-import { getServiceImage } from '../../util/image';
 import { Pagination } from '../../components/Pagination';
+import { Container, InputGroup, Stack, Form as BootstrapForm, Button, Table } from 'react-bootstrap';
+import { ServiceImage } from '../../components/ServiceImage';
 
 export const AdminSeries = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -77,16 +78,7 @@ export const AdminSeries = () => {
           <td>
             {hydratedSeries.services &&
               hydratedSeries.services.map((service) => {
-                return (
-                  <img
-                    key={service._id}
-                    style={{ maxHeight: '30px' }}
-                    className="img-thumbnail rounded-2 bg-white"
-                    src={getServiceImage(service)}
-                    alt={service.serviceName}
-                    title={service.serviceName}
-                  />
-                );
+                return <ServiceImage service={service} size="xs" />;
               })}
           </td>
           <td>{lastScan || 'Unknown'}</td>
@@ -101,21 +93,18 @@ export const AdminSeries = () => {
   };
 
   return (
-    <div className="container">
-      <div className="d-flex justify-content-end">
+    <Container>
+      <Stack className="justify-content-end">
         <Link to="/admin/series/new" type="button" className="btn btn-primary">
           + Add
         </Link>
-      </div>
+      </Stack>
       <Form role="search" action="/search" onSubmit={onSubmit}>
-        <div className="d-flex g-3 mt-3">
-          <div>
-            <h2 className="me-2">Search:</h2>
-          </div>
-          <div className="input-group">
-            <input
+        <Stack gap={2} className="mt-3">
+          <h2 className="me-2">Search:</h2>
+          <InputGroup>
+            <BootstrapForm.Control
               ref={searchRef}
-              className="form-control"
               autoComplete="off"
               name="search"
               id="page-search"
@@ -123,26 +112,24 @@ export const AdminSeries = () => {
               defaultValue={search ?? undefined}
               aria-label="Search..."
             />
-            <button name="clear" type="button" className="btn btn-secondary" onClick={clearSearch}>
+            <Button variant="secondary" name="clear" type="button" onClick={clearSearch}>
               Clear
-            </button>
-          </div>
-        </div>
+            </Button>
+          </InputGroup>
+        </Stack>
       </Form>
-      <div className="series content">
-        <table className="table table-striped table-hover table-responsive align-middle">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Services</th>
-              <th>Last Scan</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>{renderSeries()}</tbody>
-        </table>
-      </div>
+      <Table striped responsive hover>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Services</th>
+            <th>Last Scan</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>{renderSeries()}</tbody>
+      </Table>
       <Pagination hasPrev={seriesList?.hasPrevPage} hasNext={seriesList?.hasNextPage} nextAction={nextPage} prevAction={prevPage} />
-    </div>
+    </Container>
   );
 };

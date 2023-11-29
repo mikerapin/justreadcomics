@@ -3,6 +3,7 @@ import Logo from '../../components/Logo';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { getRoutePath } from '../../util/getRoutePath';
 import { useAuth } from '../../providers/AuthProvider';
+import { Button, Container, Nav, Navbar } from 'react-bootstrap';
 
 export const AdminHeader = () => {
   const location = useLocation();
@@ -11,30 +12,35 @@ export const AdminHeader = () => {
   const { logout } = useAuth();
 
   return (
-    <header className="p-3 mb-3 border-bottom">
-      <div className="container">
-        <div className="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-          <a href="/" className="d-flex align-items-center mb-2 mb-lg-0 link-body-emphasis text-decoration-none">
+    <div className="p-3 mb-3 border-bottom">
+      <Navbar expand="lg">
+        <Container>
+          <Navbar.Brand href="/admin">
             <Logo admin />
-          </a>
+          </Navbar.Brand>
 
-          <div className="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0 btn-group ">
-            <Link to="/admin" className={`btn ${path === '/admin' ? 'btn-danger' : 'btn-secondary'}`}>
-              Dashboard
-            </Link>
-            <Link to="/admin/series" className={`btn ${path.match('/admin/series') ? 'btn-danger' : 'btn-secondary'}`}>
-              Series
-            </Link>
-            <Link to="/admin/services" className={`btn ${path.match('/admin/service') ? 'btn-danger' : 'btn-secondary'}`}>
-              Services
-            </Link>
-          </div>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="me-auto">
+              <Link to="/admin" className={`m-2 btn ${path === '/admin' ? 'btn-danger' : 'btn-secondary'}`}>
+                Dashboard
+              </Link>
+              <Link to="/admin/series" className={`m-2 btn ${path.match('/admin/series') ? 'btn-danger' : 'btn-secondary'}`}>
+                Series
+              </Link>
+              <Link to="/admin/services" className={`m-2 btn ${path.match('/admin/service') ? 'btn-danger' : 'btn-secondary'}`}>
+                Services
+              </Link>
+            </Nav>
 
-          <button type="button" className="btn btn-toolbar" onClick={logout}>
-            Logout
-          </button>
-        </div>
-      </div>
-    </header>
+            <Nav>
+              <Button variant="link" type="button" className="btn btn-toolbar" onClick={logout}>
+                Logout
+              </Button>
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
+    </div>
   );
 };

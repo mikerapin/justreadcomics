@@ -8,6 +8,7 @@ import { LoadingSeries } from './LoadingSeries';
 import { SeriesImage } from '../components/SeriesImage';
 import { Helmet } from 'react-helmet-async';
 import { useAdmin } from '../hooks/admin';
+import { Col, Container, Row } from 'react-bootstrap';
 
 export const SeriesDetail = () => {
   const { id } = useParams();
@@ -28,15 +29,15 @@ export const SeriesDetail = () => {
   }
 
   return (
-    <div className="container">
+    <Container>
       <Helmet>
         <title>Where to read {series.seriesName} | just read comics</title>
       </Helmet>
-      <div className="row">
-        <div className="col-4">
+      <Row>
+        <Col xs={4}>
           <SeriesImage series={series} alt={series.seriesName} />
-        </div>
-        <div className="col-8">
+        </Col>
+        <Col xs={8}>
           <div className="text-content">
             {isAdmin ? <Link to={`/admin/series/${series?._id}`}>Edit</Link> : ''}
             <h1 className="title">{series?.seriesName}</h1>
@@ -44,8 +45,8 @@ export const SeriesDetail = () => {
             <p>{series?.description}</p>
           </div>
           <Services services={services} seriesServices={series.services} />
-        </div>
-      </div>
-    </div>
+        </Col>
+      </Row>
+    </Container>
   );
 };

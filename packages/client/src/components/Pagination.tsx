@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import { Button, ButtonGroup, Stack } from 'react-bootstrap';
 
 export const Pagination = ({
   hasNext,
@@ -15,16 +16,16 @@ export const Pagination = ({
     return <></>;
   }
   return (
-    <div className="d-flex justify-content-center">
-      <div className="btn-group mt-5" role="group">
-        <button className={classNames('btn btn-primary', { invisible: !hasPrev })} onClick={prevAction}>
+    <Stack direction="horizontal" className="justify-content-center">
+      <ButtonGroup className="mt-5" role="group">
+        <Button variant="primary" className={classNames({ invisible: !hasPrev })} onClick={prevAction}>
           <i className="bi bi-arrow-left-square-fill"></i>&nbsp;Prev
-        </button>
-        <button className={classNames('btn btn-primary', { invisible: !hasNext })} type="button" onClick={nextAction}>
+        </Button>
+        <Button variant="primary" className={classNames({ invisible: !hasNext })} type="button" onClick={nextAction}>
           Next&nbsp;
           <i className="bi bi-arrow-right-square-fill"></i>
-        </button>
-      </div>
-    </div>
+        </Button>
+      </ButtonGroup>
+    </Stack>
   );
 };

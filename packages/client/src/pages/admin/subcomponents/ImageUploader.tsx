@@ -1,5 +1,6 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { UseFormRegister } from 'react-hook-form';
+import { Col, Stack, Form } from 'react-bootstrap';
 
 export const ImageUploader = ({ register, fieldName }: { register: UseFormRegister<any>; fieldName: string }) => {
   const [preview, setPreview] = useState<string>();
@@ -29,12 +30,12 @@ export const ImageUploader = ({ register, fieldName }: { register: UseFormRegist
   };
 
   return (
-    <div className="mt-2 d-flex flex-column">
-      <div className="col mb-1">
+    <Stack className="mt-2">
+      <Col className="col mb-1">
         <label htmlFor="image">Upload new Image</label>
-      </div>
-      <div className="col">
-        <input
+      </Col>
+      <Col className="col">
+        <Form.Control
           {...register(fieldName)}
           type="file"
           id="image"
@@ -44,14 +45,14 @@ export const ImageUploader = ({ register, fieldName }: { register: UseFormRegist
         />
 
         {selectedFile && (
-          <div className="d-flex align-items-center flex-column">
-            <div className="col-6">Preview:</div>
-            <div className="col-6">
+          <Stack className="align-items-center">
+            <Col xs={6}>Preview:</Col>
+            <Col xs={6}>
               <img src={preview} className="img-thumbnail m-auto" alt="YOU uploaded this, bub" />
-            </div>
-          </div>
+            </Col>
+          </Stack>
         )}
-      </div>
-    </div>
+      </Col>
+    </Stack>
   );
 };
