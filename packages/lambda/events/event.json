@@ -6,7 +6,7 @@
   "time": "1970-01-01T00:00:00Z",
   "region": "us-west-2",
   "resources": [
-    "arn:aws:events:us-west-2:123456789012:rule/ExampleRule"
+    "arn:aws:events:us-west-2:123456789012:rule/scrape-corpo"
   ],
-  "detail": {}
+  "body": "{\"id\": \"65335910054daa28f9734fc6\"}"
 }

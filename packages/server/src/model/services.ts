@@ -1,5 +1,5 @@
 import { model, Schema } from 'mongoose';
-import { IService } from '../types/services';
+import { IService } from '@justreadcomics/common/dist/types/services';
 
 const servicesSchema = new Schema<IService>({
   serviceName: {

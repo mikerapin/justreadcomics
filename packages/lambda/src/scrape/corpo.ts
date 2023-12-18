@@ -1,17 +1,16 @@
 import { cleanSearch, initScraperPage } from './util';
 import { Creator } from 'client/src/types/series';
-import { isProduction } from '@justreadcomics/common/dist/util/process';
+import { isProduction } from '../util/process';
 
 export const searchScrapeCorpo = async (search: string, runHeadless?: boolean) => {
   const { page, browser } = await initScraperPage(runHeadless || isProduction());
 
   const cleanedSearch = cleanSearch(search);
 
-  const searchQuery =
-    'https://www.amazon.com/s?k=%s&i=comics-manga&rh=n%3A156104011%2Cp_n_feature_browse-bin%3A13684862011'.replace(
-      '%s',
-      encodeURIComponent(cleanedSearch)
-    );
+  const searchQuery = 'https://www.amazon.com/s?k=%s&i=comics-manga&rh=n%3A156104011%2Cp_n_feature_browse-bin%3A13684862011'.replace(
+    '%s',
+    encodeURIComponent(cleanedSearch)
+  );
 
   await page.goto(searchQuery, { waitUntil: 'domcontentloaded' });
 

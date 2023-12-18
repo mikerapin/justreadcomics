@@ -1,6 +1,6 @@
 import pino from 'pino';
 import pinoHttp from 'pino-http';
-import { isDevelopment } from './process';
+import { isDevelopment } from '@justreadcomics/common/dist/util/process';
 
 const PINO_CONFIG = {
   level: process.env.PINO_LOG_LEVEL || 'info',

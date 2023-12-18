@@ -1,0 +1,30 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  justreadcomics-lambda-functions
+Transform:
+  - AWS::Serverless-2016-10-31
+Globals:
+  Function:
+    CodeUri: ./
+    Timeout: 25
+    Runtime: nodejs18.x
+
+Resources:
+  SearchAndScrapeCorpo:
+    Type: AWS::Serverless::Function
+    Properties:
+      Name: "SearchAndScrapCorpo"
+      Handler: scrape-corpo.searchAndScrapeCorpoAction
+      Runtime: nodejs18.x
+      Events:
+        HelloWorld:
+          Type: Api
+          Properties:
+            Path: /
+            Method: get
+  RestApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Cors: "'*'"
+      OpenApiVersion: '3.0.1' # Declaring this option prevents AWS SAM from creating a default "Stage"
+      StageName: !Ref RestApiStageName

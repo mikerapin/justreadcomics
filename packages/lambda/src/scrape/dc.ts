@@ -1,7 +1,7 @@
 import { initScraperPage } from './util';
+import { IMassDcImport } from '../types/scraper';
 import { logError } from '../util/logger';
-import { isProduction } from '@justreadcomics/common/dist/util/process';
-import { IMassDcImport } from '@justreadcomics/common/dist/types/scraper';
+import { isProduction } from '../util/process';
 
 export const massDcImport = async (runHeadless: boolean) => {
   const { page, browser } = await initScraperPage(runHeadless || isProduction());
@@ -16,9 +16,7 @@ export const massDcImport = async (runHeadless: boolean) => {
   try {
     await page.waitForSelector('.browse-results__container');
     // waiting for this request ensures the page has fully loaded its ajax content
-    await page.waitForRequest(
-      'https://cdn.cookielaw.org/consent/e7d1c260-e31e-4b31-a120-7cf7fef9bf33/36d5a1f4-82c8-4b94-85ff-b861c862f807/en.json'
-    );
+    await page.waitForRequest('https://cdn.cookielaw.org/consent/e7d1c260-e31e-4b31-a120-7cf7fef9bf33/36d5a1f4-82c8-4b94-85ff-b861c862f807/en.json');
 
     // get series blocks selector
     const titlesLocator = '.browse-results__container div .thumbnail-square';

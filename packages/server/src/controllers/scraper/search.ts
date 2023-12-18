@@ -3,7 +3,7 @@ import { getSeriesModelById } from '../series';
 import { searchScrapeCorpo } from '../../scrape/corpo';
 import { uploadSeriesImageFromUrlToS3 } from '../../s3/s3';
 import { CORPO_SERVICE_ID, CU_SERVICE_ID } from '../../static/const';
-import { ISeriesServiceType } from '../../types/series';
+import { ISeriesServiceType } from '@justreadcomics/common/dist/types/series';
 
 export const searchAndScrapeCorpoAction = async (req: Request, res: Response) => {
   const id = req.params.id;

@@ -3,13 +3,13 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 // don't move this line down or the DB won't connect correctly
 dotenv.config({ path: `./config/.env.${process.env.NODE_ENV}.local` });
-import { connectToServer } from './db/conn';
 import { seriesRouter } from './controllers/series';
 import { servicesRouter } from './controllers/services';
 import { scraperRouter } from './controllers/scraper';
 import { authRouter } from './controllers/auth';
-import { logError, logFatal, loggerMiddleware, logInfo } from './util/logger';
+import { logError, logFatal, logInfo } from './util/logger';
 import { uploadSeriesImageFromUrlToS3 } from './s3/s3';
+import { connectToServer } from '@justreadcomics/common/dist/db/conn';
 
 const app = express();
 
@@ -31,7 +31,10 @@ app.use('/api/auth', authRouter);
 app.use('/scraper', scraperRouter);
 
 app.get('/test', (req, res) => {
-  uploadSeriesImageFromUrlToS3('test', 'https://dw9to29mmj727.cloudfront.net/properties/2016/3081-628_th_mitamathumb_jpg.jpeg');
+  uploadSeriesImageFromUrlToS3(
+    'test',
+    'https://dw9to29mmj727.cloudfront.net/properties/2016/3081-628_th_mitamathumb_jpg.jpeg'
+  );
   res.status(200).json('nice');
 });
 

@@ -3,6 +3,7 @@
   "description": "Lambdas for Just Read Comics",
   "version": "0.0.1",
   "private": true,
+  "type": "module",
   "devDependencies": {
     "@types/jest": "^29.5.11",
     "eslint": "^8.55.0",
@@ -12,7 +13,8 @@
   },
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "compile": "tsc",
+    "compile": "NODE_ENV=production tsc",
+    "compile:dev": "NODE_ENV=development tsc",
     "start": "",
     "start:dev": ""
   },
@@ -29,6 +31,8 @@
     ]
   },
   "dependencies": {
-    "@types/aws-lambda": "^8.10.130"
+    "@justreadcomics/common": "1.0.0",
+    "@types/aws-lambda": "^8.10.130",
+    "puppeteer": "^21.5.2"
   }
 }

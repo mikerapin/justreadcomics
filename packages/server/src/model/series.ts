@@ -1,5 +1,5 @@
 import { model, Schema } from 'mongoose';
-import { ISeries, ISeriesService } from '../types/series';
+import { ISeries, ISeriesService } from '@justreadcomics/common/dist/types/series';
 
 const seriesServiceSchema = new Schema<ISeriesService>({
   seriesServiceUrl: String,

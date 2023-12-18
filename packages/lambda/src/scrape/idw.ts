@@ -1,4 +1,23 @@
-import { IdwApiProduct, IdwApiResponse, ReturnMassProducts } from '@justreadcomics/common/dist/types/scraper';
+interface IdwApiProduct {
+  title: string;
+  handle: string;
+  description: string;
+  featured_image: string;
+  type: 'Book' | 'Single Issue';
+}
+
+interface IdwApiResponse {
+  pagination_limit: number;
+  products: IdwApiProduct[];
+  products_count: number;
+}
+
+interface ReturnMassProducts {
+  seriesName: string;
+  description: string;
+  seriesImage: string;
+  seriesLink: string;
+}
 
 /**
  * @deprecated Don't use this

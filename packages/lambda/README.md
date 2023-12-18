@@ -66,7 +66,7 @@ Test a single function by invoking it directly with a test event. An event is a 
 Run functions locally and invoke them with the `sam local invoke` command.
 
 ```bash
-my-application$ sam local invoke ScheduledEventLogger --event events/event-cloudwatch-event.json
+my-application$ sam local invoke ScheduledEventLogger --event events/eventevent.json
 ```
 
 ## Add a resource to your application

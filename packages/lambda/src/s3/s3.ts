@@ -1,7 +1,7 @@
 import { fromEnv } from '@aws-sdk/credential-providers'; // ES6 import
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { logError } from '../util/logger';
-import { cleanFileName } from '@justreadcomics/common/dist/util/string';
+import { cleanFileName } from '../util/string';
 
 const s3Bucket = process.env.AWS_S3_BUCKET_NAME || '';
 

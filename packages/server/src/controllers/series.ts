@@ -1,17 +1,14 @@
-import express from 'express';
-import { Request, Response } from 'express';
+import express, { Request, Response } from 'express';
 import { Types } from 'mongoose';
 
-import { CreateSeriesRequest, IHydratedSeries, ISeriesService } from '../types/series';
-
 import { seriesModel } from '../model/series';
-import { escapeRegex } from '../util/util';
 import { upload } from '../util/multer';
 import { uploadImageToS3 } from '../s3/s3';
 import { servicesModel } from '../model/services';
-import { IService } from '../types/services';
 import { verifyTokenMiddleware } from '../middleware/auth';
-import { logInfo } from '../util/logger';
+import { IService } from '@justreadcomics/common/dist/types/services';
+import { escapeRegex } from '@justreadcomics/common/dist/util/util';
+import { CreateSeriesRequest, IHydratedSeries, ISeriesService } from '@justreadcomics/common/dist/types/series';
 
 const seriesRouter = express.Router();
 
@@ -110,40 +107,44 @@ seriesRouter.post('/create', [verifyTokenMiddleware], async (req: CreateSeriesRe
   }
 });
 
-seriesRouter.patch('/update-image/:id', [verifyTokenMiddleware, upload.single('imageBlob')], async (req: Request, res: Response) => {
-  try {
-    let fileUrl;
-    if (req.file) {
-      // upload file we received to S3 and get url to add to db
-      fileUrl = await uploadImageToS3({
-        image: req.file.buffer,
-        filename: req.file.originalname || '',
-        path: 'series/'
-      });
-    }
-
-    const updatedSeries = await seriesModel.findOneAndUpdate(
-      { _id: new Types.ObjectId(req.params.id) },
-      {
-        image: fileUrl
-      },
-      {
-        // this ensures we return the UPDATED document *sigh*
-        new: true
+seriesRouter.patch(
+  '/update-image/:id',
+  [verifyTokenMiddleware, upload.single('imageBlob')],
+  async (req: Request, res: Response) => {
+    try {
+      let fileUrl;
+      if (req.file) {
+        // upload file we received to S3 and get url to add to db
+        fileUrl = await uploadImageToS3({
+          image: req.file.buffer,
+          filename: req.file.originalname || '',
+          path: 'series/'
+        });
       }
-    );
 
-    if (updatedSeries) {
-      await updatedSeries.validate();
-      const savedSeries = await updatedSeries.save();
-      res.status(200).json(savedSeries);
-    } else {
-      res.status(404).json({ message: 'series with id:' + req.params.id + ' not found, sorry dude' });
+      const updatedSeries = await seriesModel.findOneAndUpdate(
+        { _id: new Types.ObjectId(req.params.id) },
+        {
+          image: fileUrl
+        },
+        {
+          // this ensures we return the UPDATED document *sigh*
+          new: true
+        }
+      );
+
+      if (updatedSeries) {
+        await updatedSeries.validate();
+        const savedSeries = await updatedSeries.save();
+        res.status(200).json(savedSeries);
+      } else {
+        res.status(404).json({ message: 'series with id:' + req.params.id + ' not found, sorry dude' });
+      }
+    } catch (err: any) {
+      res.status(400).json(err);
     }
-  } catch (err: any) {
-    res.status(400).json(err);
   }
-});
+);
 
 seriesRouter.patch('/update/:id', [verifyTokenMiddleware], async (req: CreateSeriesRequest, res: Response) => {
   const { seriesName, description, image, credits, services, meta, lastScan } = req.body;

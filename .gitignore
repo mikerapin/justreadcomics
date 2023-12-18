@@ -25,3 +25,4 @@ yarn-error.log*
 pino-logger.log*
 
 .idea
+.aws-sam

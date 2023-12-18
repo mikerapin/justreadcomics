@@ -1,12 +1,11 @@
-import express from 'express';
-import { Request, Response } from 'express';
+import express, { Request, Response } from 'express';
 
 import { servicesModel } from '../model/services';
-import { CreateServiceRequest, FindServicesRequest, IService } from '../types/services';
 import { Types } from 'mongoose';
 import { upload } from '../util/multer';
 import { uploadImageToS3 } from '../s3/s3';
 import { verifyTokenMiddleware } from '../middleware/auth';
+import { CreateServiceRequest, FindServicesRequest, IService } from '@justreadcomics/common/dist/types/services';
 
 const servicesRouter = express.Router();
 
@@ -51,67 +50,77 @@ servicesRouter.get('/get/:id', async (req: Request, res: Response) => {
   res.status(200).json(service);
 });
 
-servicesRouter.post('/create', [verifyTokenMiddleware], upload.single('imageBlob'), async (req: CreateServiceRequest, res: Response) => {
-  const { serviceName, siteUrl, searchUrl, type } = req.body;
-  try {
-    let fileUrl;
-    if (req.file) {
-      // upload file we received to S3 and get url to add to db
-      fileUrl = await uploadImageToS3({
-        image: req.file?.buffer,
-        filename: req.file?.originalname || '',
-        path: 'services/'
-      });
-    }
-
-    // create service
-    const newService = new servicesModel({
-      serviceName,
-      siteUrl,
-      image: fileUrl,
-      searchUrl,
-      type
-    });
-
-    await newService.validate();
-    const savedSeries = await newService.save();
-
-    res.status(200).json(savedSeries);
-  } catch (err: any) {
-    res.status(400).json(err);
-  }
-});
-
-servicesRouter.patch('/update-image/:id', [verifyTokenMiddleware], upload.single('imageBlob'), async (req: Request, res: Response) => {
-  try {
-    let fileUrl;
-    if (req.file) {
-      // upload file we received to S3 and get url to add to db
-      fileUrl = await uploadImageToS3({
-        image: req.file.buffer,
-        filename: req.file.originalname || '',
-        path: 'services/'
-      });
-    }
-
-    const updatedService = await servicesModel.findOneAndUpdate(
-      { _id: new Types.ObjectId(req.params.id) },
-      {
-        image: fileUrl
+servicesRouter.post(
+  '/create',
+  [verifyTokenMiddleware],
+  upload.single('imageBlob'),
+  async (req: CreateServiceRequest, res: Response) => {
+    const { serviceName, siteUrl, searchUrl, type } = req.body;
+    try {
+      let fileUrl;
+      if (req.file) {
+        // upload file we received to S3 and get url to add to db
+        fileUrl = await uploadImageToS3({
+          image: req.file?.buffer,
+          filename: req.file?.originalname || '',
+          path: 'services/'
+        });
       }
-    );
 
-    if (updatedService) {
-      await updatedService.validate();
-      const savedService = await updatedService.save();
-      res.status(200).json(savedService);
-    } else {
-      res.status(404).json({ message: 'service with id:' + req.params.id + ' not found, sorry dude' });
+      // create service
+      const newService = new servicesModel({
+        serviceName,
+        siteUrl,
+        image: fileUrl,
+        searchUrl,
+        type
+      });
+
+      await newService.validate();
+      const savedSeries = await newService.save();
+
+      res.status(200).json(savedSeries);
+    } catch (err: any) {
+      res.status(400).json(err);
     }
-  } catch (err: any) {
-    res.status(400).json(err);
   }
-});
+);
+
+servicesRouter.patch(
+  '/update-image/:id',
+  [verifyTokenMiddleware],
+  upload.single('imageBlob'),
+  async (req: Request, res: Response) => {
+    try {
+      let fileUrl;
+      if (req.file) {
+        // upload file we received to S3 and get url to add to db
+        fileUrl = await uploadImageToS3({
+          image: req.file.buffer,
+          filename: req.file.originalname || '',
+          path: 'services/'
+        });
+      }
+
+      const updatedService = await servicesModel.findOneAndUpdate(
+        { _id: new Types.ObjectId(req.params.id) },
+        {
+          image: fileUrl
+        }
+      );
+
+      if (updatedService) {
+        await updatedService.validate();
+        const savedService = await updatedService.save();
+        res.status(200).json(savedService);
+      } else {
+        res.status(404).json({ message: 'service with id:' + req.params.id + ' not found, sorry dude' });
+      }
+    } catch (err: any) {
+      res.status(400).json(err);
+    }
+  }
+);
 
 servicesRouter.patch('/update/:id', [verifyTokenMiddleware], async (req: CreateServiceRequest, res: Response) => {
   const { serviceName, siteUrl, image, type, searchUrl } = req.body;
