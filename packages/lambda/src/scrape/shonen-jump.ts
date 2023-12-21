@@ -1,7 +1,6 @@
 import { initScraperPage } from './util';
-import { isProduction } from '../util/process';
-import { ISeries } from '../types/series';
-import { logError } from '../util/logger';
+import { isProduction } from '@justreadcomics/common/dist/util/process';
+import { logError } from '@justreadcomics/common/dist/util/logger';
 
 interface IShonenJumpSeries {
   seriesName: string;

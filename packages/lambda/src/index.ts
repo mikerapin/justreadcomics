@@ -1,6 +1,6 @@
 import { connectToServer } from '@justreadcomics/common/dist/db/conn';
 
-export const handler = async (event: any) => {
+export const searchAndScrapeCorpo = async (event: any) => {
   try {
     await connectToServer();
 

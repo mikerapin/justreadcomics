@@ -9,14 +9,14 @@ import { chunk } from 'lodash';
 import { massDcImport } from '../../scrape/dc';
 import { massImageImport } from '../../scrape/image';
 import { massImportMarvel } from '../../scrape/marvel';
-import { seriesModel } from '../../model/series';
-import { uploadSeriesImageFromUrlToS3 } from '../../s3/s3';
-import { logError } from '../../util/logger';
 import { massImportIdw } from '../../scrape/idw';
 import { Types } from 'mongoose';
 import { massImportShonenJump } from '../../scrape/shonen-jump';
 import { cleanSeriesName } from '@justreadcomics/common/dist/util/string';
 import { promiseAllSequence } from '@justreadcomics/common/dist/util/scraper';
+import { seriesModel } from '@justreadcomics/common/dist/model/series';
+import { logError } from '@justreadcomics/common/dist/util/logger';
+import { uploadSeriesImageFromUrlToS3 } from '@justreadcomics/common/dist/s3/s3';
 
 export const massImportMarvelAction = async (req: Request, res: Response) => {
   const result = await massImportMarvel(false);

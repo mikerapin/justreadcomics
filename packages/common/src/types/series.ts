@@ -1,6 +1,5 @@
-import { Request } from 'express';
-import { HydratedSingleSubdocument, Types } from 'mongoose';
-import { IService } from './services';
+import { HydratedSingleSubdocument, Types } from "mongoose";
+import { IService } from "./services";
 
 export interface Creator {
   name: string;
@@ -37,8 +36,4 @@ export interface IHydratedSeries {
   series: ISeries;
   services: IService[] | object;
   msg?: string;
-}
-
-export interface CreateSeriesRequest extends Request {
-  body: ISeries;
 }

@@ -1,18 +1,16 @@
-import { Request, Response } from 'express';
-import { searchScrapeCorpo } from '../../scrape/corpo';
-import { CORPO_SERVICE_ID, CU_SERVICE_ID } from '../../static/const';
 import { ISeriesServiceType } from '@justreadcomics/common/dist/types/series';
+import { CORPO_SERVICE_ID, CU_SERVICE_ID } from '@justreadcomics/common/dist/const';
+import { searchScrapeCorpo } from '../scrape/corpo';
 import { getSeriesModelById } from '@justreadcomics/common/dist/model/lookup';
 import { uploadSeriesImageFromUrlToS3 } from '@justreadcomics/common/dist/s3/s3';
 
-export const searchAndScrapeCorpoAction = async (req: Request, res: Response) => {
-  const id = req.params.id;
+export const searchAndScrapeCorpoAction = async (id: string) => {
   const series = await getSeriesModelById(id);
   if (!series) {
-    res.status(400).json({
-      msg: "series doesn't exist, bub"
-    });
-    return;
+    return {
+      statusCode: 400,
+      body: { message: `Series with ${id} not found, bub` }
+    };
   }
 
   const seriesName = series.seriesName;
@@ -70,8 +68,8 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
 
     await series.save();
 
-    res.status(200).json({ msg: `${series.seriesName} updated!`, series });
+    return { statusCode: 200, body: { msg: `${series.seriesName} updated!`, series } };
   } else {
-    res.status(200).json({ msg: 'Series not found in corpoland' });
+    return { statusCode: 404, body: { msg: `Series not found in corpoland` } };
   }
 };

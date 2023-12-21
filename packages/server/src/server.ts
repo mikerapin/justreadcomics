@@ -7,9 +7,9 @@ import { seriesRouter } from './controllers/series';
 import { servicesRouter } from './controllers/services';
 import { scraperRouter } from './controllers/scraper';
 import { authRouter } from './controllers/auth';
-import { logError, logFatal, logInfo } from './util/logger';
-import { uploadSeriesImageFromUrlToS3 } from './s3/s3';
 import { connectToServer } from '@justreadcomics/common/dist/db/conn';
+import { logError, logFatal, logInfo } from '@justreadcomics/common/dist/util/logger';
+import { uploadSeriesImageFromUrlToS3 } from '@justreadcomics/common/dist/s3/s3';
 
 const app = express();
 
@@ -34,8 +34,7 @@ app.get('/test', (req, res) => {
   uploadSeriesImageFromUrlToS3(
     'test',
     'https://dw9to29mmj727.cloudfront.net/properties/2016/3081-628_th_mitamathumb_jpg.jpeg'
-  );
-  res.status(200).json('nice');
+  ).then(() => res.status(200).json('nice'));
 });
 
 const server = app.listen(port, async () => {

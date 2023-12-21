@@ -30,6 +30,7 @@ Resources:
   #      Timeout: 100
 
 # # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+
 Globals:
   Function:
     Tracing: Active

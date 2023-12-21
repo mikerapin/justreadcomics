@@ -1,39 +1,19 @@
 import express, { Request, Response } from 'express';
 import { Types } from 'mongoose';
 
-import { seriesModel } from '../model/series';
-import { upload } from '../util/multer';
-import { uploadImageToS3 } from '../s3/s3';
-import { servicesModel } from '../model/services';
 import { verifyTokenMiddleware } from '../middleware/auth';
-import { IService } from '@justreadcomics/common/dist/types/services';
+import { lookupServicesForSeries, getHydratedSeriesById } from '@justreadcomics/common/dist/model/lookup';
+import { IHydratedSeries, ISeries } from '@justreadcomics/common/dist/types/series';
+import { uploadImageToS3 } from '@justreadcomics/common/dist/s3/s3';
+import { upload } from '@justreadcomics/common/dist/util/multer';
 import { escapeRegex } from '@justreadcomics/common/dist/util/util';
-import { CreateSeriesRequest, IHydratedSeries, ISeriesService } from '@justreadcomics/common/dist/types/series';
+import { seriesModel } from '@justreadcomics/common/dist/model/series';
+
+interface CreateSeriesRequest extends Request {
+  body: ISeries;
+}
 
 const seriesRouter = express.Router();
-
-const lookupServicesForSeries = async (seriesServices?: ISeriesService[]): Promise<IService[] | object> => {
-  if (!seriesServices) {
-    return {};
-  }
-  const ids = seriesServices.map((seriesService) => seriesService._id);
-  return servicesModel.find({ _id: { $in: ids } });
-};
-
-const getSeriesModelById = async (id: string) => {
-  return seriesModel.findOne({ _id: new Types.ObjectId(id) });
-};
-
-const getHydratedSeriesById = async (id: string): Promise<IHydratedSeries | null> => {
-  const series = await getSeriesModelById(id);
-  if (!series) {
-    return null;
-  }
-
-  const hydratedServices = await lookupServicesForSeries(series.services);
-
-  return { series, services: hydratedServices };
-};
 
 // GetAll Method
 seriesRouter.get('/get/all', async (req: Request, res: Response) => {
@@ -229,4 +209,4 @@ seriesRouter.get('/get-3', async (req: Request, res: Response) => {
   res.status(200).json({ data: await Promise.all(hydratedSeries) });
 });
 
-export { getHydratedSeriesById, getSeriesModelById, seriesRouter };
+export { getHydratedSeriesById, seriesRouter };

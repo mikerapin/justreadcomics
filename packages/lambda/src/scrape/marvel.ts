@@ -1,5 +1,5 @@
 import { initScraperPage } from './util';
-import { isProduction } from '../util/process';
+import { isProduction } from '@justreadcomics/common/dist/util/process';
 
 export const scrapeMarvelSeries = async (seriesUrl: string, runHeadless?: boolean) => {
   const { page, browser } = await initScraperPage(runHeadless || isProduction());
@@ -43,7 +43,10 @@ export const scrapeMarvelSeries = async (seriesUrl: string, runHeadless?: boolea
 export const scrapeAndSearchMarvel = async (search: string, runHeadless?: boolean) => {
   const { page, browser } = await initScraperPage(runHeadless || isProduction());
 
-  const searchQuery = 'https://www.marvel.com/search?limit=1&query=%s&offset=0&content_type=comics'.replace('%s', encodeURIComponent(search));
+  const searchQuery = 'https://www.marvel.com/search?limit=1&query=%s&offset=0&content_type=comics'.replace(
+    '%s',
+    encodeURIComponent(search)
+  );
 
   await page.goto(searchQuery, { waitUntil: 'domcontentloaded' });
 

@@ -1,11 +1,27 @@
 import express, { Request, Response } from 'express';
 
-import { servicesModel } from '../model/services';
 import { Types } from 'mongoose';
-import { upload } from '../util/multer';
-import { uploadImageToS3 } from '../s3/s3';
 import { verifyTokenMiddleware } from '../middleware/auth';
-import { CreateServiceRequest, FindServicesRequest, IService } from '@justreadcomics/common/dist/types/services';
+import { IService } from '@justreadcomics/common/dist/types/services';
+import { upload } from '@justreadcomics/common/dist/util/multer';
+import { uploadImageToS3 } from '@justreadcomics/common/dist/s3/s3';
+import { servicesModel } from '@justreadcomics/common/dist/model/services';
+
+interface IServiceRequestBody extends IService {
+  imageBlob?: File[];
+}
+
+interface CreateServiceRequest extends Request {
+  body: IServiceRequestBody;
+}
+
+interface FindServices {
+  serviceIds: string[];
+}
+
+interface FindServicesRequest extends Request {
+  body: FindServices;
+}
 
 const servicesRouter = express.Router();
 
