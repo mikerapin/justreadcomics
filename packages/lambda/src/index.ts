@@ -1,8 +1,10 @@
-import { connectToServer } from '@justreadcomics/common/dist/db/conn';
+// import { connectToServer } from '@justreadcomics/common/dist/db/conn';
 
 export const searchAndScrapeCorpo = async (event: any) => {
   try {
-    await connectToServer();
+    // await connectToServer();
+
+    console.log('heyyyyyy');
 
     const eventType = event.body.eventType;
 

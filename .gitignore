@@ -26,3 +26,5 @@ pino-logger.log*
 
 .idea
 .aws-sam
+
+.nx/cache

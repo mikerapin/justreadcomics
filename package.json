@@ -1,5 +1,6 @@
 {
   "name": "justreadcomics",
+  "version": "1.0.0",
   "license": "MIT",
   "private": true,
   "workspaces": [
@@ -12,7 +13,8 @@
     "build": "lerna run --parallel --stream build"
   },
   "devDependencies": {
-    "lerna": "^7.4.2"
+    "lerna": "^7.4.2",
+    "nx": "17.2.6"
   },
   "dependencies": {
     "bootstrap": "^5.3.2",

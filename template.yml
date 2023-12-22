@@ -13,8 +13,8 @@ Resources:
   SearchAndScrapeCorpo:
     Type: AWS::Serverless::Function
     Properties:
-      Name: "SearchAndScrapCorpo"
-      Handler: scrape-corpo.searchAndScrapeCorpoAction
+      CodeUri: ./
+      Handler: packages/lambda/dist/index.searchAndScrapeCorpo
       Runtime: nodejs18.x
       Events:
         HelloWorld:

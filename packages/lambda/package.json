@@ -13,8 +13,8 @@
   },
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "compile": "NODE_ENV=production tsc",
-    "compile:dev": "NODE_ENV=development tsc",
+    "build:production": "NODE_ENV=production tsc",
+    "build": "NODE_ENV=development tsc",
     "start": "",
     "start:dev": ""
   },

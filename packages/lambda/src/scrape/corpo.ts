@@ -1,6 +1,6 @@
 import { cleanSearch, initScraperPage } from './util';
-import { Creator } from 'client/src/types/series';
 import { isProduction } from '@justreadcomics/common/dist/util/process';
+import { Creator } from '@justreadcomics/common/dist/types/series';
 
 export const searchScrapeCorpo = async (search: string, runHeadless?: boolean) => {
   const { page, browser } = await initScraperPage(runHeadless || isProduction());
