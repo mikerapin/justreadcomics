@@ -1,10 +1,10 @@
-import { ISeries } from '../types/series';
 import { getSeriesImage } from '../util/image';
 import { useRef } from 'react';
 import { DEFAULT_COVER_IMAGE } from '../static/const';
+import { IClientSeries } from '../types/series';
 
 interface ISeriesImage {
-  series: ISeries;
+  series: IClientSeries;
   alt: string;
   style?: Record<string, string | number>;
   className?: string;

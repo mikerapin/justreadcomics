@@ -1,9 +1,10 @@
-import { IService, ServiceType } from '../types/service';
-import { ISeriesService } from '../types/series';
 import { ServiceImage } from './ServiceImage';
 import React from 'react';
+import { ServiceType } from '@justreadcomics/common/dist/types/services';
+import { ISeriesService } from '@justreadcomics/common/dist/types/series';
+import { IClientService } from '../types/service';
 
-export const Services = ({ seriesServices, services }: { seriesServices?: ISeriesService[]; services?: IService[] }) => {
+export const Services = ({ seriesServices, services }: { seriesServices?: ISeriesService[]; services?: IClientService[] }) => {
   if (!services || services.length === 0) {
     return null;
   }

@@ -1,4 +1,4 @@
-import { IGetAllServicesWithCursor, IService, IServiceWithImageUpload } from '../types/service';
+import { IClientService, IGetAllServicesWithCursor, IServiceWithImageUpload } from '../types/service';
 import { API_BASE_URL } from '../static/const';
 import { authFetch } from './fetch';
 
@@ -8,12 +8,12 @@ export const fetchAllServices = async (cursor?: number): Promise<IGetAllServices
   return await res.json();
 };
 
-export const fetchServiceById = async (id: string): Promise<IService> => {
+export const fetchServiceById = async (id: string): Promise<IClientService> => {
   const res = await fetch(`${API_BASE_URL}/services/get/${id}`);
   return await res.json();
 };
 
-const uploadServiceImage = async (service: IService, imageBlob: File) => {
+const uploadServiceImage = async (service: IClientService, imageBlob: File) => {
   const formData = new FormData();
 
   const filename = `${service.serviceName}.${imageBlob.name.split('.').pop()}`.toLowerCase();
@@ -40,7 +40,7 @@ export const updateServiceById = async (service: Partial<IServiceWithImageUpload
   });
 
   if (service.imageBlob) {
-    const updatedService: IService = await res.json();
+    const updatedService: IClientService = await res.json();
     return uploadServiceImage(updatedService, service.imageBlob);
   }
   return res.json();
@@ -57,7 +57,7 @@ export const createService = async (service: Partial<IServiceWithImageUpload>) =
   });
 
   if (service.imageBlob) {
-    const updatedService: IService = await res.json();
+    const updatedService: IClientService = await res.json();
     return uploadServiceImage(updatedService, service.imageBlob);
   }
   return res.json();

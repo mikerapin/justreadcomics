@@ -1,4 +1,4 @@
-import { Creator, ISeriesService } from '../../../types/series';
+import { Creator } from '@justreadcomics/common/dist/types/series';
 
 export interface ISeriesForm {
   seriesName?: string;

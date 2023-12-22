@@ -1,13 +1,14 @@
 import { seriesScanners } from '../../../static/const';
 import { useState } from 'react';
 import { triggerScanner } from '../../../data/scanner';
-import { ISeries, ISeriesService } from '../../../types/series';
 import { Button } from 'react-bootstrap';
+import { IClientSeries } from '../../../types/series';
+import { ISeriesService } from '@justreadcomics/common/dist/types/series';
 
 interface ScannerProps {
   seriesService?: ISeriesService;
   seriesId?: string;
-  scannerResultCallback: (series: ISeries) => void;
+  scannerResultCallback: (series: IClientSeries) => void;
 }
 
 export const Scanner = ({ seriesService, seriesId, scannerResultCallback }: ScannerProps) => {

@@ -1,10 +1,10 @@
 import { getServiceImage } from '../util/image';
 import { useRef } from 'react';
-import { IService } from '../types/service';
 import { DEFAULT_SERVICE_IMAGE } from '../static/const';
+import { IClientService } from '../types/service';
 
 interface IServiceImage {
-  service: IService;
+  service: IClientService;
   alt?: string;
   style?: Record<string, string | number>;
   className?: string;

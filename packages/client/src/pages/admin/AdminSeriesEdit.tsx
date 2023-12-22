@@ -1,18 +1,18 @@
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import React, { useCallback, useRef, useState } from 'react';
-import { ISeries, ISeriesService, ISeriesWithImageUpload } from '../../types/series';
+import { IClientSeries, IClientSeriesService, ISeriesWithImageUpload } from '../../types/series';
 import { createSeries, fetchSeriesById, updateSeriesById } from '../../data/series';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { fetchAllServices } from '../../data/services';
-import { IService } from '../../types/service';
+import { IClientService } from '../../types/service';
 import { ImageUploader } from './subcomponents/ImageUploader';
 import { ISeriesForm } from './types/series';
 import { SeriesImage } from '../../components/SeriesImage';
 import { Scanner } from './series-service/Scanner';
-import { Button, Col, Container, FloatingLabel, Form, Row, Stack, Table, ToastContainer, Toast } from 'react-bootstrap';
+import { Button, Col, Container, FloatingLabel, Form, Row, Stack, Table, Toast, ToastContainer } from 'react-bootstrap';
 import { ServiceImage } from '../../components/ServiceImage';
 
-const getSeriesServiceStringArray = (seriesServices?: ISeriesService[]) => {
+const getSeriesServiceStringArray = (seriesServices?: IClientSeriesService[]) => {
   return (
     seriesServices?.map((service) => {
       return service._id;
@@ -24,8 +24,8 @@ export const AdminSeriesEdit = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [series, setSeries] = useState<ISeries>();
-  const [services, setServices] = useState<IService[]>();
+  const [series, setSeries] = useState<IClientSeries>();
+  const [services, setServices] = useState<IClientService[]>();
 
   const rightColumnRef = useRef<HTMLDivElement>(null);
 
@@ -137,7 +137,7 @@ export const AdminSeriesEdit = () => {
     return <></>;
   };
 
-  const updateSeriesData = (series: ISeries) => {
+  const updateSeriesData = (series: IClientSeries) => {
     navigate(location);
   };
 

@@ -1,25 +1,15 @@
-export enum ServiceType {
-  FREE = 'free',
-  PAID = 'paid',
-  SUBSCRIPTION = 'subscription',
-  NONE = 'none'
-}
+import { IService } from '@justreadcomics/common/dist/types/services';
 
-export interface IService {
+export interface IClientService extends Omit<IService, '_id'> {
   _id?: string;
-  image?: string;
-  searchUrl: string;
-  serviceName: string;
-  siteUrl: string;
-  type: ServiceType;
 }
 
-export interface IServiceWithImageUpload extends IService {
+export interface IServiceWithImageUpload extends IClientService {
   imageBlob?: File;
 }
 
 export interface IGetAllServicesWithCursor {
-  data: IService[];
+  data: IClientService[];
   hasNextPage: boolean;
   hasPrevPage: boolean;
 }

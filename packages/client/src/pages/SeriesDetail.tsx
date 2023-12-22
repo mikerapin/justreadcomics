@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { fetchSeriesById } from '../data/series';
 import { Link, useParams } from 'react-router-dom';
-import { ISeries } from '../types/series';
+import { IClientSeries } from '../types/series';
 import { Services } from '../components/Services';
-import { IService } from '../types/service';
+import { IClientService } from '../types/service';
 import { LoadingSeries } from './LoadingSeries';
 import { SeriesImage } from '../components/SeriesImage';
 import { Helmet } from 'react-helmet-async';
@@ -13,8 +13,8 @@ import { Col, Container, Row } from 'react-bootstrap';
 export const SeriesDetail = () => {
   const { id } = useParams();
   const isAdmin = useAdmin();
-  const [series, setSeries] = useState<ISeries>();
-  const [services, setServices] = useState<IService[]>();
+  const [series, setSeries] = useState<IClientSeries>();
+  const [services, setServices] = useState<IClientService[]>();
   useEffect(() => {
     if (id) {
       fetchSeriesById(id).then((result) => {

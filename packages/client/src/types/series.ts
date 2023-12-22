@@ -1,38 +1,24 @@
-import { IService } from './service';
+import { ISeries } from '@justreadcomics/common/dist/types/series';
+import { IClientService } from './service';
 
-export interface Creator {
-  name: string;
-  role: string;
-  order: number;
-}
-
-export interface ISeriesService {
+export interface IClientSeriesService {
   _id: string;
   seriesServiceUrl?: string;
   lastScan?: string;
 }
 
-export interface ISeries {
+export interface IClientSeries extends Omit<ISeries, 'services' | '_id'> {
   _id?: string;
-  seriesName: string;
-  description?: string;
-  image?: string;
-  credits?: Creator[];
-  services?: ISeriesService[];
-  meta: {
-    searches: number;
-    clickOuts: number;
-  };
-  lastScan?: string;
+  services?: IClientSeriesService[];
 }
 
-export interface ISeriesWithImageUpload extends ISeries {
+export interface ISeriesWithImageUpload extends IClientSeries {
   imageBlob?: File;
 }
 
 export interface IHydratedSeries {
-  series: ISeries;
-  services: IService[];
+  series: IClientSeries;
+  services: IClientService[];
   msg?: string;
 }
 

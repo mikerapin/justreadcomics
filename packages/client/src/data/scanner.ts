@@ -1,10 +1,10 @@
 import { seriesScanners } from '../static/const';
 import { authFetch } from './fetch';
-import { ISeries } from '../types/series';
+import { IClientSeries } from '../types/series';
 
 interface IScannerResult {
   msg: string;
-  series: ISeries;
+  series: IClientSeries;
 }
 
 export const triggerScanner = async (seriesServiceId: string, seriesId: string): Promise<IScannerResult> => {
