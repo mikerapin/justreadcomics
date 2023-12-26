@@ -32,7 +32,7 @@ export const Search = () => {
       return;
     }
     const val = e.target.value;
-    searchInMenu(val);
+    if (val.length > 2) searchInMenu(val);
   };
 
   const closeMenu = () => {

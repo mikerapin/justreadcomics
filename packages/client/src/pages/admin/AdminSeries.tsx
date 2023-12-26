@@ -78,7 +78,7 @@ export const AdminSeries = () => {
           <td>
             {hydratedSeries.services &&
               hydratedSeries.services.map((service) => {
-                return <ServiceImage service={service} size="xs" />;
+                return <ServiceImage key={service._id} service={service} size="xs" />;
               })}
           </td>
           <td>{lastScan || 'Unknown'}</td>

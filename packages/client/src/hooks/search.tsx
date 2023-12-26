@@ -8,9 +8,11 @@ export const useSearch = (searchFunction: (options: IFetchSeriesSearchOptions) =
   const [cursor, setCursor] = useState<number | undefined>();
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      searchFunction({ seriesName: searchTerm, isLargeSearch, cursor }).then((res) => {
-        setSearchResults(res.data);
-      });
+      if (searchTerm.length >= 2) {
+        searchFunction({ seriesName: searchTerm, isLargeSearch, cursor }).then((res) => {
+          setSearchResults(res.data);
+        });
+      }
     }, 500);
 
     return () => {

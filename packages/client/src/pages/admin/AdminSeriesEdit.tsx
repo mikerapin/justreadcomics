@@ -166,10 +166,10 @@ export const AdminSeriesEdit = () => {
             <div className="mb-3">
               Last Scan: <code>{series?.lastScan ? new Date(series.lastScan).toLocaleString() : 'Unknown'}</code>
             </div>
-            <FloatingLabel controlId="seriesName" label="Series Name" className="mb-3">
+            <FloatingLabel label="Series Name" className="mb-3">
               <Form.Control {...register('seriesName')} id="seriesName" placeholder="X-Men (2023)" />
             </FloatingLabel>
-            <FloatingLabel controlId="description" label="Description" className="mb-3">
+            <FloatingLabel label="Description" className="mb-3">
               <Form.Control as="textarea" {...register('description')} id="description" style={{ height: '160px' }} />
             </FloatingLabel>
             <Stack gap={2} direction="horizontal" className="align-items-center mb-2">
@@ -181,12 +181,12 @@ export const AdminSeriesEdit = () => {
             {creditsFields.map((credits, index) => (
               <Row className="row g-2 align-items-center" key={credits.id}>
                 <Col className="mb-3">
-                  <FloatingLabel controlId={`name-${credits.id}`} label="Name" className="mb-3">
+                  <FloatingLabel label="Name" className="mb-3">
                     <Form.Control id={`name-${credits.id}`} {...register(`credits.${index}.name` as const)} autoComplete="off" />
                   </FloatingLabel>
                 </Col>
                 <Col className="mb-3">
-                  <FloatingLabel controlId={`role-${credits.id}`} label="Role" className="mb-3">
+                  <FloatingLabel label="Role" className="mb-3">
                     <Form.Control id={`role-${credits.id}`} {...register(`credits.${index}.name` as const)} autoComplete="off" />
                   </FloatingLabel>
                 </Col>
