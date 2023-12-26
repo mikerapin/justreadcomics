@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import { Types } from 'mongoose';
 
 import { verifyTokenMiddleware } from '../middleware/auth';
-import { lookupServicesForSeries, getHydratedSeriesById } from '@justreadcomics/common/dist/model/lookup';
+import { getHydratedSeriesById, lookupServicesForSeries } from '@justreadcomics/common/dist/model/lookup';
 import { IHydratedSeries, ISeries } from '@justreadcomics/common/dist/types/series';
 import { uploadImageToS3 } from '@justreadcomics/common/dist/s3/s3';
 import { upload } from '@justreadcomics/common/dist/util/multer';
@@ -147,7 +147,6 @@ seriesRouter.patch('/update/:id', [verifyTokenMiddleware], async (req: CreateSer
     );
     if (series) {
       const hydratedServices = await lookupServicesForSeries(series.services);
-      console.log(series);
 
       res.status(200).json({ series: series, services: hydratedServices });
     } else {
