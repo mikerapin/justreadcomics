@@ -1,5 +1,5 @@
 import { getBaseUrl } from '../util/http';
-import { CORPO_SERVICE_ID, IMAGE_SERVICE_ID, SHONEN_JUMP_SERVICE_ID } from 'server/src/static/const';
+import { CORPO_SERVICE_ID, IMAGE_SERVICE_ID, SHONEN_JUMP_SERVICE_ID } from '@justreadcomics/common/dist/const';
 
 export const API_BASE_URL = `${getBaseUrl()}/api`;
 export const SCRAPER_BASE_URL = `${getBaseUrl()}/scraper`;
