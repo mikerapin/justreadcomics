@@ -9,9 +9,10 @@ interface ScannerProps {
   seriesService?: ISeriesService;
   seriesId?: string;
   scannerResultCallback: (series: IClientSeries) => void;
+  showErrorToastCall: (message: string) => void;
 }
 
-export const Scanner = ({ seriesService, seriesId, scannerResultCallback }: ScannerProps) => {
+export const Scanner = ({ seriesService, seriesId, scannerResultCallback, showErrorToastCall }: ScannerProps) => {
   const [inProgress, setInProgress] = useState(false);
   if (!seriesService || !seriesId) {
     return <></>;
@@ -24,11 +25,17 @@ export const Scanner = ({ seriesService, seriesId, scannerResultCallback }: Scan
     const disableButton = lastScan ? new Date(lastScan).getTime() - yesterday > 0 : false;
     const handleClick = () => {
       setInProgress(true);
-      triggerScanner(service.seriesServiceId, seriesId).then((res) => {
-        setInProgress(false);
-        // refresh the service in the parent somehow
-        scannerResultCallback(res.series);
-      });
+      triggerScanner(service.seriesServiceId, seriesId)
+        .then((res) => {
+          if (res) {
+            // refresh the service in the parent somehow
+            scannerResultCallback(res.series);
+          }
+        })
+        .catch((e: any) => {
+          setInProgress(false);
+          showErrorToastCall(e);
+        });
     };
     return (
       <Button variant="secondary" type="button" onClick={handleClick} disabled={disableButton || inProgress}>

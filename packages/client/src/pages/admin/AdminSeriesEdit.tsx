@@ -30,6 +30,7 @@ export const AdminSeriesEdit = () => {
   const rightColumnRef = useRef<HTMLDivElement>(null);
 
   const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showErrorToast, setShowErrorToast] = useState('');
 
   const {
     register,
@@ -74,13 +75,13 @@ export const AdminSeriesEdit = () => {
     [series]
   );
 
+  const showErrorToastCall = (msg: string) => {
+    setShowErrorToast(msg);
+  };
+
   if (!series) {
     return <span>'Loading'</span>;
   }
-
-  const showToast = () => {
-    setShowSuccessToast(true);
-  };
 
   const saveSeries = handleSubmit((seriesForm) => {
     seriesForm.credits = seriesForm.credits?.filter((c) => c.name !== '' && c.role !== '');
@@ -111,7 +112,7 @@ export const AdminSeriesEdit = () => {
       promise = createSeries(updatedSeries);
     }
     promise.then((res) => {
-      showToast();
+      setShowSuccessToast(true);
       setSeries(res.series);
       setValue('services', getSeriesServiceStringArray(res.series.services));
     });
@@ -226,7 +227,12 @@ export const AdminSeriesEdit = () => {
                         Last Scan: <code>{getSeriesServiceById(service._id)?.lastScan}</code>
                       </td>
                       <td>
-                        <Scanner seriesService={getSeriesServiceById(service._id)} seriesId={series._id} scannerResultCallback={updateSeriesData} />
+                        <Scanner
+                          seriesService={getSeriesServiceById(service._id)}
+                          seriesId={series._id}
+                          scannerResultCallback={updateSeriesData}
+                          showErrorToastCall={showErrorToastCall}
+                        />
                       </td>
                     </tr>
                   );
@@ -241,6 +247,17 @@ export const AdminSeriesEdit = () => {
           <Toast.Body>
             <Stack direction="horizontal" className="justify-content-between">
               <span>Successfully saved!</span>
+              <Button type="button" className="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></Button>
+            </Stack>
+          </Toast.Body>
+        </Toast>
+        <Toast onClose={() => setShowErrorToast('')} show={showErrorToast !== ''} autohide delay={3000} bg="secondary">
+          <Toast.Body style={{ borderLeft: '2px solid red' }}>
+            <Stack direction="horizontal" className="justify-content-between">
+              <div>
+                <p>There was an error!</p>
+                <span style={{ fontFamily: 'monospace' }}>{showErrorToast}</span>
+              </div>
               <Button type="button" className="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></Button>
             </Stack>
           </Toast.Body>
