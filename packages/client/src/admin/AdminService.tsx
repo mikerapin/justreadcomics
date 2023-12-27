@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { fetchAllServices } from '../../data/services';
-import { IGetAllServicesWithCursor } from '../../types/service';
+import { fetchAllServices } from '../data/services';
+import { IGetAllServicesWithCursor } from '../types/service';
 import { Link } from 'react-router-dom';
 import { Container, Table } from 'react-bootstrap';
-import { ServiceImage } from '../../components/ServiceImage';
+import { ServiceImage } from '../components/ServiceImage';
 
 export const AdminService = () => {
   const [servicesList, setServicesList] = useState<IGetAllServicesWithCursor>();

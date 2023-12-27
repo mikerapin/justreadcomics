@@ -45,7 +45,7 @@ export const SeriesDetail = () => {
             <p>{series?.description}</p>
           </div>
           <Services services={services} seriesServices={series.services} />
-          {series.credits?.length && (
+          {series.credits?.length ? (
             <>
               <h3>Creators:</h3>
               <Stack direction="horizontal" gap={2} style={{ flexWrap: 'wrap' }}>
@@ -56,7 +56,7 @@ export const SeriesDetail = () => {
                 ))}
               </Stack>
             </>
-          )}
+          ) : null}
         </Col>
       </Row>
     </Container>

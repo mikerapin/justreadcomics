@@ -1,11 +1,11 @@
 import { redirectDocument, useParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
-import { createService, fetchServiceById, updateServiceById } from '../../data/services';
-import { IClientService, IServiceWithImageUpload } from '../../types/service';
+import { createService, fetchServiceById, updateServiceById } from '../data/services';
+import { IClientService, IServiceWithImageUpload } from '../types/service';
 import { useForm } from 'react-hook-form';
 import { ImageUploader } from './subcomponents/ImageUploader';
 import { Button, Col, Container, FloatingLabel, Form, Row, Stack, ToastContainer, Toast, FormControl } from 'react-bootstrap';
-import { ServiceImage } from '../../components/ServiceImage';
+import { ServiceImage } from '../components/ServiceImage';
 import { ServiceType } from '@justreadcomics/common/dist/types/services';
 
 interface IServiceForm {

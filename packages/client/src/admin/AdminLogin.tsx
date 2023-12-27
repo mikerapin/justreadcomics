@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { loginFetch } from '../../data/auth';
+import { loginFetch } from '../data/auth';
 import { useNavigate } from 'react-router-dom';
 import { Button, FloatingLabel, Form, Stack } from 'react-bootstrap';
 

@@ -4,14 +4,14 @@ import PageTemplate from '../pages/PageTemplate';
 import ErrorPage from '../pages/ErrorPage';
 import Home from '../pages/Home';
 import { SeriesDetail } from '../pages/SeriesDetail';
-import { AdminTemplate } from '../pages/admin/AdminTemplate';
-import { AdminHome } from '../pages/admin/AdminHome';
-import { AdminSeries } from '../pages/admin/AdminSeries';
-import { AdminSeriesEdit } from '../pages/admin/AdminSeriesEdit';
-import { AdminService } from '../pages/admin/AdminService';
-import { AdminServiceEdit } from '../pages/admin/AdminServiceEdit';
+import { AdminTemplate } from '../admin/AdminTemplate';
+import { AdminHome } from '../admin/AdminHome';
+import { AdminSeries } from '../admin/AdminSeries';
+import { AdminSeriesEdit } from '../admin/AdminSeriesEdit';
+import { AdminService } from '../admin/AdminService';
+import { AdminServiceEdit } from '../admin/AdminServiceEdit';
+import { AdminLogin } from '../admin/AdminLogin';
 import { SearchPage } from '../pages/SearchPage';
-import { AdminLogin } from '../pages/admin/AdminLogin';
 import { authenticate } from '../data/auth';
 
 export const siteRouter = [

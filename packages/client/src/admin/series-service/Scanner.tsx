@@ -1,14 +1,13 @@
-import { seriesScanners } from '../../../static/const';
+import { seriesScanners } from '../../static/const';
 import { useState } from 'react';
-import { triggerScanner } from '../../../data/scanner';
+import { IScannerResult, triggerScanner } from '../../data/scanner';
 import { Button } from 'react-bootstrap';
-import { IClientSeries } from '../../../types/series';
 import { ISeriesService } from '@justreadcomics/common/dist/types/series';
 
 interface ScannerProps {
   seriesService?: ISeriesService;
   seriesId?: string;
-  scannerResultCallback: (series: IClientSeries) => void;
+  scannerResultCallback: (result: IScannerResult) => void;
   showErrorToastCall: (message: string) => void;
 }
 
@@ -28,13 +27,14 @@ export const Scanner = ({ seriesService, seriesId, scannerResultCallback, showEr
       triggerScanner(service.seriesServiceId, seriesId)
         .then((res) => {
           if (res) {
-            // refresh the service in the parent somehow
-            scannerResultCallback(res.series);
+            scannerResultCallback(res);
           }
         })
         .catch((e: any) => {
-          setInProgress(false);
           showErrorToastCall(e);
+        })
+        .finally(() => {
+          setInProgress(false);
         });
     };
     return (

@@ -54,7 +54,7 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
         series.services.push(cuResults);
       }
     } else {
-      series.services.id(CU_SERVICE_ID).deleteOne();
+      series.services.id(CU_SERVICE_ID)?.deleteOne();
     }
 
     if (imageUrl) {

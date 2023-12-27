@@ -1,8 +1,8 @@
 import React from 'react';
-import Logo from '../../components/Logo';
+import Logo from '../components/Logo';
 import { Link, useLocation, useParams } from 'react-router-dom';
-import { getRoutePath } from '../../util/getRoutePath';
-import { useAuth } from '../../providers/AuthProvider';
+import { getRoutePath } from '../util/getRoutePath';
+import { useAuth } from '../providers/AuthProvider';
 import { Button, Container, Nav, Navbar } from 'react-bootstrap';
 
 export const AdminHeader = () => {

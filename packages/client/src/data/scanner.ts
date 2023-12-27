@@ -2,7 +2,7 @@ import { seriesScanners } from '../static/const';
 import { authFetch } from './fetch';
 import { IClientSeries } from '../types/series';
 
-interface IScannerResult {
+export interface IScannerResult {
   msg: string;
   series: IClientSeries;
 }

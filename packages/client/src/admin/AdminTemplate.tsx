@@ -1,9 +1,9 @@
 import { Await, Navigate, Outlet, useLoaderData } from 'react-router-dom';
-import Footer from '../../components/Footer';
+import Footer from '../components/Footer';
 import React, { Suspense } from 'react';
 import { AdminHeader } from './AdminHeader';
 import { Helmet } from 'react-helmet-async';
-import { AuthProvider } from '../../providers/AuthProvider';
+import { AuthProvider } from '../providers/AuthProvider';
 
 export const AdminTemplate = () => {
   const authPromise = useLoaderData() as boolean;

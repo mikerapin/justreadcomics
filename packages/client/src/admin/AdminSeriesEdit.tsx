@@ -1,16 +1,17 @@
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import React, { useCallback, useRef, useState } from 'react';
-import { IClientSeries, IClientSeriesService, ISeriesWithImageUpload } from '../../types/series';
-import { createSeries, fetchSeriesById, updateSeriesById } from '../../data/series';
+import { IClientSeries, IClientSeriesService, ISeriesWithImageUpload } from '../types/series';
+import { createSeries, fetchSeriesById, updateSeriesById } from '../data/series';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { fetchAllServices } from '../../data/services';
-import { IClientService } from '../../types/service';
+import { fetchAllServices } from '../data/services';
+import { IClientService } from '../types/service';
 import { ImageUploader } from './subcomponents/ImageUploader';
 import { ISeriesForm } from './types/series';
-import { SeriesImage } from '../../components/SeriesImage';
+import { SeriesImage } from '../components/SeriesImage';
 import { Scanner } from './series-service/Scanner';
 import { Button, Col, Container, FloatingLabel, Form, Row, Stack, Table, Toast, ToastContainer } from 'react-bootstrap';
-import { ServiceImage } from '../../components/ServiceImage';
+import { ServiceImage } from '../components/ServiceImage';
+import { IScannerResult } from '../data/scanner';
 
 const getSeriesServiceStringArray = (seriesServices?: IClientSeriesService[]) => {
   return (
@@ -21,8 +22,6 @@ const getSeriesServiceStringArray = (seriesServices?: IClientSeriesService[]) =>
 };
 export const AdminSeriesEdit = () => {
   const { id } = useParams();
-  const location = useLocation();
-  const navigate = useNavigate();
 
   const [series, setSeries] = useState<IClientSeries>();
   const [services, setServices] = useState<IClientService[]>();
@@ -138,8 +137,13 @@ export const AdminSeriesEdit = () => {
     return <></>;
   };
 
-  const updateSeriesData = (series: IClientSeries) => {
-    navigate(location);
+  const scannerCallback = (result: IScannerResult) => {
+    if (!result.series && result.msg) {
+      setShowErrorToast(result.msg);
+    } else {
+      setSeries(result.series);
+      setShowSuccessToast(true);
+    }
   };
 
   return (
@@ -230,7 +234,7 @@ export const AdminSeriesEdit = () => {
                         <Scanner
                           seriesService={getSeriesServiceById(service._id)}
                           seriesId={series._id}
-                          scannerResultCallback={updateSeriesData}
+                          scannerResultCallback={scannerCallback}
                           showErrorToastCall={showErrorToastCall}
                         />
                       </td>

@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { IFetchMultipleSeriesWithCursor } from '../../types/series';
-import { fetchAllSeries, fetchSeriesByName } from '../../data/series';
+import { IFetchMultipleSeriesWithCursor } from '../types/series';
+import { fetchAllSeries, fetchSeriesByName } from '../data/series';
 import { Form, Link, useSearchParams } from 'react-router-dom';
-import { Pagination } from '../../components/Pagination';
+import { Pagination } from '../components/Pagination';
 import { Container, InputGroup, Stack, Form as BootstrapForm, Button, Table } from 'react-bootstrap';
-import { ServiceImage } from '../../components/ServiceImage';
+import { ServiceImage } from '../components/ServiceImage';
 
 export const AdminSeries = () => {
   const [searchParams, setSearchParams] = useSearchParams();
