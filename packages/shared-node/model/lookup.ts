@@ -1,9 +1,8 @@
 import { Types } from 'mongoose';
-import { IHydratedSeries, ISeriesService } from "../types/series";
-import { IService } from "../types/services";
-import { servicesModel } from "./services";
-import { seriesModel } from "./series";
-
+import { servicesModel } from './services';
+import { seriesModel } from './series';
+import { IHydratedSeries, ISeriesService } from '@justreadcomics/common/dist/types/series';
+import { IService } from '@justreadcomics/common/dist/types/services';
 
 export const lookupServicesForSeries = async (seriesServices?: ISeriesService[]): Promise<IService[] | object> => {
   if (!seriesServices) {

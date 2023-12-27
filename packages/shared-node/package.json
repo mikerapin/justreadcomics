@@ -1,7 +1,7 @@
 {
-  "name": "@justreadcomics/common",
+  "name": "@justreadcomics/shared-node",
   "version": "1.0.0",
-  "description": "common types and utils for just read comics",
+  "description": "shared functions and utilities for node servers",
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -11,9 +11,20 @@
   "author": "Mike Rapin",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.431.0",
+    "@aws-sdk/credential-providers": "^3.431.0",
     "@justreadcomics/common": "1.0.0",
+    "@justreadcomics/shared-node": "1.0.0",
+    "@types/express": "^4.17.21",
     "dotenv": "^16.3.1",
+    "express": "^4.18.2",
     "mongoose": "^8.0.3",
+    "multer": "^1.4.5-lts.1",
+    "multer-s3": "^3.0.1",
+    "pino": "^8.16.1",
+    "pino-http": "^8.5.1",
+    "pino-pretty": "^10.2.3",
+    "puppeteer": "^21.3.8",
     "typescript": "^5.3.3"
   },
   "devDependencies": {
@@ -23,7 +34,6 @@
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.2",
-    "nodemon": "^3.0.2",
     "prettier": "^3.1.1"
   }
 }

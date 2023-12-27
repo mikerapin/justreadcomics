@@ -1,22 +1,22 @@
-import {
-  DC_INFINITE_UNIVERSE_SERVICE_ID,
-  IMAGE_SERVICE_ID,
-  MARVEL_UNLIMITED_SERVICE_ID,
-  SHONEN_JUMP_SERVICE_ID
-} from '../../static/const';
 import { Request, Response } from 'express';
 import { chunk } from 'lodash';
-import { massDcImport } from '../../scrape/dc';
-import { massImageImport } from '../../scrape/image';
-import { massImportMarvel } from '../../scrape/marvel';
-import { massImportIdw } from '../../scrape/idw';
+import { massDcImport } from '../scrape/dc';
+import { massImageImport } from '../scrape/image';
+import { massImportMarvel } from '../scrape/marvel';
+import { massImportIdw } from '../scrape/idw';
 import { Types } from 'mongoose';
-import { massImportShonenJump } from '../../scrape/shonen-jump';
+import { massImportShonenJump } from '../scrape/shonen-jump';
 import { cleanSeriesName } from '@justreadcomics/common/dist/util/string';
 import { promiseAllSequence } from '@justreadcomics/common/dist/util/scraper';
 import { seriesModel } from '@justreadcomics/common/dist/model/series';
 import { logError } from '@justreadcomics/common/dist/util/logger';
 import { uploadSeriesImageFromUrlToS3 } from '@justreadcomics/common/dist/s3/s3';
+import {
+  DC_INFINITE_UNIVERSE_SERVICE_ID,
+  IMAGE_SERVICE_ID,
+  MARVEL_UNLIMITED_SERVICE_ID,
+  SHONEN_JUMP_SERVICE_ID
+} from '@justreadcomics/common/dist/const';
 
 export const massImportMarvelAction = async (req: Request, res: Response) => {
   const result = await massImportMarvel(false);

@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
-import { searchScrapeCorpo } from '../../scrape/corpo';
-import { CORPO_SERVICE_ID, CU_SERVICE_ID } from '../../static/const';
+import { searchScrapeCorpo } from '../scrape/corpo';
 import { ISeriesServiceType } from '@justreadcomics/common/dist/types/series';
 import { getSeriesModelById } from '@justreadcomics/common/dist/model/lookup';
 import { uploadSeriesImageFromUrlToS3 } from '@justreadcomics/common/dist/s3/s3';
+import { CORPO_SERVICE_ID, CU_SERVICE_ID } from '@justreadcomics/common/dist/const';
 
 export const searchAndScrapeCorpoAction = async (req: Request, res: Response) => {
   const id = req.params.id;

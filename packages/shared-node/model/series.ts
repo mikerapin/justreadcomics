@@ -1,12 +1,12 @@
-import { model, Schema } from "mongoose";
-import { ISeries, ISeriesService } from "../types/series";
+import { model, models, Schema } from 'mongoose';
+import { ISeries, ISeriesService } from '@justreadcomics/common/dist/types/series';
 
 const seriesServiceSchema = new Schema<ISeriesService>({
   seriesServiceUrl: String,
   lastScan: {
     type: Date,
-    default: null,
-  },
+    default: null
+  }
 });
 
 const seriesSchema = new Schema<ISeries>(
@@ -15,37 +15,37 @@ const seriesSchema = new Schema<ISeries>(
       required: true,
       type: String,
       index: true,
-      unique: true,
+      unique: true
     },
     description: String,
     image: {
-      type: String,
+      type: String
     },
     credits: {
-      type: Array,
+      type: Array
     },
     ongoingSeries: Boolean,
     services: [seriesServiceSchema],
     meta: {
       searches: {
         type: Number,
-        default: 0,
+        default: 0
       },
       clickOuts: {
         type: Number,
-        default: 0,
-      },
+        default: 0
+      }
     },
     lastScan: {
       type: Date,
-      default: null,
-    },
+      default: null
+    }
   },
   {
-    timestamps: true,
+    timestamps: true
   }
 );
 
-const seriesModel = model<ISeries>("comic_series", seriesSchema);
+const seriesModel = models.comic_series || model<ISeries>('comic_series', seriesSchema);
 
 export { seriesModel };

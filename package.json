@@ -7,11 +7,11 @@
     "packages/*"
   ],
   "scripts": {
-    "common": "nx build @justreadcomics/common",
-    "start:dev": "npm run common && nx run-many -t start:dev",
+    "common": "nx build @justreadcomics/common && nx build @justreadcomics/shared-node",
+    "start:dev": "npm run common && nx run-many -t start:dev --exclude @justreadcomics/common @justreadcomics/shared-node",
     "start:build-run-prod": "npm run common && nx run-many -t start:build-run-prod",
     "start": "nx run-many -t start",
-    "build": " npm run common && nx run-many -t build --exclude @justreadcomics/common"
+    "build": "npm run common && nx run-many -t build --exclude @justreadcomics/common @justreadcomics/shared-node"
   },
   "devDependencies": {
     "lerna": "^7.4.2",

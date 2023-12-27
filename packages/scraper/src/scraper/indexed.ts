@@ -1,10 +1,14 @@
 import { Request, Response } from 'express';
-import { scrapeMarvelSeries } from '../../scrape/marvel';
-import { IMAGE_SERVICE_ID, MARVEL_UNLIMITED_SERVICE_ID, SHONEN_JUMP_SERVICE_ID } from '../../static/const';
-import { scrapeImageSeries } from '../../scrape/image';
-import { scrapeShonenJumpSeries } from '../../scrape/shonen-jump';
 import { uploadSeriesImageFromUrlToS3 } from '@justreadcomics/common/dist/s3/s3';
 import { getSeriesModelById } from '@justreadcomics/common/dist/model/lookup';
+import { scrapeMarvelSeries } from '../scrape/marvel';
+import {
+  IMAGE_SERVICE_ID,
+  MARVEL_UNLIMITED_SERVICE_ID,
+  SHONEN_JUMP_SERVICE_ID
+} from '@justreadcomics/common/dist/const';
+import { scrapeImageSeries } from '../scrape/image';
+import { scrapeShonenJumpSeries } from '../scrape/shonen-jump';
 
 const getSeriesAndSeriesService = async (seriesId: string, serviceId: string) => {
   const series = await getSeriesModelById(seriesId);
