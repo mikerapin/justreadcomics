@@ -8,7 +8,7 @@ import { LoadingSeries } from './LoadingSeries';
 import { SeriesImage } from '../components/SeriesImage';
 import { Helmet } from 'react-helmet-async';
 import { useAdmin } from '../hooks/admin';
-import { Col, Container, Row } from 'react-bootstrap';
+import { Badge, Col, Container, Row, Stack } from 'react-bootstrap';
 
 export const SeriesDetail = () => {
   const { id } = useParams();
@@ -45,6 +45,18 @@ export const SeriesDetail = () => {
             <p>{series?.description}</p>
           </div>
           <Services services={services} seriesServices={series.services} />
+          {series.credits?.length && (
+            <>
+              <h3>Creators:</h3>
+              <Stack direction="horizontal" gap={2} style={{ flexWrap: 'wrap' }}>
+                {series.credits?.map((credit) => (
+                  <Badge pill bg="secondary">
+                    {credit.name}
+                  </Badge>
+                ))}
+              </Stack>
+            </>
+          )}
         </Col>
       </Row>
     </Container>

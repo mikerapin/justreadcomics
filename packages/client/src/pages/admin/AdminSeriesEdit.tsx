@@ -187,7 +187,7 @@ export const AdminSeriesEdit = () => {
                 </Col>
                 <Col className="mb-3">
                   <FloatingLabel label="Role" className="mb-3">
-                    <Form.Control id={`role-${credits.id}`} {...register(`credits.${index}.name` as const)} autoComplete="off" />
+                    <Form.Control id={`role-${credits.id}`} {...register(`credits.${index}.role` as const)} autoComplete="off" />
                   </FloatingLabel>
                 </Col>
                 <input type="hidden" {...register(`credits.${index}.order` as const)} />
