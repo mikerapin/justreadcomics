@@ -13,6 +13,7 @@ import { AdminServiceEdit } from '../admin/AdminServiceEdit';
 import { AdminLogin } from '../admin/AdminLogin';
 import { SearchPage } from '../pages/SearchPage';
 import { authenticate } from '../data/auth';
+import { QueueList } from '../admin/QueueList.';
 
 export const siteRouter = [
   {
@@ -74,6 +75,10 @@ export const siteRouter = [
       {
         path: '/admin/service/:id',
         element: <AdminServiceEdit />
+      },
+      {
+        path: '/admin/queue',
+        element: <QueueList />
       }
     ]
   }

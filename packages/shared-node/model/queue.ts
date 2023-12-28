@@ -25,4 +25,6 @@ export const queueSchema = new Schema<IQueue>(
   }
 );
 
-export const queueModel = models.queue || model<IQueue>('queue', queueSchema);
+const queueModel = models.queue || model<IQueue>('queue', queueSchema);
+
+export { queueModel };

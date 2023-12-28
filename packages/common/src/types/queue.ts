@@ -10,4 +10,6 @@ export interface IQueue {
   withinCU?: boolean;
   seriesCreators?: string[];
   seriesDescription?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }

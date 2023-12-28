@@ -25,11 +25,23 @@ export const AdminHeader = () => {
               <Link to="/admin" className={`m-2 btn ${path === '/admin' ? 'btn-danger' : 'btn-secondary'}`}>
                 Dashboard
               </Link>
-              <Link to="/admin/series" className={`m-2 btn ${path.match('/admin/series') ? 'btn-danger' : 'btn-secondary'}`}>
+              <Link
+                to="/admin/series"
+                className={`m-2 btn ${path.match('/admin/series') ? 'btn-danger' : 'btn-secondary'}`}
+              >
                 Series
               </Link>
-              <Link to="/admin/services" className={`m-2 btn ${path.match('/admin/service') ? 'btn-danger' : 'btn-secondary'}`}>
+              <Link
+                to="/admin/services"
+                className={`m-2 btn ${path.match('/admin/service') ? 'btn-danger' : 'btn-secondary'}`}
+              >
                 Services
+              </Link>
+              <Link
+                to="/admin/queue"
+                className={`m-2 btn ${path.match('/admin/queue') ? 'btn-danger' : 'btn-secondary'}`}
+              >
+                Queue
               </Link>
             </Nav>
 
