@@ -6,18 +6,17 @@ import { logError } from '@justreadcomics/common/dist/util/logger';
 export const searchScrapeCorpo = async (search: string, runHeadless?: boolean) => {
   const { page, browser } = await initScraperPage(runHeadless || isProduction());
 
-  const cleanedSearch = cleanSearch(search);
-
   const searchQuery =
     'https://www.amazon.com/s?k=%s&i=comics-manga&rh=n%3A156104011%2Cp_n_feature_browse-bin%3A13684862011&test=1'.replace(
       '%s',
-      encodeURIComponent(cleanedSearch)
+      encodeURIComponent(search)
     );
 
   await page.goto(searchQuery, { waitUntil: 'domcontentloaded' });
 
   // const firstSearchResultSelector = 'div.s-search-results ::-p-text(Kindle Edition)';
 
+  let seriesName;
   let imageUrl;
   let seriesPageUrl;
   let seriesDescription;
@@ -34,6 +33,7 @@ export const searchScrapeCorpo = async (search: string, runHeadless?: boolean) =
 
       const imageUrlSelector = 'meta[property="og:image"]';
       const seriesUrlSelector = 'link[rel="canonical"]';
+      const seriesNameSelector = '#collection-title';
       const seriesDescriptionSelector = '#collection_description';
       const seriesCreatorsSelector = '.series-common-atf .a-column.a-span8 a';
 
@@ -49,6 +49,10 @@ export const searchScrapeCorpo = async (search: string, runHeadless?: boolean) =
       seriesDescription = await page.evaluate((selector) => {
         return document.querySelector(selector)?.textContent;
       }, seriesDescriptionSelector);
+
+      seriesName = await page.evaluate((selector) => {
+        return document.querySelector(selector)?.textContent;
+      }, seriesNameSelector);
 
       seriesCreators = await page.evaluate((selector) => {
         const creators = document.querySelectorAll(selector);
@@ -78,5 +82,5 @@ export const searchScrapeCorpo = async (search: string, runHeadless?: boolean) =
 
   await browser.close();
 
-  return { imageUrl, seriesPageUrl, withinCU, seriesDescription, seriesCreators };
+  return { imageUrl, seriesPageUrl, withinCU, seriesDescription, seriesCreators, seriesName };
 };

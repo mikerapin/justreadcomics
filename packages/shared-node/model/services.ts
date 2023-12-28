@@ -26,6 +26,4 @@ const servicesSchema = new Schema<IService>({
   }
 });
 
-const servicesModel = models.services || model<IService>('services', servicesSchema);
-
-export { servicesModel };
+export const servicesModel = models.services || model<IService>('services', servicesSchema);

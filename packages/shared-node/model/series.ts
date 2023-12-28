@@ -46,6 +46,4 @@ const seriesSchema = new Schema<ISeries>(
   }
 );
 
-const seriesModel = models.comic_series || model<ISeries>('comic_series', seriesSchema);
-
-export { seriesModel };
+export const seriesModel = models.comic_series || model<ISeries>('comic_series', seriesSchema);

@@ -4,6 +4,8 @@ import { ISeriesServiceType } from '@justreadcomics/common/dist/types/series';
 import { getSeriesModelById } from '@justreadcomics/common/dist/model/lookup';
 import { uploadSeriesImageFromUrlToS3 } from '@justreadcomics/common/dist/s3/s3';
 import { CORPO_SERVICE_ID, CU_SERVICE_ID } from '@justreadcomics/common/dist/const';
+import { cleanSearch } from '../scrape/util';
+import { distance } from 'closest-match';
 
 export const searchAndScrapeCorpoAction = async (req: Request, res: Response) => {
   const id = req.params.id;
@@ -15,9 +17,26 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
     return;
   }
 
-  const seriesName = series.seriesName;
+  const allowedDistance = 3;
+  let searchValue = series.seriesName;
 
-  const { imageUrl, seriesPageUrl, withinCU, seriesCreators, seriesDescription } = await searchScrapeCorpo(seriesName);
+  if (req.params.cleanSearch) {
+    const allowedDistance = 7;
+    searchValue = cleanSearch(searchValue);
+  }
+
+  const { imageUrl, seriesPageUrl, withinCU, seriesCreators, seriesDescription, seriesName } = await searchScrapeCorpo(
+    searchValue
+  );
+
+  // this is an UGLY comparison, but let's try it
+  // get the distance between the initial series name and the series name
+  if (seriesName && distance(searchValue, seriesName) > 5) {
+    res.status(200).json({
+      msg: `Found the series ${seriesName} but it does not match ${searchValue}. Queuing the data for manual approval.`
+    });
+    return;
+  }
 
   if (seriesPageUrl) {
     const corpoResults = {

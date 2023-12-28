@@ -213,8 +213,12 @@ export const AdminSeriesEdit = () => {
                 {services?.map((service) => {
                   return (
                     <tr key={service.serviceName}>
+                      {/* TODO: determine if this is even needed */}
+                      {/*<td>*/}
+                      {/*  <Form.Check type="radio" {...register(`primary`)} id={`service-primary${service._id}`} value={1} />*/}
+                      {/*</td>*/}
                       <td>
-                        <Form.Check {...register(`services`)} id={`service${service._id}`} type="checkbox" value={service._id} />
+                        <Form.Check type="switch" {...register(`services`)} id={`service${service._id}`} value={service._id} />
                       </td>
                       <td>
                         <Form.Label className="form-check-label" htmlFor={`service${service._id}`}>

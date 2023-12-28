@@ -1,5 +1,5 @@
-import { HydratedSingleSubdocument, Types } from "mongoose";
-import { IService } from "./services";
+import { HydratedSingleSubdocument, Types } from 'mongoose';
+import { IService } from './services';
 
 export interface Creator {
   name: string;

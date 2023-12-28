@@ -17,6 +17,10 @@ export const initScraperPage = async (runHeadless = true) => {
   return { page, browser };
 };
 
+/**
+ * Strips parenthesis from a search value
+ * @param search
+ */
 export const cleanSearch = (search: string) => {
   return search.replace(/ *\([^)]*\) */g, '');
 };
