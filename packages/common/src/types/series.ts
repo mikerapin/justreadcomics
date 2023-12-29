@@ -19,6 +19,9 @@ export type ISeriesServiceType = ISeriesService[] & {
 
 export interface ISeries {
   _id: Types.ObjectId;
+  createdAt?: string;
+  updatedAt?: string;
+
   seriesName: string;
   description?: string;
   image?: string;

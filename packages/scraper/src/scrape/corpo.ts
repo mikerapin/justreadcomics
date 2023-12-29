@@ -2,15 +2,21 @@ import { cleanSearch, initScraperPage } from './util';
 import { isProduction } from '@justreadcomics/common/dist/util/process';
 import { Creator } from '@justreadcomics/common/dist/types/series';
 import { logError } from '@justreadcomics/common/dist/util/logger';
+import { Types } from 'mongoose';
+import { servicesModel } from '@justreadcomics/common/dist/model/services';
+import { CORPO_SERVICE_ID } from '@justreadcomics/common/dist/const';
+
+const FALLBACK_SEARCH =
+  'https://www.amazon.com/s?k=%s&i=comics-manga&rh=n%3A156104011%2Cp_n_feature_browse-bin%3A13684862011&test=1';
 
 export const searchScrapeCorpo = async (search: string, runHeadless?: boolean) => {
   const { page, browser } = await initScraperPage(runHeadless || isProduction());
 
-  const searchQuery =
-    'https://www.amazon.com/s?k=%s&i=comics-manga&rh=n%3A156104011%2Cp_n_feature_browse-bin%3A13684862011&test=1'.replace(
-      '%s',
-      encodeURIComponent(search)
-    );
+  const service = await servicesModel.findOne({ _id: new Types.ObjectId(CORPO_SERVICE_ID) });
+
+  const searchUrl = service?.get('searchUrl') || FALLBACK_SEARCH;
+
+  const searchQuery = searchUrl.replace('%s', encodeURIComponent(search));
 
   await page.goto(searchQuery, { waitUntil: 'domcontentloaded' });
 

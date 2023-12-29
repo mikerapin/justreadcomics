@@ -13,7 +13,8 @@ import { AdminServiceEdit } from '../admin/AdminServiceEdit';
 import { AdminLogin } from '../admin/AdminLogin';
 import { SearchPage } from '../pages/SearchPage';
 import { authenticate } from '../data/auth';
-import { QueueList } from '../admin/QueueList.';
+import { QueueList } from '../admin/QueueList';
+import { QueueView } from '../admin/QueueView';
 
 export const siteRouter = [
   {
@@ -79,6 +80,10 @@ export const siteRouter = [
       {
         path: '/admin/queue',
         element: <QueueList />
+      },
+      {
+        path: '/admin/queue/:id',
+        element: <QueueView />
       }
     ]
   }

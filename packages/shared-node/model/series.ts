@@ -1,4 +1,4 @@
-import { model, models, Schema } from 'mongoose';
+import { Model, model, models, Schema } from 'mongoose';
 import { ISeries, ISeriesService } from '@justreadcomics/common/dist/types/series';
 
 const seriesServiceSchema = new Schema<ISeriesService>({
@@ -46,4 +46,6 @@ const seriesSchema = new Schema<ISeries>(
   }
 );
 
-export const seriesModel = models.comic_series || model<ISeries>('comic_series', seriesSchema);
+const seriesModel: Model<ISeries> = models.comic_series || model<ISeries>('comic_series', seriesSchema);
+
+export { seriesModel };

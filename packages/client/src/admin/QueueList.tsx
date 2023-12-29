@@ -1,15 +1,15 @@
 import { Button, Container, Table } from 'react-bootstrap';
 import React, { useEffect, useState } from 'react';
 import { fetchQueueEntries } from '../data/queue';
-import { IClientQueue, IHydratedClientQueue } from '../types/queue';
-import { Link } from 'react-router-dom';
+import { IHydratedClientQueue } from '../types/queue';
+import { Link, useNavigate } from 'react-router-dom';
 
 export const QueueList = () => {
+  const navigate = useNavigate();
   const [queue, setQueue] = useState<IHydratedClientQueue[] | null>(null);
   useEffect(() => {
     fetchQueueEntries().then((res) => {
       setQueue(res.data);
-      console.log(res.data);
     });
   }, []);
   return (
@@ -32,7 +32,9 @@ export const QueueList = () => {
             return (
               <tr key={q._id}>
                 <td>
-                  <Button size="sm">View</Button>
+                  <Button size="sm" onClick={() => navigate(`/admin/queue/${q._id}`)}>
+                    View
+                  </Button>
                 </td>
                 <td>
                   <small>
@@ -43,7 +45,7 @@ export const QueueList = () => {
                   <Link to={`/admin/series/${q.seriesId}`}>{q.series.seriesName}</Link>
                 </td>
                 <td>{q.searchValue}</td>
-                <td>{q.seriesName}</td>
+                <td>{q.foundSeriesName}</td>
                 <td>
                   <code>{q.createdAt}</code>
                 </td>

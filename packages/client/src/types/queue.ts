@@ -6,5 +6,5 @@ export interface IClientQueue extends Omit<IQueue, '_id'> {
 }
 
 export interface IHydratedClientQueue extends IClientQueue {
-  series: IClientSeries;
+  series: IClientSeries; 
 }

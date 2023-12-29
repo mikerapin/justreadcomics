@@ -32,6 +32,7 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
   // this is an UGLY comparison, but let's try it
   // get the distance between the initial series name and the series name
   if (seriesName && distance(searchValue, seriesName) > 5) {
+    // CORPO_SERVICE_ID needs to be added to the queue here
     res.status(200).json({
       msg: `Found the series ${seriesName} but it does not match ${searchValue}. Queuing the data for manual approval.`
     });

@@ -1,7 +1,5 @@
-import { model, models, Schema } from 'mongoose';
+import { Model, model, models, Schema } from 'mongoose';
 import { IQueue } from '@justreadcomics/common/dist/types/queue';
-
-// const queueSchema = new Schema<IQueue>();
 
 export const queueSchema = new Schema<IQueue>(
   {
@@ -13,18 +11,21 @@ export const queueSchema = new Schema<IQueue>(
       type: String,
       required: true
     },
-    seriesName: String,
+    foundSeriesName: String,
     imageUrl: String,
     seriesPageUrl: String,
     withinCU: Boolean,
     seriesCreators: String,
-    seriesDescription: String
+    seriesDescription: String,
+    credits: {
+      type: Array
+    }
   },
   {
     timestamps: true
   }
 );
 
-const queueModel = models.queue || model<IQueue>('queue', queueSchema);
+const queueModel: Model<IQueue> = models.queue || model<IQueue>('queue', queueSchema);
 
 export { queueModel };
