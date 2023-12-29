@@ -1,6 +1,7 @@
 import { Types } from 'mongoose';
 import { Creator, ISeries } from './series';
 
+export type ReviewStatus = 'rejected' | 'accepted' | 'partial';
 export interface IQueue {
   _id?: Types.ObjectId;
   createdAt?: string;
@@ -17,7 +18,7 @@ export interface IQueue {
   withinCU?: boolean;
 
   reviewedDate?: string;
-  reviewStatus?: 'rejected' | 'accepted' | 'partial';
+  reviewStatus?: ReviewStatus;
 }
 
 export interface IHydratedQueue extends IQueue {
@@ -41,4 +42,14 @@ export interface IQueueReviewLog {
   seriesId: string;
   newValues: ISeriesUpdatableValues;
   oldValues: ISeriesUpdatableValues;
+}
+
+export interface IQueueReviewData {
+  seriesId: string;
+  seriesName?: string;
+  description?: string;
+  imageUrl?: string;
+  credits?: Creator[];
+  withinCU?: boolean;
+  reviewStatus: ReviewStatus;
 }

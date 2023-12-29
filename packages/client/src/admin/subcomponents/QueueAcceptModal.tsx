@@ -4,11 +4,12 @@ import { Link } from 'react-router-dom';
 import { getSeriesImage } from '../../util/image';
 import { CORPO_SERVICE_ID, CU_SERVICE_ID } from '@justreadcomics/common/dist/const';
 import React from 'react';
-import classNames from 'classnames';
+import { IQueueReviewData } from '@justreadcomics/common/dist/types/queue';
+import { submitQueueReview } from '../../data/queue';
 
 interface QueueAcceptModalProps {
   showModal: boolean;
-  handleClose: () => void;
+  handleClose: (msg?: string) => void;
   overrideChanges: QueueViewForm;
   queue: IHydratedClientQueue;
 }
@@ -24,8 +25,26 @@ export const QueueAcceptModal = ({ showModal, handleClose, overrideChanges, queu
     ? queue.withinCU
     : queue.series.services?.includes({ _id: CU_SERVICE_ID });
 
+  const submitChanges = () => {
+    console.log('submitting changes');
+    if (queue.series._id) {
+      const updatedValues: IQueueReviewData = {
+        seriesId: queue.series._id,
+        reviewStatus: Object.values(overrideChanges).every((val) => val) ? 'accepted' : 'partial',
+        seriesName: overrideChanges.overwriteSeriesName ? seriesName : undefined,
+        credits: overrideChanges.overwriteSeriesCredits ? credits : undefined,
+        imageUrl: overrideChanges.overwriteSeriesImage ? seriesImage : undefined,
+        withinCU: overrideChanges.overwriteSeriesWithinCU ? withinCU : undefined
+      };
+
+      submitQueueReview(queue._id, updatedValues).then(() => {
+        console.log('submitted the data!');
+      });
+    }
+  };
+
   return (
-    <Modal show={showModal} onHide={handleClose} backdrop="static" keyboard={false} size="lg">
+    <Modal show={showModal} onHide={() => handleClose()} backdrop="static" keyboard={false} size="lg">
       <Modal.Header closeButton>
         <Modal.Title>
           By clicking <strong>Save</strong> you will make the following change(s) to the series:
@@ -101,10 +120,10 @@ export const QueueAcceptModal = ({ showModal, handleClose, overrideChanges, queu
         </Container>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
+        <Button variant="secondary" onClick={() => handleClose()}>
           Close
         </Button>
-        <Button variant="primary" onClick={() => console.log('submit the queue changes')}>
+        <Button variant="primary" onClick={submitChanges}>
           Understood
         </Button>
       </Modal.Footer>

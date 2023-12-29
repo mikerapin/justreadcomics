@@ -1,10 +1,10 @@
-import { Types } from "mongoose";
+import { Types } from 'mongoose';
 
 export enum ServiceType {
-  FREE = "free",
-  PAID = "paid",
-  SUBSCRIPTION = "subscription",
-  NONE = "none",
+  FREE = 'free',
+  PAID = 'paid',
+  SUBSCRIPTION = 'subscription',
+  NONE = 'none'
 }
 
 export interface IService {

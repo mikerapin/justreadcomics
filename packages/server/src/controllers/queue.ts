@@ -3,7 +3,8 @@ import { verifyTokenMiddleware } from '@justreadcomics/shared-node/middleware/au
 import { queueModel } from '@justreadcomics/shared-node/model/queue';
 import { getSeriesModelById } from '@justreadcomics/common/dist/model/lookup';
 import { Types } from 'mongoose';
-import { IHydratedQueue, IQueue } from '@justreadcomics/common/dist/types/queue';
+import { IHydratedQueue, IQueue, IQueueReviewData, ReviewStatus } from '@justreadcomics/common/dist/types/queue';
+import { logError } from '@justreadcomics/common/dist/util/logger';
 
 const queueRouter = express.Router();
 
@@ -40,6 +41,27 @@ queueRouter.get('/get/:id', [verifyTokenMiddleware], async (req: Request, res: R
     res.status(200).json({ data: hydratedQueue });
   } else {
     res.status(404).json({ msg: 'no queue here, bub' });
+  }
+});
+
+interface ReviewQueueRequest extends Request {
+  body: IQueueReviewData;
+}
+
+queueRouter.post('/review/:id', [verifyTokenMiddleware], async (req: ReviewQueueRequest, res: Response) => {
+  const queueId = req.params.id;
+  if (!queueId) {
+    res.status(403).json({ msg: 'no id? no queue' });
+    return;
+  }
+
+  const { seriesId, seriesName, description, imageUrl, credits, withinCU, reviewStatus } = req.body;
+
+  try {
+    console.log(req.body);
+  } catch (e: any) {
+    logError(e);
+    res.status(400).json({ msg: 'There was an error updating the queue' });
   }
 });
 

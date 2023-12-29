@@ -48,8 +48,11 @@ export const QueueView = () => {
     return <Container>Loading...</Container>;
   }
 
-  const handleCloseChangesModal = () => {
+  const handleCloseChangesModal = (msg?: string) => {
     setShowChangesModal(false);
+    if (msg) {
+      // show toast and reload the content
+    }
   };
 
   const handleSaveOverrides = handleSubmit((queueForm) => {
