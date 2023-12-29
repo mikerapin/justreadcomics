@@ -19,7 +19,9 @@ export const queueSchema = new Schema<IQueue>(
     seriesDescription: String,
     credits: {
       type: Array
-    }
+    },
+    reviewedDate: Date,
+    reviewStatus: String
   },
   {
     timestamps: true

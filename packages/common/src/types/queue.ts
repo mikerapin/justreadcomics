@@ -16,6 +16,9 @@ export interface IQueue {
   seriesPageUrl?: string;
   serviceId: string;
   withinCU?: boolean;
+
+  reviewedDate?: string;
+  reviewStatus?: 'rejected' | 'accepted' | 'partial';
 }
 
 export interface IHydratedQueue extends IQueue {

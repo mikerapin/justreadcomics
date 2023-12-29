@@ -5,6 +5,7 @@ import { fetchSingleQueueEntry } from '../data/queue';
 import { IHydratedClientQueue } from '../types/queue';
 import { getSeriesImage } from '../util/image';
 import { CORPO_SERVICE_ID } from '@justreadcomics/common/dist/const';
+import { hasBeenReviewed } from '../util/queueStatus';
 
 export const QueueView = () => {
   const { id } = useParams();
@@ -21,7 +22,7 @@ export const QueueView = () => {
     }
     setTimeout(() => {
       setDisableBigChangeButtons(false);
-    }, 3000);
+    }, 5000);
   }, []);
 
   if (!queue) {
@@ -34,13 +35,15 @@ export const QueueView = () => {
           Queue <code>{id}</code>
         </h2>
         <ButtonGroup>
-          <Button variant="danger" disabled={disableBigChangeButtons}>
+          <Button variant="danger" disabled={hasBeenReviewed(queue) || disableBigChangeButtons}>
             Reject All
           </Button>
-          <Button variant="secondary" disabled={disableBigChangeButtons}>
+          <Button variant="secondary" disabled={hasBeenReviewed(queue) || disableBigChangeButtons}>
             Accept All
           </Button>
-          <Button variant="primary">Accept Selected</Button>
+          <Button variant="primary" disabled={hasBeenReviewed(queue)}>
+            Accept Selected
+          </Button>
         </ButtonGroup>
       </Stack>
       <hr />

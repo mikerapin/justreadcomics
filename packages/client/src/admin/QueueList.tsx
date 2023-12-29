@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { fetchQueueEntries } from '../data/queue';
 import { IHydratedClientQueue } from '../types/queue';
 import { Link, useNavigate } from 'react-router-dom';
+import { hasBeenReviewed } from '../util/queueStatus';
 
 export const QueueList = () => {
   const navigate = useNavigate();
@@ -25,6 +26,7 @@ export const QueueList = () => {
             <th>Search Value</th>
             <th>Found Series</th>
             <th>Date</th>
+            <th>Reviewed</th>
           </tr>
         </thead>
         <tbody>
@@ -49,6 +51,7 @@ export const QueueList = () => {
                 <td>
                   <code>{q.createdAt}</code>
                 </td>
+                <td>{hasBeenReviewed(q) ? 'Yes' : 'No'}</td>
               </tr>
             );
           })}
