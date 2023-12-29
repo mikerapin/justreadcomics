@@ -15,7 +15,7 @@ export const searchAndScrapeCorpoAction = async (id: string) => {
 
   const seriesName = series.seriesName;
 
-  const { imageUrl, seriesPageUrl, withinCU, seriesCreators, seriesDescription } = await searchScrapeCorpo(seriesName);
+  const { imageUrl, seriesPageUrl, withinCU, seriesCredits, seriesDescription } = await searchScrapeCorpo(seriesName);
 
   if (seriesPageUrl) {
     const corpoResults = {
@@ -58,9 +58,9 @@ export const searchAndScrapeCorpoAction = async (id: string) => {
     if (imageUrl) {
       series.image = await uploadSeriesImageFromUrlToS3(series.seriesName, imageUrl);
     }
-    if (seriesCreators) {
+    if (seriesCredits) {
       // TODO this isn't working great, maybe fix it up a bit
-      series.credits = seriesCreators;
+      series.credits = seriesCredits;
     }
     if (seriesDescription) {
       series.description = seriesDescription;

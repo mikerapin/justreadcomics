@@ -20,7 +20,7 @@ export const searchScrapeCorpo = async (search: string, runHeadless?: boolean) =
   let imageUrl;
   let seriesPageUrl;
   let seriesDescription;
-  let seriesCreators;
+  let seriesCredits;
   let withinCU;
 
   const partOfLinkSelector = '.s-search-results .s-widget-container ::-p-text(Part of)';
@@ -33,7 +33,7 @@ export const searchScrapeCorpo = async (search: string, runHeadless?: boolean) =
     const imageUrlSelector = 'meta[property="og:image"]';
     const seriesUrlSelector = 'link[rel="canonical"]';
     const seriesDescriptionSelector = '#collection_description';
-    const seriesCreatorsSelector = '.series-common-atf .a-column.a-span8 a';
+    const seriesCreditsSelector = '.series-common-atf .a-column.a-span8 a';
 
     imageUrl = await page.evaluate((selector) => {
       const url = document.querySelector(selector)?.getAttribute('content');
@@ -48,7 +48,7 @@ export const searchScrapeCorpo = async (search: string, runHeadless?: boolean) =
       return document.querySelector(selector)?.textContent;
     }, seriesDescriptionSelector);
 
-    seriesCreators = await page.evaluate((selector) => {
+    seriesCredits = await page.evaluate((selector) => {
       const creators = document.querySelectorAll(selector);
       const creatorsArray: Creator[] = [];
       creators.forEach((c, index) => {
@@ -58,7 +58,7 @@ export const searchScrapeCorpo = async (search: string, runHeadless?: boolean) =
         }
       });
       return creatorsArray;
-    }, seriesCreatorsSelector);
+    }, seriesCreditsSelector);
 
     const cuSelector = '#series-childAsin-item_1 ::-p-text(Read for Free)';
     try {
@@ -73,5 +73,5 @@ export const searchScrapeCorpo = async (search: string, runHeadless?: boolean) =
 
   await browser.close();
 
-  return { imageUrl, seriesPageUrl, withinCU, seriesDescription, seriesCreators };
+  return { imageUrl, seriesPageUrl, withinCU, seriesDescription, seriesCredits };
 };

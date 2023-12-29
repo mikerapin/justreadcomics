@@ -25,7 +25,7 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
     searchValue = cleanSearch(searchValue);
   }
 
-  const { imageUrl, seriesPageUrl, withinCU, seriesCreators, seriesDescription, seriesName } = await searchScrapeCorpo(
+  const { imageUrl, seriesPageUrl, withinCU, seriesCredits, seriesDescription, seriesName } = await searchScrapeCorpo(
     searchValue
   );
 
@@ -80,9 +80,9 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
     if (imageUrl) {
       series.image = await uploadSeriesImageFromUrlToS3(series.seriesName, imageUrl);
     }
-    if (seriesCreators) {
+    if (seriesCredits) {
       // TODO this isn't working great, maybe fix it up a bit
-      series.credits = seriesCreators;
+      series.credits = seriesCredits;
     }
     if (seriesDescription) {
       series.description = seriesDescription;

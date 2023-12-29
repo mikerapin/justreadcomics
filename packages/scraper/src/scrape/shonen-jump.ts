@@ -67,7 +67,7 @@ export const scrapeShonenJumpSeries = async (seriesUrl: string, runHeadless = tr
       return (text || '').trim();
     }, seriesDescription);
 
-    const seriesCreators = '#series-intro .disp-bl--bm.mar-b-md';
+    const seriesCredits = '#series-intro .disp-bl--bm.mar-b-md';
 
     const creators = await page.evaluate((selector) => {
       const text = document.querySelector(selector)?.textContent;
@@ -78,7 +78,7 @@ export const scrapeShonenJumpSeries = async (seriesUrl: string, runHeadless = tr
         }
       }
       return [];
-    }, seriesCreators);
+    }, seriesCredits);
     let imageUrl;
     try {
       const modal = await page.waitForSelector(modalId, { timeout: 1000 });

@@ -10,7 +10,6 @@ export interface IQueue {
   foundSeriesName?: string;
   imageUrl?: string;
   searchValue: string;
-  seriesCreators?: string[];
   seriesDescription?: string;
   seriesId: string;
   seriesPageUrl?: string;
@@ -23,4 +22,23 @@ export interface IQueue {
 
 export interface IHydratedQueue extends IQueue {
   series: ISeries | null;
+}
+
+interface ISeriesUpdatableValues {
+  seriesName?: string;
+  seriesDescription?: string;
+  credits?: Creator[];
+  withinCU?: boolean;
+  imageUrl?: string;
+}
+
+export interface IQueueReviewLog {
+  _id?: Types.ObjectId;
+  createdAt?: string;
+  updatedAt?: string;
+
+  queueId: string;
+  seriesId: string;
+  newValues: ISeriesUpdatableValues;
+  oldValues: ISeriesUpdatableValues;
 }
