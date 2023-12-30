@@ -5,6 +5,9 @@ import { getSeriesModelById } from '@justreadcomics/common/dist/model/lookup';
 import { Types } from 'mongoose';
 import { IHydratedQueue, IQueue, IQueueReviewData, ReviewStatus } from '@justreadcomics/common/dist/types/queue';
 import { logError } from '@justreadcomics/common/dist/util/logger';
+import { seriesModel } from '@justreadcomics/common/dist/model/series';
+import { uploadSeriesImageFromUrlToS3 } from '@justreadcomics/common/dist/s3/s3';
+import { ISeries } from '@justreadcomics/common/dist/types/series';
 
 const queueRouter = express.Router();
 
@@ -58,10 +61,50 @@ queueRouter.post('/review/:id', [verifyTokenMiddleware], async (req: ReviewQueue
   const { seriesId, seriesName, description, imageUrl, credits, withinCU, reviewStatus } = req.body;
 
   try {
-    console.log(req.body);
+    const seriesUpdateObject: Partial<ISeries> = {
+      seriesName,
+      description,
+      credits
+    };
+    if (seriesName && imageUrl && !imageUrl?.match(/justreadcomics/gi)) {
+      seriesUpdateObject.image = await uploadSeriesImageFromUrlToS3(seriesName, imageUrl);
+    }
+
+    const series = await seriesModel.findOneAndUpdate({ _id: new Types.ObjectId(seriesId) }, seriesUpdateObject, {
+      // this ensures we return the UPDATED document *sigh*
+      new: true
+    });
+
+    const queue = await queueModel.findOneAndUpdate(
+      { _id: new Types.ObjectId(queueId) },
+      {
+        reviewStatus,
+        reviewedDate: new Date()
+      },
+      {
+        // this ensures we return the UPDATED document *sigh*
+        new: true
+      }
+    );
+
+    if (queue && series) {
+      await series.validate();
+      await queue.validate();
+      await series.save();
+      const updatedQueue = await queue.save();
+
+      res.status(200).json({
+        msg: 'Success updating the queue and series',
+        error: false,
+        queue: await getHydratedQueue(updatedQueue.toObject())
+      });
+    } else {
+      logError('error finding and updating the series or queue');
+      res.status(400).json({ error: true, msg: 'error finding and updating the series or queue' });
+    }
   } catch (e: any) {
     logError(e);
-    res.status(400).json({ msg: 'There was an error updating the queue' });
+    res.status(400).json({ error: true, msg: 'There was an error updating the queue' });
   }
 });
 

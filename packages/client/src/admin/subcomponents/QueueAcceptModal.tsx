@@ -9,7 +9,7 @@ import { submitQueueReview } from '../../data/queue';
 
 interface QueueAcceptModalProps {
   showModal: boolean;
-  handleClose: (msg?: string) => void;
+  handleClose: (queueResponse?: { updatedQueue?: IHydratedClientQueue; msg?: string; error?: boolean }) => void;
   overrideChanges: QueueViewForm;
   queue: IHydratedClientQueue;
 }
@@ -31,14 +31,16 @@ export const QueueAcceptModal = ({ showModal, handleClose, overrideChanges, queu
       const updatedValues: IQueueReviewData = {
         seriesId: queue.series._id,
         reviewStatus: Object.values(overrideChanges).every((val) => val) ? 'accepted' : 'partial',
-        seriesName: overrideChanges.overwriteSeriesName ? seriesName : undefined,
-        credits: overrideChanges.overwriteSeriesCredits ? credits : undefined,
-        imageUrl: overrideChanges.overwriteSeriesImage ? seriesImage : undefined,
-        withinCU: overrideChanges.overwriteSeriesWithinCU ? withinCU : undefined
+        seriesName,
+        description: seriesDescription,
+        credits,
+        imageUrl: seriesImage,
+        withinCU
       };
 
-      submitQueueReview(queue._id, updatedValues).then(() => {
-        console.log('submitted the data!');
+      submitQueueReview(queue._id, updatedValues).then((res) => {
+        console.log(res);
+        handleClose({ updatedQueue: res.queue, msg: res.msg, error: res.error });
       });
     }
   };

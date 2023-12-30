@@ -1,6 +1,6 @@
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import React, { useCallback, useRef, useState } from 'react';
-import { IClientSeries, IClientSeriesService, ISeriesWithImageUpload } from '../types/series';
+import {IClientSeries, IClientSeriesService, IHydratedSeries, ISeriesWithImageUpload} from '../types/series';
 import { createSeries, fetchSeriesById, updateSeriesById } from '../data/series';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { fetchAllServices } from '../data/services';
@@ -9,9 +9,10 @@ import { ImageUploader } from './subcomponents/ImageUploader';
 import { ISeriesForm } from './types/series';
 import { SeriesImage } from '../components/SeriesImage';
 import { Scanner } from './series-service/Scanner';
-import { Button, Col, Container, FloatingLabel, Form, Row, Stack, Table, Toast, ToastContainer } from 'react-bootstrap';
+import { Button, Col, Container, FloatingLabel, Form, Row, Stack, Table } from 'react-bootstrap';
 import { ServiceImage } from '../components/ServiceImage';
 import { IScannerResult } from '../data/scanner';
+import {useToast} from "./hooks/useToast";
 
 const getSeriesServiceStringArray = (seriesServices?: IClientSeriesService[]) => {
   return (
@@ -22,14 +23,12 @@ const getSeriesServiceStringArray = (seriesServices?: IClientSeriesService[]) =>
 };
 export const AdminSeriesEdit = () => {
   const { id } = useParams();
+  const {renderToast, showSuccessToast, showErrorToast} = useToast();
 
   const [series, setSeries] = useState<IClientSeries>();
   const [services, setServices] = useState<IClientService[]>();
 
   const rightColumnRef = useRef<HTMLDivElement>(null);
-
-  const [showSuccessToast, setShowSuccessToast] = useState(false);
-  const [showErrorToast, setShowErrorToast] = useState('');
 
   const {
     register,
@@ -75,7 +74,7 @@ export const AdminSeriesEdit = () => {
   );
 
   const showErrorToastCall = (msg: string) => {
-    setShowErrorToast(msg);
+    showErrorToast(msg);
   };
 
   if (!series) {
@@ -104,16 +103,19 @@ export const AdminSeriesEdit = () => {
       imageBlob: file
     };
 
-    let promise;
+    let promise: Promise<IHydratedSeries>;
+    let successMessage: string;
     if (id) {
       promise = updateSeriesById(updatedSeries);
+      successMessage = `Success updating ${updatedSeries.seriesName}!`
     } else {
       promise = createSeries(updatedSeries);
+      successMessage = `Success creating ${updatedSeries.seriesName}!`
     }
     promise.then((res) => {
-      setShowSuccessToast(true);
       setSeries(res.series);
       setValue('services', getSeriesServiceStringArray(res.series.services));
+      showSuccessToast(successMessage);
     });
   });
 
@@ -139,10 +141,10 @@ export const AdminSeriesEdit = () => {
 
   const scannerCallback = (result: IScannerResult) => {
     if (!result.series && result.msg) {
-      setShowErrorToast(result.msg);
+      showErrorToast(result.msg);
     } else {
       setSeries(result.series);
-      setShowSuccessToast(true);
+      showSuccessToast('Scan complete!');
     }
   };
 
@@ -250,27 +252,7 @@ export const AdminSeriesEdit = () => {
           </Container>
         </Row>
       </Form>
-      <ToastContainer position="bottom-end" className="p-3">
-        <Toast onClose={() => setShowSuccessToast(false)} show={showSuccessToast} autohide delay={3000} bg="primary">
-          <Toast.Body>
-            <Stack direction="horizontal" className="justify-content-between">
-              <span>Successfully saved!</span>
-              <Button type="button" className="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></Button>
-            </Stack>
-          </Toast.Body>
-        </Toast>
-        <Toast onClose={() => setShowErrorToast('')} show={showErrorToast !== ''} autohide delay={3000} bg="secondary">
-          <Toast.Body style={{ borderLeft: '2px solid red' }}>
-            <Stack direction="horizontal" className="justify-content-between">
-              <div>
-                <p>There was an error!</p>
-                <span style={{ fontFamily: 'monospace' }}>{showErrorToast}</span>
-              </div>
-              <Button type="button" className="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></Button>
-            </Stack>
-          </Toast.Body>
-        </Toast>
-      </ToastContainer>
+      {renderToast()}
     </Container>
   );
 };

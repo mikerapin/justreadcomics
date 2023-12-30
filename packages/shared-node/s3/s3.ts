@@ -2,6 +2,7 @@ import { fromEnv } from '@aws-sdk/credential-providers'; // ES6 import
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { logError } from '../util/logger';
 import { cleanFileName } from '@justreadcomics/common/dist/util/string';
+import {randomString} from "../util/string";
 
 const s3Bucket = process.env.AWS_S3_BUCKET_NAME || '';
 
@@ -63,7 +64,7 @@ export const uploadSeriesImageFromUrlToS3 = async (seriesName: string, seriesIma
       const imageExtension = imageUrl.split('.').pop();
 
       // simplify the filename (uploader will clean the filename)
-      const filename = seriesName.split(' ').join('').toLowerCase();
+      const filename = `${seriesName.split(' ').join('').toLowerCase()}-${randomString(8)}`;
 
       if (imageBlob) {
         return await uploadImageToS3({

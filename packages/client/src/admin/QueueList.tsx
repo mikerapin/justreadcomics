@@ -21,15 +21,15 @@ export const QueueList = () => {
         <thead>
           <tr>
             <th />
+            <th style={{textAlign: 'center'}}>Reviewed</th>
             <th>Queue ID</th>
             <th>Series</th>
             <th>Search Value</th>
             <th>Found Series</th>
             <th>Date</th>
-            <th>Reviewed</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody style={{fontSize: '14px'}}>
           {queue?.map((q) => {
             return (
               <tr key={q._id}>
@@ -38,6 +38,7 @@ export const QueueList = () => {
                     View
                   </Button>
                 </td>
+                <td style={{textAlign: 'center'}}>{hasBeenReviewed(q) ? 'Yes' : 'No'}</td>
                 <td>
                   <small>
                     <code>{q._id}</code>
@@ -51,7 +52,6 @@ export const QueueList = () => {
                 <td>
                   <code>{q.createdAt}</code>
                 </td>
-                <td>{hasBeenReviewed(q) ? 'Yes' : 'No'}</td>
               </tr>
             );
           })}

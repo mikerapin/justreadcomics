@@ -8,6 +8,7 @@ import { CORPO_SERVICE_ID, CU_SERVICE_ID } from '@justreadcomics/common/dist/con
 import { hasBeenReviewed } from '../util/queueStatus';
 import { useForm } from 'react-hook-form';
 import { QueueAcceptModal } from './subcomponents/QueueAcceptModal';
+import { useToast } from './hooks/useToast';
 
 const defaultQueueOverrides: QueueViewForm = {
   overwriteSeriesName: false,
@@ -19,17 +20,22 @@ const defaultQueueOverrides: QueueViewForm = {
 
 export const QueueView = () => {
   const { id } = useParams();
-  const [queue, setQueue] = useState<IHydratedClientQueue | null>(null);
+  const { renderToast, showErrorToast, showSuccessToast } = useToast();
 
+  const [queue, setQueue] = useState<IHydratedClientQueue | null>(null);
   const [disableBigChangeButtons, setDisableBigChangeButtons] = useState(true);
   const [showChangesModal, setShowChangesModal] = useState(false);
   const [overrideChanges, setOverrideChanges] = useState<QueueViewForm>(defaultQueueOverrides);
 
   useEffect(() => {
     if (id) {
-      fetchSingleQueueEntry(id).then((res) => {
-        setQueue(res.data);
-      });
+      fetchSingleQueueEntry(id)
+        .then((res) => {
+          setQueue(res.data);
+        })
+        .catch(() => {
+          showErrorToast('There was an error loading the queue');
+        });
     }
     setTimeout(() => {
       setDisableBigChangeButtons(false);
@@ -48,10 +54,21 @@ export const QueueView = () => {
     return <Container>Loading...</Container>;
   }
 
-  const handleCloseChangesModal = (msg?: string) => {
+  const handleCloseChangesModal = (queueResponse?: {
+    updatedQueue?: IHydratedClientQueue;
+    msg?: string;
+    error?: boolean;
+  }) => {
     setShowChangesModal(false);
-    if (msg) {
-      // show toast and reload the content
+    if (queueResponse?.msg) {
+      if (queueResponse?.error) {
+        showErrorToast(queueResponse.msg);
+      } else {
+        showSuccessToast(queueResponse.msg);
+        if (queueResponse?.updatedQueue) {
+          setQueue(queueResponse.updatedQueue);
+        }
+      }
     }
   };
 
@@ -60,6 +77,8 @@ export const QueueView = () => {
     setShowChangesModal(true);
   });
 
+  const reviewed = hasBeenReviewed(queue);
+
   return (
     <Container>
       <Stack direction="horizontal" className="justify-content-between">
@@ -67,13 +86,13 @@ export const QueueView = () => {
           Queue <code>{id}</code>
         </h2>
         <ButtonGroup>
-          <Button variant="danger" disabled={hasBeenReviewed(queue) || disableBigChangeButtons}>
+          <Button variant="danger" disabled={reviewed || disableBigChangeButtons}>
             Reject All
           </Button>
-          <Button variant="secondary" disabled={hasBeenReviewed(queue) || disableBigChangeButtons}>
+          <Button variant="secondary" disabled={reviewed || disableBigChangeButtons}>
             Accept All
           </Button>
-          <Button variant="primary" onClick={handleSaveOverrides} disabled={!isDirty || hasBeenReviewed(queue)}>
+          <Button variant="primary" onClick={handleSaveOverrides} disabled={!isDirty || reviewed}>
             Accept Selected
           </Button>
         </ButtonGroup>
@@ -97,6 +116,7 @@ export const QueueView = () => {
                 type="checkbox"
                 {...register('overwriteSeriesName')}
                 inline
+                disabled={reviewed}
                 id="overwrite-seriesName"
                 label={
                   <>
@@ -113,6 +133,7 @@ export const QueueView = () => {
                 type="checkbox"
                 {...register('overwriteSeriesDescription')}
                 inline
+                disabled={reviewed}
                 id="overwrite-seriesDescription"
                 label={
                   <>
@@ -129,6 +150,7 @@ export const QueueView = () => {
                 type="checkbox"
                 {...register('overwriteSeriesImage')}
                 inline
+                disabled={reviewed}
                 id="overwrite-seriesImage"
                 label={
                   <Stack direction="horizontal" gap={5} className={'align-middle'}>
@@ -153,6 +175,7 @@ export const QueueView = () => {
                     type="checkbox"
                     {...register('overwriteSeriesWithinCU')}
                     inline
+                    disabled={reviewed}
                     id="overwrite-withinCU"
                     label={
                       <>
@@ -172,6 +195,7 @@ export const QueueView = () => {
                   type="checkbox"
                   {...register('overwriteSeriesCredits')}
                   inline
+                  disabled={reviewed}
                   id="overwrite-credits"
                   label={
                     <>
@@ -261,6 +285,7 @@ export const QueueView = () => {
         handleClose={handleCloseChangesModal}
         queue={queue}
       />
+      {renderToast()}
     </Container>
   );
 };
