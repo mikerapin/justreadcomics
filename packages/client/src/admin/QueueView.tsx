@@ -85,6 +85,7 @@ export const QueueView = () => {
         <h2 className="me-2">
           Queue <code>{id}</code>
         </h2>
+        {queue.reviewedDate ? <><h3>Review Date</h3><code>{queue.reviewedDate}</code></> : (
         <ButtonGroup>
           <Button variant="danger" disabled={reviewed || disableBigChangeButtons}>
             Reject All
@@ -95,7 +96,7 @@ export const QueueView = () => {
           <Button variant="primary" onClick={handleSaveOverrides} disabled={!isDirty || reviewed}>
             Accept Selected
           </Button>
-        </ButtonGroup>
+        </ButtonGroup>)}
       </Stack>
       <hr />
       <Row>
