@@ -1,5 +1,5 @@
 import { Badge, Button, Container, Modal, Stack } from 'react-bootstrap';
-import { IHydratedClientQueue, QueueViewForm } from '../../types/queue';
+import { QueueModalProps, QueueViewForm } from '../../types/queue';
 import { Link } from 'react-router-dom';
 import { getSeriesImage } from '../../util/image';
 import { CORPO_SERVICE_ID, CU_SERVICE_ID } from '@justreadcomics/common/dist/const';
@@ -7,11 +7,8 @@ import React from 'react';
 import { IQueueReviewData } from '@justreadcomics/common/dist/types/queue';
 import { submitQueueReview } from '../../data/queue';
 
-interface QueueAcceptModalProps {
-  showModal: boolean;
-  handleClose: (queueResponse?: { updatedQueue?: IHydratedClientQueue; msg?: string; error?: boolean }) => void;
+interface QueueAcceptModalProps extends QueueModalProps {
   overrideChanges: QueueViewForm;
-  queue: IHydratedClientQueue;
 }
 
 export const QueueAcceptModal = ({ showModal, handleClose, overrideChanges, queue }: QueueAcceptModalProps) => {
@@ -49,7 +46,7 @@ export const QueueAcceptModal = ({ showModal, handleClose, overrideChanges, queu
     <Modal show={showModal} onHide={() => handleClose()} backdrop="static" keyboard={false} size="lg">
       <Modal.Header closeButton>
         <Modal.Title>
-          By clicking <strong>Save</strong> you will make the following change(s) to the series:
+          By clicking <strong>Understood</strong> you will make the following change(s) to the series:
           <br />
           <Link
             title={`Open ${queue.series.seriesName} in a new tab`}

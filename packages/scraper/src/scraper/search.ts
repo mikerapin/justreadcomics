@@ -6,6 +6,7 @@ import { uploadSeriesImageFromUrlToS3 } from '@justreadcomics/common/dist/s3/s3'
 import { CORPO_SERVICE_ID, CU_SERVICE_ID } from '@justreadcomics/common/dist/const';
 import { cleanSearch } from '../scrape/util';
 import { distance } from 'closest-match';
+import { queueModel } from '@justreadcomics/shared-node/model/queue';
 
 export const searchAndScrapeCorpoAction = async (req: Request, res: Response) => {
   const id = req.params.id;
@@ -25,14 +26,28 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
     searchValue = cleanSearch(searchValue);
   }
 
-  const { imageUrl, seriesPageUrl, withinCU, seriesCredits, seriesDescription, seriesName } = await searchScrapeCorpo(
-    searchValue
-  );
+  const { imageUrl, seriesPageUrl, withinCU, seriesCredits, seriesDescription, seriesName } =
+    await searchScrapeCorpo(searchValue);
 
   // this is an UGLY comparison, but let's try it
   // get the distance between the initial series name and the series name
   if (seriesName && distance(searchValue, seriesName) > 5) {
-    // CORPO_SERVICE_ID needs to be added to the queue here
+    const queue = new queueModel({
+      seriesId: series.id,
+      serviceId: CORPO_SERVICE_ID,
+      searchValue,
+      imageUrl,
+      seriesPageUrl,
+      withinCU,
+      credits: seriesCredits,
+      seriesDescription,
+      seriesName
+    });
+    await queue.validate();
+    await queue.save();
+
+    // should we also update the scan date here for the series service??
+
     res.status(200).json({
       msg: `Found the series ${seriesName} but it does not match ${searchValue}. Queuing the data for manual approval.`
     });

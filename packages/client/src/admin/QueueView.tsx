@@ -9,6 +9,7 @@ import { hasBeenReviewed } from '../util/queueStatus';
 import { useForm } from 'react-hook-form';
 import { QueueAcceptModal } from './subcomponents/QueueAcceptModal';
 import { useToast } from './hooks/useToast';
+import { QueueRejectChangesModal } from './subcomponents/QueueRejectChangesModal';
 
 const defaultQueueOverrides: QueueViewForm = {
   overwriteSeriesName: false,
@@ -25,6 +26,7 @@ export const QueueView = () => {
   const [queue, setQueue] = useState<IHydratedClientQueue | null>(null);
   const [disableBigChangeButtons, setDisableBigChangeButtons] = useState(true);
   const [showChangesModal, setShowChangesModal] = useState(false);
+  const [showRejectChangesModal, setShowRejectChangesModal] = useState(false);
   const [overrideChanges, setOverrideChanges] = useState<QueueViewForm>(defaultQueueOverrides);
 
   useEffect(() => {
@@ -60,6 +62,7 @@ export const QueueView = () => {
     error?: boolean;
   }) => {
     setShowChangesModal(false);
+    setShowRejectChangesModal(false);
     if (queueResponse?.msg) {
       if (queueResponse?.error) {
         showErrorToast(queueResponse.msg);
@@ -77,6 +80,10 @@ export const QueueView = () => {
     setShowChangesModal(true);
   });
 
+  const handleRejectOverrides = handleSubmit(() => {
+    setShowRejectChangesModal(true);
+  });
+
   const reviewed = hasBeenReviewed(queue);
 
   return (
@@ -85,18 +92,30 @@ export const QueueView = () => {
         <h2 className="me-2">
           Queue <code>{id}</code>
         </h2>
-        {queue.reviewedDate ? <><h3>Review Date</h3><code>{queue.reviewedDate}</code></> : (
-        <ButtonGroup>
-          <Button variant="danger" disabled={reviewed || disableBigChangeButtons}>
-            Reject All
-          </Button>
-          <Button variant="secondary" disabled={reviewed || disableBigChangeButtons}>
-            Accept All
-          </Button>
-          <Button variant="primary" onClick={handleSaveOverrides} disabled={!isDirty || reviewed}>
-            Accept Selected
-          </Button>
-        </ButtonGroup>)}
+        {queue.reviewedDate ? (
+          <>
+            <div>
+            <h4>Review Date</h4>
+            <code>{queue.reviewedDate}</code>
+            </div>
+            <div>
+              <h4>Review Status: </h4>
+              <code>{queue.reviewStatus}</code>
+            </div>
+          </>
+        ) : (
+          <ButtonGroup>
+            <Button variant="danger" onClick={handleRejectOverrides} disabled={reviewed || disableBigChangeButtons}>
+              Reject All
+            </Button>
+            <Button variant="secondary" disabled={reviewed || disableBigChangeButtons}>
+              Accept All
+            </Button>
+            <Button variant="primary" onClick={handleSaveOverrides} disabled={!isDirty || reviewed}>
+              Accept Selected
+            </Button>
+          </ButtonGroup>
+        )}
       </Stack>
       <hr />
       <Row>
@@ -286,6 +305,7 @@ export const QueueView = () => {
         handleClose={handleCloseChangesModal}
         queue={queue}
       />
+      <QueueRejectChangesModal showModal={showRejectChangesModal} handleClose={handleCloseChangesModal} queue={queue} />
       {renderToast()}
     </Container>
   );

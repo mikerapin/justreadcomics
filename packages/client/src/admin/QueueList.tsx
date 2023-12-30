@@ -38,7 +38,7 @@ export const QueueList = () => {
                     View
                   </Button>
                 </td>
-                <td style={{textAlign: 'center'}}>{hasBeenReviewed(q) ? 'Yes' : 'No'}</td>
+                <td style={{textAlign: 'center'}}>{hasBeenReviewed(q) ? <code>{q.reviewStatus}</code> : 'No'}</td>
                 <td>
                   <small>
                     <code>{q._id}</code>

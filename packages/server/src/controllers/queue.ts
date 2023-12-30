@@ -11,6 +11,10 @@ import { ISeries } from '@justreadcomics/common/dist/types/series';
 
 const queueRouter = express.Router();
 
+interface ReviewQueueRequest extends Request {
+  body: IQueueReviewData;
+}
+
 const getHydratedQueue = async (queue: IQueue): Promise<IHydratedQueue> => {
   const seriesData = await getSeriesModelById(queue.seriesId);
 
@@ -21,7 +25,7 @@ const getHydratedQueue = async (queue: IQueue): Promise<IHydratedQueue> => {
 };
 
 queueRouter.get('/get/all', [verifyTokenMiddleware], async (req: Request, res: Response) => {
-  const queueList = await queueModel.find().sort('createdAt').limit(100);
+  const queueList = await queueModel.find().sort('createdAt').limit(100).sort({ createdAt: -1 });;
 
   const hydratedQueues = queueList.map(async (queue) => await getHydratedQueue(queue.toObject()));
 
@@ -46,10 +50,6 @@ queueRouter.get('/get/:id', [verifyTokenMiddleware], async (req: Request, res: R
     res.status(404).json({ msg: 'no queue here, bub' });
   }
 });
-
-interface ReviewQueueRequest extends Request {
-  body: IQueueReviewData;
-}
 
 queueRouter.post('/review/:id', [verifyTokenMiddleware], async (req: ReviewQueueRequest, res: Response) => {
   const queueId = req.params.id;
@@ -101,6 +101,43 @@ queueRouter.post('/review/:id', [verifyTokenMiddleware], async (req: ReviewQueue
     } else {
       logError('error finding and updating the series or queue');
       res.status(400).json({ error: true, msg: 'error finding and updating the series or queue' });
+    }
+  } catch (e: any) {
+    logError(e);
+    res.status(400).json({ error: true, msg: 'There was an error updating the queue' });
+  }
+});
+
+queueRouter.post('/review/:id/reject', [verifyTokenMiddleware], async (req: Request, res: Response) => {
+  const queueId = req.params.id;
+  if (!queueId) {
+    res.status(403).json({ msg: 'no id? no queue' });
+    return;
+  }
+  try {
+    const queue = await queueModel.findOneAndUpdate(
+      { _id: new Types.ObjectId(queueId) },
+      {
+        reviewStatus: 'rejected',
+        reviewedDate: new Date()
+      },
+      {
+        // this ensures we return the UPDATED document *sigh*
+        new: true
+      }
+    );
+    if (queue) {
+      await queue.validate();
+      const updatedQueue = await queue.save();
+
+      res.status(200).json({
+        msg: 'Queue has been marked as "rejected"',
+        error: false,
+        queue: await getHydratedQueue(updatedQueue.toObject())
+      });
+    } else {
+      logError('error finding and updating the queue');
+      res.status(400).json({ error: true, msg: 'error finding and updating the queue' });
     }
   } catch (e: any) {
     logError(e);

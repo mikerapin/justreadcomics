@@ -40,3 +40,14 @@ export const submitQueueReview = async (id: string, queueReviewData: IQueueRevie
   });
   return res.json();
 };
+
+export const rejectQueueReview = async (id: string): Promise<SubmitQueueReviewResult> => {
+  const res = await authFetch(`${API_BASE_URL}/queue/review/${id}/reject`, {
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    },
+    method: 'POST',
+  });
+  return res.json();
+}

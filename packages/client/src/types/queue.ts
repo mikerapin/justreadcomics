@@ -16,3 +16,9 @@ export interface QueueViewForm {
   overwriteSeriesCredits: boolean;
   overwriteSeriesWithinCU: boolean;
 }
+
+export interface QueueModalProps {
+  showModal: boolean;
+  handleClose: (queueResponse?: { updatedQueue?: IHydratedClientQueue; msg?: string; error?: boolean }) => void;
+  queue: IHydratedClientQueue;
+}
