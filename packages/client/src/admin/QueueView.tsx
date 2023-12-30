@@ -95,8 +95,8 @@ export const QueueView = () => {
         {queue.reviewedDate ? (
           <>
             <div>
-            <h4>Review Date</h4>
-            <code>{queue.reviewedDate}</code>
+              <h4>Review Date</h4>
+              <code>{queue.reviewedDate}</code>
             </div>
             <div>
               <h4>Review Status: </h4>
@@ -140,7 +140,7 @@ export const QueueView = () => {
                 id="overwrite-seriesName"
                 label={
                   <>
-                    <strong>Series Name:</strong>
+                    <strong>Series Name:</strong> {queue.distance ? <>(distance: {queue.distance})</> : ''}
                     <br />
                     {queue.foundSeriesName}
                   </>
@@ -178,7 +178,7 @@ export const QueueView = () => {
                       <strong>Image:</strong>
                     </div>
                     <img
-                      src={getSeriesImage()}
+                      src={queue.imageUrl ? queue.imageUrl : getSeriesImage()}
                       alt={queue.foundSeriesName}
                       className={`img-fluid img-thumbnail`}
                       style={{ width: '150px' }}

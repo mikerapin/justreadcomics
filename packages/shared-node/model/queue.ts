@@ -19,6 +19,7 @@ export const queueSchema = new Schema<IQueue>(
     credits: {
       type: Array
     },
+    distance: Number,
     reviewedDate: Date,
     reviewStatus: String
   },

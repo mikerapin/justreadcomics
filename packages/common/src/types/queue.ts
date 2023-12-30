@@ -16,6 +16,7 @@ export interface IQueue {
   seriesPageUrl?: string;
   serviceId: string;
   withinCU?: boolean;
+  distance?: number;
 
   reviewedDate?: string;
   reviewStatus?: ReviewStatus;

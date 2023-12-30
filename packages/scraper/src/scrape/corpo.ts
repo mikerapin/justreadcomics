@@ -87,6 +87,5 @@ export const searchScrapeCorpo = async (search: string, runHeadless?: boolean) =
   }
 
   await browser.close();
-
   return { imageUrl, seriesPageUrl, withinCU, seriesDescription, seriesCredits, seriesName };
 };

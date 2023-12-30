@@ -144,6 +144,8 @@ export const AdminSeriesEdit = () => {
       showErrorToast(result.msg);
     } else {
       setSeries(result.series);
+      setValue('description', result.series.description)
+      setValue('credits', result.series.credits)
       showSuccessToast('Scan complete!');
     }
   };

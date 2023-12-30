@@ -1,17 +1,23 @@
 import { seriesScanners } from '../../static/const';
 import { useState } from 'react';
 import { IScannerResult, triggerScanner } from '../../data/scanner';
-import { Button } from 'react-bootstrap';
+import { Dropdown, DropdownButton } from 'react-bootstrap';
 import { ISeriesService } from '@justreadcomics/common/dist/types/series';
 
 interface ScannerProps {
   seriesService?: ISeriesService;
   seriesId?: string;
+  scanWithExtras?: boolean;
   scannerResultCallback: (result: IScannerResult) => void;
   showErrorToastCall: (message: string) => void;
 }
 
-export const Scanner = ({ seriesService, seriesId, scannerResultCallback, showErrorToastCall }: ScannerProps) => {
+export const Scanner = ({
+  seriesService,
+  seriesId,
+  scannerResultCallback,
+  showErrorToastCall
+}: ScannerProps) => {
   const [inProgress, setInProgress] = useState(false);
   if (!seriesService || !seriesId) {
     return <></>;
@@ -22,9 +28,9 @@ export const Scanner = ({ seriesService, seriesId, scannerResultCallback, showEr
     const lastScan = seriesService.lastScan;
     const yesterday = new Date(new Date().getTime() - 24 * 60 * 60 * 1000).getTime();
     const disableButton = lastScan ? new Date(lastScan).getTime() - yesterday > 0 : false;
-    const handleClick = () => {
+    const handleClick = (cleanedTitle: boolean) => {
       setInProgress(true);
-      triggerScanner(service.seriesServiceId, seriesId)
+      triggerScanner(service.seriesServiceId, seriesId, cleanedTitle)
         .then((res) => {
           if (res) {
             scannerResultCallback(res);
@@ -37,16 +43,19 @@ export const Scanner = ({ seriesService, seriesId, scannerResultCallback, showEr
           setInProgress(false);
         });
     };
+
+    const title = inProgress ? (
+      <div className="spinner-border spinner-border-sm" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </div>
+    ) : (
+      <span>Scan</span>
+    );
     return (
-      <Button variant="secondary" type="button" onClick={handleClick} disabled={disableButton || inProgress}>
-        {inProgress ? (
-          <div className="spinner-border spinner-border-sm" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        ) : (
-          'Scan Now'
-        )}
-      </Button>
+      <DropdownButton id="dropdown-basic-button" title={title} disabled={inProgress || disableButton}>
+        <Dropdown.Item onClick={() => handleClick(false)}>Scan Full Title</Dropdown.Item>
+        <Dropdown.Item onClick={() => handleClick(true)}>Scan Cleaned Title</Dropdown.Item>
+      </DropdownButton>
     );
   }
   return <></>;
