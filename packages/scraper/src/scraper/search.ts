@@ -39,7 +39,7 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
 
     const { imageUrl, seriesPageUrl, withinCU, seriesCredits, seriesDescription, seriesName } =
       await searchScrapeCorpo(searchValue);
-
+    
     if (seriesPageUrl && seriesName) {
       // this is an UGLY comparison, but let's try it
       // get the distance between the initial series name and the series name

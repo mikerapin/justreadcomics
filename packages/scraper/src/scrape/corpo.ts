@@ -1,4 +1,4 @@
-import { cleanSearch, initScraperPage } from './util';
+import { initScraperPage } from './util';
 import { isProduction } from '@justreadcomics/common/dist/util/process';
 import { Creator } from '@justreadcomics/common/dist/types/series';
 import { logError } from '@justreadcomics/common/dist/util/logger';
@@ -8,6 +8,27 @@ import { CORPO_SERVICE_ID } from '@justreadcomics/common/dist/const';
 
 const FALLBACK_SEARCH =
   'https://www.amazon.com/s?k=%s&i=comics-manga&rh=n%3A156104011%2Cp_n_feature_browse-bin%3A13684862011&test=1';
+
+const findCreators = (selector: string) => {
+  const creators = document.querySelectorAll(selector);
+  const creatorsArray: Creator[] = [];
+  creators.forEach((c, index) => {
+    const withinParenthesis = /\(([^)]+)\)/gi;
+    if (c?.textContent) {
+      const creatorText = c.textContent.trim();
+      let creatorRole = creatorText.match(withinParenthesis) || '';
+      if (typeof creatorRole === 'object') {
+        creatorRole = creatorRole[0].replace(/[^a-zA-Z0-9]/g, '');
+      }
+
+      const creator = creatorText.split(' (')[0];
+      if (creator) {
+        creatorsArray.push({ name: creator, role: creatorRole, order: index });
+      }
+    }
+  });
+  return creatorsArray;
+}
 
 export const searchScrapeCorpo = async (search: string, runHeadless?: boolean) => {
   const { page, browser } = await initScraperPage(runHeadless || isProduction());
@@ -41,7 +62,9 @@ export const searchScrapeCorpo = async (search: string, runHeadless?: boolean) =
       const seriesUrlSelector = 'link[rel="canonical"]';
       const seriesNameSelector = '#collection-title';
       const seriesDescriptionSelector = '#collection_description';
-      const seriesCreditsSelector = '.series-common-atf .a-column.a-span8 a';
+      const seriesCreditsBaseSelector = '#series-common-atf a[href*="/e/B"]';
+      const seriesCreditsLinkHoverSelector = '#series-common-atf .a-declarative #contributor-link';
+      const seriesCreditsPopoverSelector = '.a-popover #a-popover-content-1 a';
 
       imageUrl = await page.evaluate((selector) => {
         const url = document.querySelector(selector)?.getAttribute('content');
@@ -60,17 +83,19 @@ export const searchScrapeCorpo = async (search: string, runHeadless?: boolean) =
         return document.querySelector(selector)?.textContent;
       }, seriesNameSelector);
 
-      seriesCredits = await page.evaluate((selector) => {
-        const creators = document.querySelectorAll(selector);
-        const creatorsArray: Creator[] = [];
-        creators.forEach((c, index) => {
-          const creator = c?.textContent?.split(' (')[0];
-          if (creator) {
-            creatorsArray.push({ name: creator, role: '', order: index });
-          }
-        });
-        return creatorsArray;
-      }, seriesCreditsSelector);
+      seriesCredits = await page.evaluate(findCreators, seriesCreditsBaseSelector);
+
+      // if the credits weren't actually links, then we gotta play with the page a bit to get the popover
+      //  to appear which has ALL of the contributors
+      if (seriesCredits.length === 0) {
+        await page.hover(seriesCreditsLinkHoverSelector);
+        const creditsLink = await page.waitForSelector(seriesCreditsLinkHoverSelector, { timeout: 3000 });
+        if (creditsLink) {
+          await creditsLink.click();
+          const creditsPopover = await page.waitForSelector(seriesCreditsPopoverSelector, { timeout: 3000 });
+          seriesCredits = await page.evaluate(findCreators, seriesCreditsPopoverSelector);
+        }
+      }
 
       const cuSelector = '#series-childAsin-item_1 ::-p-text(Read for Free)';
       try {
@@ -84,8 +109,10 @@ export const searchScrapeCorpo = async (search: string, runHeadless?: boolean) =
     }
   } catch (e: any) {
     logError('unable to find or load dom queries');
+    console.log(e);
   }
 
   await browser.close();
+
   return { imageUrl, seriesPageUrl, withinCU, seriesDescription, seriesCredits, seriesName };
 };
