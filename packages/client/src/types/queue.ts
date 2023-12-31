@@ -12,6 +12,7 @@ export interface IHydratedClientQueue extends IClientQueue {
 }
 
 export interface QueueViewForm {
+  overwriteAddService: boolean;
   overwriteSeriesName: boolean;
   overwriteSeriesDescription: boolean;
   overwriteSeriesImage: boolean;

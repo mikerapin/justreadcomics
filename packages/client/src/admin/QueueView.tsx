@@ -10,8 +10,10 @@ import { useForm } from 'react-hook-form';
 import { QueueAcceptModal } from './subcomponents/QueueAcceptModal';
 import { useToast } from './hooks/useToast';
 import { QueueRejectChangesModal } from './subcomponents/QueueRejectChangesModal';
+import {ServiceImage} from "../components/ServiceImage";
 
 const defaultQueueOverrides: QueueViewForm = {
+  overwriteAddService: false,
   overwriteSeriesName: false,
   overwriteSeriesDescription: false,
   overwriteSeriesImage: false,
@@ -117,6 +119,20 @@ export const QueueView = () => {
           </ButtonGroup>
         )}
       </Stack>
+      <hr />
+      <Form.Check
+        type="checkbox"
+        {...register('overwriteAddService')}
+        inline
+        disabled={reviewed}
+        id="overwrite-add-service"
+        label={
+          <Stack direction="horizontal" gap={4}>
+            <div>Service:</div>
+            <ServiceImage service={queue.service} size="xs" />
+          </Stack>
+        }
+      />
       <hr />
       <Row>
         <Col xs={6}>

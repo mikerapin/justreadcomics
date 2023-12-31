@@ -6,12 +6,14 @@ import { CORPO_SERVICE_ID, CU_SERVICE_ID } from '@justreadcomics/common/dist/con
 import React from 'react';
 import { IQueueReviewData } from '@justreadcomics/common/dist/types/queue';
 import { submitQueueReview } from '../../data/queue';
+import {ServiceImage} from "../../components/ServiceImage";
 
 interface QueueAcceptModalProps extends QueueModalProps {
   overrideChanges: QueueViewForm;
 }
 
 export const QueueAcceptModal = ({ showModal, handleClose, overrideChanges, queue }: QueueAcceptModalProps) => {
+  const addService = overrideChanges.overwriteAddService;
   const seriesName = overrideChanges.overwriteSeriesName ? queue.foundSeriesName : queue.series.seriesName;
   const seriesDescription = overrideChanges.overwriteSeriesDescription
     ? queue.seriesDescription
@@ -23,7 +25,6 @@ export const QueueAcceptModal = ({ showModal, handleClose, overrideChanges, queu
     : queue.series.services?.includes({ _id: CU_SERVICE_ID });
 
   const submitChanges = () => {
-    console.log('submitting changes');
     if (queue.series._id) {
       const updatedValues: IQueueReviewData = {
         seriesId: queue.series._id,
@@ -32,11 +33,11 @@ export const QueueAcceptModal = ({ showModal, handleClose, overrideChanges, queu
         description: seriesDescription,
         credits,
         imageUrl: seriesImage,
-        withinCU
+        withinCU,
+        addService
       };
 
       submitQueueReview(queue._id, updatedValues).then((res) => {
-        console.log(res);
         handleClose({ updatedQueue: res.queue, msg: res.msg, error: res.error });
       });
     }
@@ -61,6 +62,13 @@ export const QueueAcceptModal = ({ showModal, handleClose, overrideChanges, queu
       <Modal.Body>
         <Container>
           <h4>Updated Series information:</h4>
+          <div>
+            <strong>Add <ServiceImage service={queue.service} size="xs" /> as Series Service:</strong>{' '}
+            {overrideChanges.overwriteAddService ? <Badge bg="danger">Will Change!</Badge> : null}
+            <br />
+            {addService ? <code>true</code> : <code>false</code>}
+          </div>
+          <hr />
           <div>
             <strong>Series Name:</strong>{' '}
             {overrideChanges.overwriteSeriesName ? <Badge bg="danger">Will Change!</Badge> : null}

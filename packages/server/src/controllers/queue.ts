@@ -8,6 +8,7 @@ import { IHydratedQueue, IQueue, IQueueReviewData } from '@justreadcomics/common
 import { ISeries } from '@justreadcomics/common/dist/types/series';
 import { logError } from '@justreadcomics/shared-node/dist/util/logger';
 import { queueModel } from '@justreadcomics/shared-node/dist/model/queue';
+import { insertOrUpdateSeriesService } from '@justreadcomics/shared-node/dist/util/scraper';
 
 const queueRouter = express.Router();
 
@@ -59,14 +60,20 @@ queueRouter.post('/review/:id', [verifyTokenMiddleware], async (req: ReviewQueue
     return;
   }
 
-  const { seriesId, seriesName, description, imageUrl, credits, withinCU, reviewStatus } = req.body;
+  const { seriesId, seriesName, description, imageUrl, credits, withinCU, reviewStatus, addService } = req.body;
 
   try {
+    const queue = await queueModel.findOne({ _id: new Types.ObjectId(queueId) });
+    if (!queue) {
+      res.status(403).json({ msg: 'no queue found, bub' });
+      return;
+    }
     const seriesUpdateObject: Partial<ISeries> = {
       seriesName,
       description,
       credits
     };
+
     if (seriesName && imageUrl && !imageUrl?.match(/justreadcomics/gi)) {
       seriesUpdateObject.image = await uploadSeriesImageFromUrlToS3(seriesName, imageUrl);
     }
@@ -76,17 +83,15 @@ queueRouter.post('/review/:id', [verifyTokenMiddleware], async (req: ReviewQueue
       new: true
     });
 
-    const queue = await queueModel.findOneAndUpdate(
-      { _id: new Types.ObjectId(queueId) },
-      {
-        reviewStatus,
-        reviewedDate: new Date()
-      },
-      {
-        // this ensures we return the UPDATED document *sigh*
-        new: true
-      }
-    );
+    const seriesPageUrl = queue.get('seriesPageUrl');
+
+    if (series && addService && seriesPageUrl) {
+      const serviceID = queue.serviceId;
+      insertOrUpdateSeriesService(series, serviceID, seriesPageUrl);
+    }
+
+    queue.reviewStatus = reviewStatus;
+    queue.reviewedDate = new Date().toJSON();
 
     if (queue && series) {
       await series.validate();

@@ -8,6 +8,7 @@ import { cleanSearch } from '../scrape/util';
 import { distance } from 'closest-match';
 import { queueModel } from '@justreadcomics/shared-node/dist/model/queue';
 import { logError } from '@justreadcomics/shared-node/dist/util/logger';
+import {insertOrUpdateSeriesService} from "@justreadcomics/shared-node/dist/util/scraper";
 
 export const searchAndScrapeCorpoAction = async (req: Request, res: Response) => {
   const id = req.params.id;
@@ -69,41 +70,27 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
         return;
       }
 
-      const corpoResults = {
-        _id: CORPO_SERVICE_ID,
-        seriesServiceUrl: seriesPageUrl,
-        lastScan: new Date().toJSON()
-      };
+      insertOrUpdateSeriesService(series, CORPO_SERVICE_ID, seriesPageUrl);
 
+      // we can't use `insertOrUpdateSeriesService` here because we may need to remove CU if it existed
       if (series.services) {
-        const corpoService = series.services.id(CORPO_SERVICE_ID);
+        const cuService = series.services.id(CU_SERVICE_ID);
+        const cuResults = {
+          _id: CU_SERVICE_ID,
+          seriesServiceUrl: seriesPageUrl,
+          lastScan: new Date().toJSON()
+        };
 
-        if (corpoService) {
-          corpoService.seriesServiceUrl = corpoResults.seriesServiceUrl;
-          corpoService.lastScan = corpoResults.lastScan;
+        if (withinCU) {
+          if (cuService) {
+            cuService.seriesServiceUrl = cuResults.seriesServiceUrl;
+            cuService.lastScan = cuResults.lastScan;
+          } else {
+            series.services.push(cuResults);
+          }
         } else {
-          series.services.push(corpoResults);
+          series.services.id(CU_SERVICE_ID)?.deleteOne();
         }
-      } else {
-        series.services = [corpoResults] as ISeriesServiceType;
-      }
-
-      const cuService = series.services.id(CU_SERVICE_ID);
-      const cuResults = {
-        _id: CU_SERVICE_ID,
-        seriesServiceUrl: seriesPageUrl,
-        lastScan: new Date().toJSON()
-      };
-
-      if (withinCU) {
-        if (cuService) {
-          cuService.seriesServiceUrl = cuResults.seriesServiceUrl;
-          cuService.lastScan = cuResults.lastScan;
-        } else {
-          series.services.push(cuResults);
-        }
-      } else {
-        series.services.id(CU_SERVICE_ID)?.deleteOne();
       }
 
       // only update the image if it didn't already exist (to save space on s3...?)

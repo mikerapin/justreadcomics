@@ -34,6 +34,7 @@ interface ISeriesUpdatableValues {
   credits?: Creator[];
   withinCU?: boolean;
   imageUrl?: string;
+  seriesPageUrl?: string;
 }
 
 export interface IQueueReviewLog {
@@ -55,4 +56,6 @@ export interface IQueueReviewData {
   credits?: Creator[];
   withinCU?: boolean;
   reviewStatus: ReviewStatus;
+  addService?: boolean;
+  seriesPageUrl?: string;
 }
