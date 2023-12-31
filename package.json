@@ -7,7 +7,7 @@
     "packages/*"
   ],
   "scripts": {
-    "common": "nx build @justreadcomics/common --output-style=static && nx build @justreadcomics/shared-node --output-style=static",
+    "common": "nx build @justreadcomics/common --skip-nx-cache && nx build @justreadcomics/shared-node --skip-nx-cache",
     "start:dev": "npm run common && nx run-many -t start:dev --output-style=static --exclude @justreadcomics/common @justreadcomics/shared-node",
     "start:build-run-prod": "npm run common && nx run-many -t start:build-run-prod",
     "start": "nx run-many -t start",

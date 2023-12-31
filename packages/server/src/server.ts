@@ -6,9 +6,9 @@ dotenv.config({ path: `./config/.env.${process.env.NODE_ENV}.local` });
 import { seriesRouter } from './controllers/series';
 import { servicesRouter } from './controllers/services';
 import { authRouter } from './controllers/auth';
-import { connectToServer } from '@justreadcomics/shared-node/db/conn';
-import { uploadSeriesImageFromUrlToS3 } from '@justreadcomics/shared-node/s3/s3';
-import { logError, logFatal, logInfo } from '@justreadcomics/shared-node/util/logger';
+import { connectToServer } from '@justreadcomics/shared-node/dist/db/conn';
+import { uploadSeriesImageFromUrlToS3 } from '@justreadcomics/shared-node/dist/s3/s3';
+import { logError, logFatal, logInfo } from '@justreadcomics/shared-node/dist/util/logger';
 import { queueRouter } from './controllers/queue';
 
 const app = express();

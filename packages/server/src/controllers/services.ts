@@ -2,10 +2,10 @@ import express, { Request, Response } from 'express';
 
 import { Types } from 'mongoose';
 import { IService } from '@justreadcomics/common/dist/types/services';
-import { upload } from '@justreadcomics/common/dist/util/multer';
-import { servicesModel } from '@justreadcomics/shared-node/model/services';
-import { verifyTokenMiddleware } from '@justreadcomics/shared-node/middleware/auth';
-import { uploadImageToS3 } from '@justreadcomics/shared-node/s3/s3';
+import { upload } from '@justreadcomics/shared-node/dist/util/multer';
+import { servicesModel } from '@justreadcomics/shared-node/dist/model/services';
+import { verifyTokenMiddleware } from '@justreadcomics/shared-node/dist/middleware/auth';
+import { uploadImageToS3 } from '@justreadcomics/shared-node/dist/s3/s3';
 
 interface IServiceRequestBody extends IService {
   imageBlob?: File[];

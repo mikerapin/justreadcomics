@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { uploadSeriesImageFromUrlToS3 } from '@justreadcomics/common/dist/s3/s3';
-import { getSeriesModelById } from '@justreadcomics/common/dist/model/lookup';
+import { uploadSeriesImageFromUrlToS3 } from '@justreadcomics/shared-node/dist/s3/s3';
+import { getSeriesModelById } from '@justreadcomics/shared-node/dist/model/lookup';
 import { scrapeMarvelSeries } from '../scrape/marvel';
 import {
   IMAGE_SERVICE_ID,

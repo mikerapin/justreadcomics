@@ -5,7 +5,7 @@ import {
   scrapeIndexedShonenJumpSeriesAction
 } from '../scraper/indexed';
 import { searchAndScrapeCorpoAction } from '../scraper/search';
-import { keyChecker, verifyTokenMiddleware } from '@justreadcomics/shared-node/middleware/auth';
+import { keyChecker, verifyTokenMiddleware } from '@justreadcomics/shared-node/dist/middleware/auth';
 
 const scraperRouter = express.Router();
 

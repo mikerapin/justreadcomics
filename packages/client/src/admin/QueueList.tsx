@@ -4,13 +4,14 @@ import { fetchQueueEntries } from '../data/queue';
 import { IHydratedClientQueue } from '../types/queue';
 import { Link, useNavigate } from 'react-router-dom';
 import { hasBeenReviewed } from '../util/queueStatus';
+import {ServiceImage} from "../components/ServiceImage";
 
 export const QueueList = () => {
   const navigate = useNavigate();
-  const [queue, setQueue] = useState<IHydratedClientQueue[] | null>(null);
+  const [queueList, setQueueList] = useState<IHydratedClientQueue[] | null>(null);
   useEffect(() => {
     fetchQueueEntries().then((res) => {
-      setQueue(res.data);
+      setQueueList(res.data);
     });
   }, []);
   return (
@@ -23,6 +24,7 @@ export const QueueList = () => {
             <th />
             <th style={{textAlign: 'center'}}>Reviewed</th>
             <th>Queue ID</th>
+            <th>Service</th>
             <th>Series</th>
             <th>Search Value</th>
             <th>Found Series</th>
@@ -30,27 +32,30 @@ export const QueueList = () => {
           </tr>
         </thead>
         <tbody style={{fontSize: '14px'}}>
-          {queue?.map((q) => {
+          {queueList?.map((queue) => {
             return (
-              <tr key={q._id}>
+              <tr key={queue._id}>
                 <td>
-                  <Button size="sm" onClick={() => navigate(`/admin/queue/${q._id}`)}>
+                  <Button size="sm" onClick={() => navigate(`/admin/queue/${queue._id}`)}>
                     View
                   </Button>
                 </td>
-                <td style={{textAlign: 'center'}}>{hasBeenReviewed(q) ? <code>{q.reviewStatus}</code> : 'No'}</td>
+                <td style={{textAlign: 'center'}}>{hasBeenReviewed(queue) ? <code>{queue.reviewStatus}</code> : 'No'}</td>
                 <td>
                   <small>
-                    <code>{q._id}</code>
+                    <code>{queue._id}</code>
                   </small>
                 </td>
                 <td>
-                  <Link to={`/admin/series/${q.seriesId}`}>{q.series.seriesName}</Link>
+                  <ServiceImage service={queue.service} size="xs" />
                 </td>
-                <td>{q.searchValue}</td>
-                <td>{q.foundSeriesName}</td>
                 <td>
-                  <code>{q.createdAt}</code>
+                  <Link to={`/admin/series/${queue.seriesId}`}>{queue.series.seriesName}</Link>
+                </td>
+                <td>{queue.searchValue}</td>
+                <td>{queue.foundSeriesName}</td>
+                <td>
+                  <code>{queue.createdAt}</code>
                 </td>
               </tr>
             );

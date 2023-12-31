@@ -1,12 +1,12 @@
 import express, { Request, Response } from 'express';
 import { Types } from 'mongoose';
 
-import { getHydratedSeriesById, lookupServicesForSeries } from '@justreadcomics/common/dist/model/lookup';
+import { getHydratedSeriesById, lookupServicesForSeries } from '@justreadcomics/shared-node/dist/model/lookup';
 import { IHydratedSeries, ISeries } from '@justreadcomics/common/dist/types/series';
-import { verifyTokenMiddleware } from '@justreadcomics/shared-node/middleware/auth';
-import { seriesModel } from '@justreadcomics/shared-node/model/series';
-import { upload } from '@justreadcomics/shared-node/util/multer';
-import { uploadImageToS3 } from '@justreadcomics/shared-node/s3/s3';
+import { verifyTokenMiddleware } from '@justreadcomics/shared-node/dist/middleware/auth';
+import { seriesModel } from '@justreadcomics/shared-node/dist/model/series';
+import { upload } from '@justreadcomics/shared-node/dist/util/multer';
+import { uploadImageToS3 } from '@justreadcomics/shared-node/dist/s3/s3';
 import { escapeRegex } from '@justreadcomics/common/dist/util/util';
 
 interface CreateSeriesRequest extends Request {

@@ -1,13 +1,13 @@
 import express, { Request, Response } from 'express';
-import { verifyTokenMiddleware } from '@justreadcomics/shared-node/middleware/auth';
-import { queueModel } from '@justreadcomics/shared-node/model/queue';
-import { getSeriesModelById } from '@justreadcomics/common/dist/model/lookup';
+import { verifyTokenMiddleware } from '@justreadcomics/shared-node/dist/middleware/auth';
+import { getServiceModelById, getSeriesModelById } from '@justreadcomics/shared-node/dist/model/lookup';
+import { seriesModel } from '@justreadcomics/shared-node/dist/model/series';
+import { uploadSeriesImageFromUrlToS3 } from '@justreadcomics/shared-node/dist/s3/s3';
 import { Types } from 'mongoose';
-import { IHydratedQueue, IQueue, IQueueReviewData, ReviewStatus } from '@justreadcomics/common/dist/types/queue';
-import { logError } from '@justreadcomics/common/dist/util/logger';
-import { seriesModel } from '@justreadcomics/common/dist/model/series';
-import { uploadSeriesImageFromUrlToS3 } from '@justreadcomics/common/dist/s3/s3';
+import { IHydratedQueue, IQueue, IQueueReviewData } from '@justreadcomics/common/dist/types/queue';
 import { ISeries } from '@justreadcomics/common/dist/types/series';
+import { logError } from '@justreadcomics/shared-node/dist/util/logger';
+import { queueModel } from '@justreadcomics/shared-node/dist/model/queue';
 
 const queueRouter = express.Router();
 
@@ -17,16 +17,17 @@ interface ReviewQueueRequest extends Request {
 
 const getHydratedQueue = async (queue: IQueue): Promise<IHydratedQueue> => {
   const seriesData = await getSeriesModelById(queue.seriesId);
+  const serviceData = await getServiceModelById(queue.serviceId);
 
   return {
     ...queue,
-    series: seriesData
+    series: seriesData,
+    service: serviceData
   };
 };
 
 queueRouter.get('/get/all', [verifyTokenMiddleware], async (req: Request, res: Response) => {
-  const queueList = await queueModel.find().sort('createdAt').limit(100).sort({ createdAt: -1 });;
-
+  const queueList = await queueModel.find().sort('createdAt').limit(100).sort({ createdAt: -1 });
   const hydratedQueues = queueList.map(async (queue) => await getHydratedQueue(queue.toObject()));
 
   const data = {
@@ -47,7 +48,7 @@ queueRouter.get('/get/:id', [verifyTokenMiddleware], async (req: Request, res: R
     const hydratedQueue = await getHydratedQueue(queueData.toObject());
     res.status(200).json({ data: hydratedQueue });
   } else {
-    res.status(404).json({ msg: 'no queue here, bub' });
+    res.status(404).json({ msg: 'no queue here, bub', data: {} });
   }
 });
 

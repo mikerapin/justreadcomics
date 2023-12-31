@@ -1,10 +1,10 @@
 import { initScraperPage } from './util';
 import { isProduction } from '@justreadcomics/common/dist/util/process';
 import { Creator } from '@justreadcomics/common/dist/types/series';
-import { logError } from '@justreadcomics/common/dist/util/logger';
 import { Types } from 'mongoose';
-import { servicesModel } from '@justreadcomics/common/dist/model/services';
 import { CORPO_SERVICE_ID } from '@justreadcomics/common/dist/const';
+import { servicesModel } from '@justreadcomics/shared-node/dist/model/services';
+import { logError } from '@justreadcomics/shared-node/dist/util/logger';
 
 const FALLBACK_SEARCH =
   'https://www.amazon.com/s?k=%s&i=comics-manga&rh=n%3A156104011%2Cp_n_feature_browse-bin%3A13684862011&test=1';
@@ -28,7 +28,7 @@ const findCreators = (selector: string) => {
     }
   });
   return creatorsArray;
-}
+};
 
 export const searchScrapeCorpo = async (search: string, runHeadless?: boolean) => {
   const { page, browser } = await initScraperPage(runHeadless || isProduction());

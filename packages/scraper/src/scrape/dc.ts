@@ -1,7 +1,7 @@
 import { initScraperPage } from './util';
 import { isProduction } from '@justreadcomics/common/dist/util/process';
 import { IMassDcImport } from '@justreadcomics/common/dist/types/scraper';
-import { logError } from '@justreadcomics/common/dist/util/logger';
+import { logError } from '@justreadcomics/shared-node/dist/util/logger';
 
 export const massDcImport = async (runHeadless: boolean) => {
   const { page, browser } = await initScraperPage(runHeadless || isProduction());

@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
 import { searchScrapeCorpo } from '../scrape/corpo';
 import { ISeriesServiceType } from '@justreadcomics/common/dist/types/series';
-import { getSeriesModelById } from '@justreadcomics/common/dist/model/lookup';
-import { uploadSeriesImageFromUrlToS3 } from '@justreadcomics/common/dist/s3/s3';
+import { uploadSeriesImageFromUrlToS3 } from '@justreadcomics/shared-node/dist/s3/s3';
+import { getSeriesModelById } from '@justreadcomics/shared-node/dist/model/lookup';
 import { CORPO_SERVICE_ID, CU_SERVICE_ID } from '@justreadcomics/common/dist/const';
 import { cleanSearch } from '../scrape/util';
 import { distance } from 'closest-match';
-import { queueModel } from '@justreadcomics/shared-node/model/queue';
-import { logError } from '@justreadcomics/common/dist/util/logger';
+import { queueModel } from '@justreadcomics/shared-node/dist/model/queue';
+import { logError } from '@justreadcomics/shared-node/dist/util/logger';
 
 export const searchAndScrapeCorpoAction = async (req: Request, res: Response) => {
   const id = req.params.id;
@@ -39,7 +39,7 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
 
     const { imageUrl, seriesPageUrl, withinCU, seriesCredits, seriesDescription, seriesName } =
       await searchScrapeCorpo(searchValue);
-    
+
     if (seriesPageUrl && seriesName) {
       // this is an UGLY comparison, but let's try it
       // get the distance between the initial series name and the series name

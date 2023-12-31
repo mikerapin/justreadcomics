@@ -1,7 +1,7 @@
 import { initScraperPage } from './util';
 import { IShonenJumpSeries } from '@justreadcomics/common/dist/types/scraper';
 import { isProduction } from '@justreadcomics/common/dist/util/process';
-import { logError } from '@justreadcomics/common/dist/util/logger';
+import { logError } from '@justreadcomics/shared-node/dist/util/logger';
 
 export const massImportShonenJump = async (runHeadless = true) => {
   const { page, browser } = await initScraperPage(runHeadless || isProduction());

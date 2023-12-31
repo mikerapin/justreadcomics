@@ -1,5 +1,6 @@
 import { Types } from 'mongoose';
 import { Creator, ISeries } from './series';
+import {IService} from "./services";
 
 export type ReviewStatus = 'rejected' | 'accepted' | 'partial';
 export interface IQueue {
@@ -24,6 +25,7 @@ export interface IQueue {
 
 export interface IHydratedQueue extends IQueue {
   series: ISeries | null;
+  service: IService | null;
 }
 
 interface ISeriesUpdatableValues {

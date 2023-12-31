@@ -1,5 +1,6 @@
 import { IQueue } from '@justreadcomics/common/dist/types/queue';
 import { IClientSeries } from './series';
+import {IClientService} from "./service";
 
 export interface IClientQueue extends Omit<IQueue, '_id'> {
   _id: string;
@@ -7,6 +8,7 @@ export interface IClientQueue extends Omit<IQueue, '_id'> {
 
 export interface IHydratedClientQueue extends IClientQueue {
   series: IClientSeries;
+  service: IClientService
 }
 
 export interface QueueViewForm {

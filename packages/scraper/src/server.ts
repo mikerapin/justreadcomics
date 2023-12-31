@@ -4,8 +4,8 @@ import dotenv from 'dotenv';
 // don't move this line down or the DB won't connect correctly
 dotenv.config({ path: `./config/.env.${process.env.NODE_ENV}.local` });
 import { scraperRouter } from './controllers/scraper';
-import { logError, logFatal, logInfo } from '@justreadcomics/shared-node/util/logger';
-import { connectToServer } from '@justreadcomics/shared-node/db/conn';
+import { logError, logFatal, logInfo } from '@justreadcomics/shared-node/dist/util/logger';
+import { connectToServer } from '@justreadcomics/shared-node/dist/db/conn';
 
 const app = express();
 

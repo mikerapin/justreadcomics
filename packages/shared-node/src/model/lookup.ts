@@ -26,3 +26,7 @@ export const getHydratedSeriesById = async (id: string): Promise<IHydratedSeries
 
   return { series, services: hydratedServices };
 };
+
+export const getServiceModelById = async (id: string) => {
+  return servicesModel.findOne({ _id: new Types.ObjectId(id) });
+};

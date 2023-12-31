@@ -1,7 +1,7 @@
 import { initScraperPage } from './util';
 import { isProduction } from '@justreadcomics/common/dist/util/process';
 import { IMassImageImport } from '@justreadcomics/common/dist/types/scraper';
-import { logError } from '@justreadcomics/common/dist/util/logger';
+import { logError } from '@justreadcomics/shared-node/dist/util/logger';
 
 /**
  * This only gets series description and a (bad) creator list

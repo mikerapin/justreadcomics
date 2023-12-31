@@ -1,3 +1,4 @@
+import { logError } from '@justreadcomics/shared-node/dist/util/logger';
 import { initScraperPage } from './util';
 import { isProduction } from '@justreadcomics/common/dist/util/process';
 
@@ -141,7 +142,7 @@ export const massImportMarvel = async (runHeadless?: boolean) => {
     };
   } catch (e: any) {
     console.log(e);
-    // logError(e);
+    logError(e);
     return {
       series: [],
       error: e
