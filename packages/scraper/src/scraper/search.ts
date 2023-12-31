@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { searchScrapeCorpo } from '../scrape/corpo';
-import { ISeriesServiceType } from '@justreadcomics/common/dist/types/series';
 import { uploadSeriesImageFromUrlToS3 } from '@justreadcomics/shared-node/dist/s3/s3';
 import { getSeriesModelById } from '@justreadcomics/shared-node/dist/model/lookup';
 import { CORPO_SERVICE_ID, CU_SERVICE_ID } from '@justreadcomics/common/dist/const';
@@ -8,7 +7,7 @@ import { cleanSearch } from '../scrape/util';
 import { distance } from 'closest-match';
 import { queueModel } from '@justreadcomics/shared-node/dist/model/queue';
 import { logError } from '@justreadcomics/shared-node/dist/util/logger';
-import {insertOrUpdateSeriesService} from "@justreadcomics/shared-node/dist/util/scraper";
+import { insertOrUpdateSeriesService } from '@justreadcomics/shared-node/dist/util/scraper';
 
 export const searchAndScrapeCorpoAction = async (req: Request, res: Response) => {
   const id = req.params.id;
@@ -55,7 +54,7 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
           withinCU,
           credits: seriesCredits,
           seriesDescription,
-          foundSeriesName: seriesName,
+          foundSeriesName: seriesName.trim(),
           distance: textDistance
         });
         await queue.validate();

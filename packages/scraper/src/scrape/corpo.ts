@@ -39,6 +39,9 @@ export const searchScrapeCorpo = async (search: string, runHeadless?: boolean) =
 
   const searchQuery = searchUrl.replace('%s', encodeURIComponent(search));
 
+  await page.goto('https://www.amazon.com/', { waitUntil: 'domcontentloaded' });
+  await page.waitForNavigation({ waitUntil: 'networkidle2' });
+
   await page.goto(searchQuery, { waitUntil: 'domcontentloaded' });
 
   // const firstSearchResultSelector = 'div.s-search-results ::-p-text(Kindle Edition)';
@@ -114,5 +117,12 @@ export const searchScrapeCorpo = async (search: string, runHeadless?: boolean) =
 
   await browser.close();
 
-  return { imageUrl, seriesPageUrl, withinCU, seriesDescription, seriesCredits, seriesName };
+  return {
+    imageUrl,
+    seriesPageUrl,
+    withinCU,
+    seriesDescription: seriesDescription?.trim(),
+    seriesCredits,
+    seriesName: seriesName?.trim()
+  };
 };

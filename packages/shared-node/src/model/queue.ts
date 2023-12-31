@@ -7,6 +7,10 @@ export const queueSchema = new Schema<IQueue>(
       required: true,
       type: String
     },
+    serviceId: {
+      required: true,
+      type: String
+    },
     searchValue: {
       type: String,
       required: true
@@ -35,6 +39,10 @@ export const queueReviewLogSchema = new Schema<IQueueReviewLog>(
       type: String
     },
     seriesId: {
+      required: true,
+      type: String
+    },
+    serviceId: {
       required: true,
       type: String
     },
