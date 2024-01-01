@@ -25,7 +25,8 @@ export const queueSchema = new Schema<IQueue>(
     },
     distance: Number,
     reviewedDate: Date,
-    reviewStatus: String
+    reviewStatus: String,
+    reviewType: String
   },
   {
     timestamps: true

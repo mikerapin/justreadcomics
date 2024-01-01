@@ -3,6 +3,7 @@ import { Creator, ISeries } from './series';
 import { IService } from './services';
 
 export type ReviewStatus = 'rejected' | 'accepted' | 'partial';
+export type ReviewType = 'scanner' | 'user-submitted';
 
 export interface IQueue {
   _id?: Types.ObjectId;
@@ -22,6 +23,7 @@ export interface IQueue {
 
   reviewedDate?: string;
   reviewStatus?: ReviewStatus;
+  reviewType?: ReviewType;
 }
 
 export interface IHydratedQueue extends IQueue {

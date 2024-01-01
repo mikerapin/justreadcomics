@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "common": "nx build @justreadcomics/common --skip-nx-cache && nx build @justreadcomics/shared-node --skip-nx-cache",
-    "start:dev": "npm run common && nx run-many -t start:dev --output-style=static --exclude @justreadcomics/common @justreadcomics/shared-node",
+    "start:dev": "npm run common && nx run-many -t start:dev --exclude @justreadcomics/common @justreadcomics/shared-node --output-style=stream ",
     "start:build-run-prod": "npm run common && nx run-many -t start:build-run-prod",
     "start": "nx run-many -t start",
     "build": "npm run common && nx run-many -t build --exclude @justreadcomics/common @justreadcomics/shared-node"
