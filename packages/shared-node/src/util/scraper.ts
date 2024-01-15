@@ -20,7 +20,7 @@ export async function promiseAllSequence<ElementType, PromisedReturnType>(
 }
 
 export const insertOrUpdateSeriesService = (series: ISeries, serviceID: string, seriesPageUrl: string) => {
-  const corpoResults = {
+  const seriesServiceResults = {
     _id: serviceID,
     seriesServiceUrl: seriesPageUrl,
     lastScan: new Date().toJSON()
@@ -30,12 +30,12 @@ export const insertOrUpdateSeriesService = (series: ISeries, serviceID: string, 
     const corpoService = series.services.id(serviceID);
 
     if (corpoService) {
-      corpoService.seriesServiceUrl = corpoResults.seriesServiceUrl;
-      corpoService.lastScan = corpoResults.lastScan;
+      corpoService.seriesServiceUrl = seriesServiceResults.seriesServiceUrl;
+      corpoService.lastScan = seriesServiceResults.lastScan;
     } else {
-      series.services.push(corpoResults);
+      series.services.push(seriesServiceResults);
     }
   } else {
-    series.services = [corpoResults] as ISeriesServiceType;
+    series.services = [seriesServiceResults] as ISeriesServiceType;
   }
 };

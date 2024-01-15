@@ -1,5 +1,10 @@
 import { getBaseUrl, getScraperBaseUrl } from '../util/http';
-import { CORPO_SERVICE_ID, IMAGE_SERVICE_ID, SHONEN_JUMP_SERVICE_ID } from '@justreadcomics/common/dist/const';
+import {
+  CORPO_SERVICE_ID,
+  HOOPLA_SERVICE_ID,
+  IMAGE_SERVICE_ID,
+  SHONEN_JUMP_SERVICE_ID
+} from '@justreadcomics/common/dist/const';
 
 export const API_BASE_URL = `${getBaseUrl()}/api`;
 export const SCRAPER_BASE_URL = `${getScraperBaseUrl()}/scraper`;
@@ -13,16 +18,29 @@ export const seriesScanners = [
   // corpo scanner
   {
     seriesServiceId: CORPO_SERVICE_ID,
-    action: `${SCRAPER_BASE_URL}/corpo/`
+    action: `${SCRAPER_BASE_URL}/corpo/`,
+    metadata: true,
+    availability: false
+  },
+  // hoopla scanner
+  {
+    seriesServiceId: HOOPLA_SERVICE_ID,
+    action: `${SCRAPER_BASE_URL}/hoopla/`,
+    metadata: false,
+    availability: true
   },
   // image scanner
   {
     seriesServiceId: IMAGE_SERVICE_ID,
-    action: `${SCRAPER_BASE_URL}/image/`
+    action: `${SCRAPER_BASE_URL}/image/`,
+    metadata: true,
+    availability: false
   },
   // shonen jump scanner
   {
     seriesServiceId: SHONEN_JUMP_SERVICE_ID,
-    action: `${SCRAPER_BASE_URL}/shonen-jump/`
+    action: `${SCRAPER_BASE_URL}/shonen-jump/`,
+    metadata: true,
+    availability: false
   }
 ];

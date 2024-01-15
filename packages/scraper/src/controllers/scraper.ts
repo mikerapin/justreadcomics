@@ -3,8 +3,8 @@ import {
   scrapeIndexedImageSeriesAction,
   scrapeIndexedMarvelSeriesAction,
   scrapeIndexedShonenJumpSeriesAction
-} from '../scraper/indexed';
-import { searchAndScrapeCorpoAction } from '../scraper/search';
+} from '../actions/indexed';
+import { searchAndScrapeCorpoAction, searchAndScrapeHooplaAction } from '../actions/search';
 import { keyChecker, verifyTokenMiddleware } from '@justreadcomics/shared-node/dist/middleware/auth';
 
 const scraperRouter = express.Router();
@@ -18,6 +18,7 @@ scraperRouter.get('/shonen-jump/:id', [verifyTokenMiddleware], scrapeIndexedShon
 //
 // // search and scrape callers
 scraperRouter.get('/corpo/:id', [verifyTokenMiddleware], searchAndScrapeCorpoAction);
+scraperRouter.get('/hoopla/:id', [verifyTokenMiddleware], searchAndScrapeHooplaAction);
 //
 // // mass import scrapers (very primitive)
 // // honestly, the following controllers should only need to be done once.

@@ -2,12 +2,13 @@ import { Request, Response } from 'express';
 import { searchScrapeCorpo } from '../scrape/corpo';
 import { uploadSeriesImageFromUrlToS3 } from '@justreadcomics/shared-node/dist/s3/s3';
 import { getSeriesModelById } from '@justreadcomics/shared-node/dist/model/lookup';
-import { CORPO_SERVICE_ID, CU_SERVICE_ID } from '@justreadcomics/common/dist/const';
+import { CORPO_SERVICE_ID, CU_SERVICE_ID, HOOPLA_SERVICE_ID } from '@justreadcomics/common/dist/const';
 import { cleanSearch } from '../scrape/util';
 import { distance } from 'closest-match';
 import { queueModel } from '@justreadcomics/shared-node/dist/model/queue';
 import { logError } from '@justreadcomics/shared-node/dist/util/logger';
 import { insertOrUpdateSeriesService } from '@justreadcomics/shared-node/dist/util/scraper';
+import { searchScrapeHoopla } from '../scrape/hoopla';
 
 export const searchAndScrapeCorpoAction = async (req: Request, res: Response) => {
   const id = req.params.id;
@@ -29,16 +30,26 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
       return;
     }
 
+    const fetchMetaData = Boolean(req.params.fetchMetaData);
+    const cleanedTitle = Boolean(req.params.cleanedTitle);
+
     let allowedDistance = 3;
     let searchValue = series.seriesName;
 
-    if (req.params.cleanedTitle) {
+    if (cleanedTitle) {
       allowedDistance = 7;
       searchValue = cleanSearch(searchValue);
     }
 
     const { imageUrl, seriesPageUrl, withinCU, seriesCredits, seriesDescription, seriesName } =
       await searchScrapeCorpo(searchValue);
+
+    // TODO: Add "availability" search here
+    if (fetchMetaData) {
+      console.log('only fetch the metadata');
+      res.status(200).json({ error: false, msg: 'this is where you only check availability' });
+      return;
+    }
 
     if (seriesPageUrl && seriesName) {
       // this is an UGLY comparison, but let's try it
@@ -113,6 +124,59 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
     }
   } catch (e: any) {
     logError(e);
-    res.status(400).json({ error: true, msg: 'Somethihg goofed when trying to scan' });
+    res.status(400).json({ error: true, msg: 'Something goofed when trying to scan' });
+  }
+};
+
+export const searchAndScrapeHooplaAction = async (req: Request, res: Response) => {
+  const id = req.params.id;
+  if (!id) {
+    res.status(400).json({
+      error: true,
+      msg: "that's a bad id"
+    });
+    return;
+  }
+
+  try {
+    const series = await getSeriesModelById(id);
+    if (!series) {
+      res.status(400).json({
+        error: true,
+        msg: "series doesn't exist, bub"
+      });
+      return;
+    }
+
+    const fetchMetaData = Boolean(req.params.fetchMetaData);
+    const cleanedTitle = Boolean(req.params.cleanedTitle);
+
+    let allowedDistance = 3;
+    let searchValue = series.seriesName;
+
+    if (cleanedTitle) {
+      allowedDistance = 7;
+      searchValue = cleanSearch(searchValue);
+    }
+
+    const { seriesPageUrl } = await searchScrapeHoopla(searchValue, {
+      fetchMetaData
+    });
+    if (seriesPageUrl) {
+      if (!fetchMetaData) {
+        insertOrUpdateSeriesService(series, HOOPLA_SERVICE_ID, seriesPageUrl);
+      } else {
+        console.log(allowedDistance);
+        // TODO: check the distance and queue if incorrect
+      }
+
+      res.status(200).json({ error: false, msg: `${series.seriesName} updated!`, series });
+      await series.save();
+    } else {
+      res.status(200).json({ error: true, msg: 'Series not found on hoopla' });
+    }
+  } catch (e: any) {
+    logError(e);
+    res.status(400).json({ error: true, msg: 'Something goofed when trying to scan' });
   }
 };

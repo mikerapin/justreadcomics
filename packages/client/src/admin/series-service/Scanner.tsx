@@ -12,25 +12,20 @@ interface ScannerProps {
   showErrorToastCall: (message: string) => void;
 }
 
-export const Scanner = ({
-  seriesService,
-  seriesId,
-  scannerResultCallback,
-  showErrorToastCall
-}: ScannerProps) => {
+export const Scanner = ({ seriesService, seriesId, scannerResultCallback, showErrorToastCall }: ScannerProps) => {
   const [inProgress, setInProgress] = useState(false);
   if (!seriesService || !seriesId) {
     return <></>;
   }
-  const service = seriesScanners.find((s) => s.seriesServiceId === seriesService._id);
+  const seriesServiceScanner = seriesScanners.find((s) => s.seriesServiceId === seriesService._id);
 
-  if (service) {
+  if (seriesServiceScanner) {
     const lastScan = seriesService.lastScan;
     const yesterday = new Date(new Date().getTime() - 24 * 60 * 60 * 1000).getTime();
     const disableButton = lastScan ? new Date(lastScan).getTime() - yesterday > 0 : false;
-    const handleClick = (cleanedTitle: boolean) => {
+    const handleClick = (cleanedTitle: boolean, fetchMetaData: boolean) => {
       setInProgress(true);
-      triggerScanner(service.seriesServiceId, seriesId, cleanedTitle)
+      triggerScanner(seriesServiceScanner.seriesServiceId, seriesId, cleanedTitle, fetchMetaData)
         .then((res) => {
           if (res) {
             scannerResultCallback(res);
@@ -53,8 +48,19 @@ export const Scanner = ({
     );
     return (
       <DropdownButton id="dropdown-basic-button" title={title} disabled={inProgress || disableButton}>
-        <Dropdown.Item onClick={() => handleClick(false)}>Scan Full Title</Dropdown.Item>
-        <Dropdown.Item onClick={() => handleClick(true)}>Scan Cleaned Title</Dropdown.Item>
+        {seriesServiceScanner.availability && (
+          <>
+            <Dropdown.Item onClick={() => handleClick(false, false)}>Full Title & Availability</Dropdown.Item>
+            <Dropdown.Item onClick={() => handleClick(true, false)}>Cleaned Title & Availability</Dropdown.Item>
+          </>
+        )}
+        {seriesServiceScanner.availability && seriesServiceScanner.metadata && <Dropdown.Divider />}
+        {seriesServiceScanner.metadata && (
+          <>
+            <Dropdown.Item onClick={() => handleClick(false, true)}>Full Title & Fetch Metadata</Dropdown.Item>
+            <Dropdown.Item onClick={() => handleClick(true, true)}>Cleaned Title & Fetch Metadata</Dropdown.Item>
+          </>
+        )}
       </DropdownButton>
     );
   }

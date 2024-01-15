@@ -7,11 +7,14 @@ export interface IScannerResult {
   series: IClientSeries;
 }
 
-export const triggerScanner = async (seriesServiceId: string, seriesId: string, cleanedTitle?: boolean): Promise<IScannerResult> => {
+export const triggerScanner = async (seriesServiceId: string, seriesId: string, cleanedTitle: boolean, fetchMetaData: boolean): Promise<IScannerResult> => {
   const scannerUrl = seriesScanners.find((s) => s.seriesServiceId === seriesServiceId)?.action;
   try {
     if (scannerUrl) {
-      const res = await authFetch(`${scannerUrl}${seriesId}${cleanedTitle ? '?cleanedTitle=1' : ''}`);
+      const url = new URL(`${scannerUrl}${seriesId}`);
+      url.searchParams.set('cleanedTitle', `${cleanedTitle}`)
+      url.searchParams.set('fetchMetaData', `${fetchMetaData}`)
+      const res = await authFetch(url.toString());
       if (res.status !== 200) {
         return Promise.reject(`Error fetching data from url for service: ${seriesServiceId}`
     );

@@ -7,7 +7,7 @@ import { massImportIdw } from '../scrape/idw';
 import { Types } from 'mongoose';
 import { massImportShonenJump } from '../scrape/shonen-jump';
 import { cleanSeriesName } from '@justreadcomics/common/dist/util/string';
-import { promiseAllSequence } from '@justreadcomics/common/dist/util/scraper';
+import { promiseAllSequence } from '@justreadcomics/common/dist/util/actions';
 import { seriesModel } from '@justreadcomics/common/dist/model/series';
 import { logError } from '@justreadcomics/common/dist/util/logger';
 import { uploadSeriesImageFromUrlToS3 } from '@justreadcomics/common/dist/s3/s3';
