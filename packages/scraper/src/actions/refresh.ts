@@ -24,7 +24,6 @@ export const refreshCorpoMetadataAction = async (req: Request, res: Response) =>
       });
       return;
     }
-
     const corpoSeriesService = series.services?.id(CORPO_SERVICE_ID);
     if (corpoSeriesService && corpoSeriesService.seriesServiceUrl) {
       const fetchedMetadata = await refreshCorpoMetadata(corpoSeriesService.seriesServiceUrl);

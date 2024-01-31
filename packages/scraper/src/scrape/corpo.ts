@@ -6,6 +6,7 @@ import { CORPO_SERVICE_ID } from '@justreadcomics/common/dist/const';
 import { servicesModel } from '@justreadcomics/shared-node/dist/model/services';
 import { logError } from '@justreadcomics/shared-node/dist/util/logger';
 import { Page } from 'puppeteer';
+import * as cheerio from 'cheerio';
 
 const FALLBACK_SEARCH =
   'https://www.amazon.com/s?k=%s&i=comics-manga&rh=n%3A156104011%2Cp_n_feature_browse-bin%3A13684862011&test=1';
@@ -149,39 +150,44 @@ export const searchScrapeCorpo = async (search: string, runHeadless?: boolean) =
 };
 
 export const refreshCorpoMetadata = async (seriesUrl: string, runHeadless?: boolean) => {
-  const { page, browser } = await initScraperPage(runHeadless || isProduction());
+  // get html text from reddit
+  const response = await fetch(seriesUrl);
+  // using await to ensure that the promise resolves
+  const body = await response.text();
 
-  let seriesName;
-  let imageUrl;
-  let seriesPageUrl;
-  let description;
-  let credits;
-  let withinCU;
+  const withinParenthesis = /\(([^)]+)\)/gi;
 
-  try {
-    await page.goto(seriesUrl, { waitUntil: 'domcontentloaded' });
-    await page.waitForNavigation({ waitUntil: 'networkidle2' });
+  const imageUrlSelector = 'meta[property="og:image"]';
+  const seriesUrlSelector = 'link[rel="canonical"]';
+  const seriesNameSelector = '#collection-title';
+  const seriesDescriptionSelector = '#collection_description';
+  const seriesCreditsBaseSelector = '#series-common-atf a[href*="/e/B"]';
 
-    const content = await findContentOnPage(page);
-    seriesName = content.seriesName;
-    imageUrl = content.imageUrl;
-    seriesPageUrl = content.seriesPageUrl;
-    description = content.seriesDescription;
-    credits = content.seriesCredits;
-    withinCU = content.withinCU;
-  } catch (e: any) {
-    logError('unable to find or load dom queries');
-    console.log(e);
+  // parse the html text and extract titles
+  const $ = cheerio.load(body);
+
+  const imageUrl = $(imageUrlSelector).attr('content')?.replace('SY300', 'SY1000');
+  const seriesPageUrl = $(seriesUrlSelector).attr('content');
+  const seriesName = $(seriesNameSelector).text().trim();
+  const seriesDescription = $(seriesDescriptionSelector).text().trim();
+  const creditsArray = $(seriesCreditsBaseSelector).parent().find('a');
+
+  const credits: Creator[] = [];
+  if (creditsArray.length > 0) {
+    creditsArray.each((i, link) => {
+      const creatorText = $(link).text().trim();
+      let creatorRole = creatorText.match(withinParenthesis) || '';
+      if (typeof creatorRole === 'object') {
+        creatorRole = creatorRole[0].replace(/[^a-zA-Z0-9]/g, '');
+      }
+      const creator = creatorText.split(' (')[0];
+      if (creator) {
+        credits.push({ name: creator, role: creatorRole });
+      }
+    });
   }
 
-  await browser.close();
+  const withinCU = Boolean($('[aria-label="Read for Free"]').length);
 
-  return {
-    imageUrl,
-    seriesPageUrl,
-    withinCU,
-    description: description?.trim(),
-    credits,
-    seriesName: seriesName?.trim()
-  };
+  return { imageUrl, seriesPageUrl, seriesName, seriesDescription, credits, withinCU };
 };
