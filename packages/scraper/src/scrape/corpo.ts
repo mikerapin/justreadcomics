@@ -5,6 +5,7 @@ import { Types } from 'mongoose';
 import { CORPO_SERVICE_ID } from '@justreadcomics/common/dist/const';
 import { servicesModel } from '@justreadcomics/shared-node/dist/model/services';
 import { logError } from '@justreadcomics/shared-node/dist/util/logger';
+import { Page } from 'puppeteer';
 
 const FALLBACK_SEARCH =
   'https://www.amazon.com/s?k=%s&i=comics-manga&rh=n%3A156104011%2Cp_n_feature_browse-bin%3A13684862011&test=1';
@@ -28,6 +29,67 @@ const findCreators = (selector: string) => {
     }
   });
   return creatorsArray;
+};
+
+const findContentOnPage = async (page: Page) => {
+  const imageUrlSelector = 'meta[property="og:image"]';
+  const seriesUrlSelector = 'link[rel="canonical"]';
+  const seriesNameSelector = '#collection-title';
+  const seriesDescriptionSelector = '#collection_description';
+  const seriesCreditsBaseSelector = '#series-common-atf a[href*="/e/B"]';
+  const seriesCreditsLinkHoverSelector = '#series-common-atf .a-declarative #contributor-link';
+  const seriesCreditsPopoverSelector = '.a-popover #a-popover-content-1 a';
+
+  const imageUrl = await page.evaluate((selector) => {
+    const url = document.querySelector(selector)?.getAttribute('content');
+    return url?.replace('SY300', 'SY1000');
+  }, imageUrlSelector);
+
+  const seriesPageUrl = await page.evaluate((selector) => {
+    return document.querySelector(selector)?.getAttribute('href');
+  }, seriesUrlSelector);
+
+  const seriesDescription = await page.evaluate((selector) => {
+    return document.querySelector(selector)?.textContent;
+  }, seriesDescriptionSelector);
+
+  const seriesName = await page.evaluate((selector) => {
+    return document.querySelector(selector)?.textContent;
+  }, seriesNameSelector);
+
+  let seriesCredits = await page.evaluate(findCreators, seriesCreditsBaseSelector);
+
+  // if the credits weren't actually links, then we gotta play with the page a bit to get the popover
+  //  to appear which has ALL of the contributors
+  if (seriesCredits.length === 0) {
+    await page.hover(seriesCreditsLinkHoverSelector);
+    const creditsLink = await page.waitForSelector(seriesCreditsLinkHoverSelector, { timeout: 3000 });
+    if (creditsLink) {
+      await creditsLink.click();
+      const creditsPopover = await page.waitForSelector(seriesCreditsPopoverSelector, { timeout: 3000 });
+      seriesCredits = await page.evaluate(findCreators, seriesCreditsPopoverSelector);
+    }
+  }
+
+  let withinCU;
+  const cuSelector = '#series-childAsin-item_1 ::-p-text(Read for Free)';
+  try {
+    const cuItem = await page.waitForSelector(cuSelector, { timeout: 1000 });
+    if (cuItem) {
+      withinCU = true;
+    }
+  } catch (e: any) {
+    withinCU = false;
+  }
+
+  return {
+    seriesName,
+    imageUrl,
+    seriesPageUrl,
+    seriesDescription,
+    seriesCredits,
+    withinCU
+  };
 };
 
 export const searchScrapeCorpo = async (search: string, runHeadless?: boolean) => {
@@ -61,54 +123,13 @@ export const searchScrapeCorpo = async (search: string, runHeadless?: boolean) =
       await partOfLink.click();
       await page.waitForNavigation({ waitUntil: 'networkidle2' });
 
-      const imageUrlSelector = 'meta[property="og:image"]';
-      const seriesUrlSelector = 'link[rel="canonical"]';
-      const seriesNameSelector = '#collection-title';
-      const seriesDescriptionSelector = '#collection_description';
-      const seriesCreditsBaseSelector = '#series-common-atf a[href*="/e/B"]';
-      const seriesCreditsLinkHoverSelector = '#series-common-atf .a-declarative #contributor-link';
-      const seriesCreditsPopoverSelector = '.a-popover #a-popover-content-1 a';
-
-      imageUrl = await page.evaluate((selector) => {
-        const url = document.querySelector(selector)?.getAttribute('content');
-        return url?.replace('SY300', 'SY1000');
-      }, imageUrlSelector);
-
-      seriesPageUrl = await page.evaluate((selector) => {
-        return document.querySelector(selector)?.getAttribute('href');
-      }, seriesUrlSelector);
-
-      seriesDescription = await page.evaluate((selector) => {
-        return document.querySelector(selector)?.textContent;
-      }, seriesDescriptionSelector);
-
-      seriesName = await page.evaluate((selector) => {
-        return document.querySelector(selector)?.textContent;
-      }, seriesNameSelector);
-
-      seriesCredits = await page.evaluate(findCreators, seriesCreditsBaseSelector);
-
-      // if the credits weren't actually links, then we gotta play with the page a bit to get the popover
-      //  to appear which has ALL of the contributors
-      if (seriesCredits.length === 0) {
-        await page.hover(seriesCreditsLinkHoverSelector);
-        const creditsLink = await page.waitForSelector(seriesCreditsLinkHoverSelector, { timeout: 3000 });
-        if (creditsLink) {
-          await creditsLink.click();
-          const creditsPopover = await page.waitForSelector(seriesCreditsPopoverSelector, { timeout: 3000 });
-          seriesCredits = await page.evaluate(findCreators, seriesCreditsPopoverSelector);
-        }
-      }
-
-      const cuSelector = '#series-childAsin-item_1 ::-p-text(Read for Free)';
-      try {
-        const cuItem = await page.waitForSelector(cuSelector, { timeout: 1000 });
-        if (cuItem) {
-          withinCU = true;
-        }
-      } catch (e: any) {
-        withinCU = false;
-      }
+      const content = await findContentOnPage(page);
+      seriesName = content.seriesName;
+      imageUrl = content.imageUrl;
+      seriesPageUrl = content.seriesPageUrl;
+      seriesDescription = content.seriesDescription;
+      seriesCredits = content.seriesCredits;
+      withinCU = content.withinCU;
     }
   } catch (e: any) {
     logError('unable to find or load dom queries');
@@ -123,6 +144,44 @@ export const searchScrapeCorpo = async (search: string, runHeadless?: boolean) =
     withinCU,
     seriesDescription: seriesDescription?.trim(),
     seriesCredits,
+    seriesName: seriesName?.trim()
+  };
+};
+
+export const refreshCorpoMetadata = async (seriesUrl: string, runHeadless?: boolean) => {
+  const { page, browser } = await initScraperPage(runHeadless || isProduction());
+
+  let seriesName;
+  let imageUrl;
+  let seriesPageUrl;
+  let description;
+  let credits;
+  let withinCU;
+
+  try {
+    await page.goto(seriesUrl, { waitUntil: 'domcontentloaded' });
+    await page.waitForNavigation({ waitUntil: 'networkidle2' });
+
+    const content = await findContentOnPage(page);
+    seriesName = content.seriesName;
+    imageUrl = content.imageUrl;
+    seriesPageUrl = content.seriesPageUrl;
+    description = content.seriesDescription;
+    credits = content.seriesCredits;
+    withinCU = content.withinCU;
+  } catch (e: any) {
+    logError('unable to find or load dom queries');
+    console.log(e);
+  }
+
+  await browser.close();
+
+  return {
+    imageUrl,
+    seriesPageUrl,
+    withinCU,
+    description: description?.trim(),
+    credits,
     seriesName: seriesName?.trim()
   };
 };

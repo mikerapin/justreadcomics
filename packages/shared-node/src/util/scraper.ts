@@ -27,11 +27,11 @@ export const insertOrUpdateSeriesService = (series: ISeries, serviceID: string, 
   };
 
   if (series.services) {
-    const corpoService = series.services.id(serviceID);
+    const seriesService = series.services.id(serviceID);
 
-    if (corpoService) {
-      corpoService.seriesServiceUrl = seriesServiceResults.seriesServiceUrl;
-      corpoService.lastScan = seriesServiceResults.lastScan;
+    if (seriesService) {
+      seriesService.seriesServiceUrl = seriesServiceResults.seriesServiceUrl;
+      seriesService.lastScan = seriesServiceResults.lastScan;
     } else {
       series.services.push(seriesServiceResults);
     }
