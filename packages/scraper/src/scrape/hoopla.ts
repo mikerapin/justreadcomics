@@ -5,6 +5,8 @@ import { Types } from 'mongoose';
 import { HOOPLA_SERVICE_ID } from '@justreadcomics/common/dist/const';
 import { logError } from '@justreadcomics/shared-node/dist/util/logger';
 
+// hoopla requires puppeteer because it's dynamically loaded via Javascript
+//  this may be avoidable by using a plugin for cheerio...
 export const searchScrapeHoopla = async (
   searchValue: string,
   {

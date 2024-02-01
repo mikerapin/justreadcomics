@@ -1,6 +1,7 @@
 import { logError } from '@justreadcomics/shared-node/dist/util/logger';
 import { initScraperPage } from './util';
 import { isProduction } from '@justreadcomics/common/dist/util/process';
+import * as cheerio from 'cheerio';
 
 export const scrapeMarvelSeries = async (seriesUrl: string, runHeadless?: boolean) => {
   const { page, browser } = await initScraperPage(runHeadless || isProduction());
@@ -34,6 +35,23 @@ export const scrapeMarvelSeries = async (seriesUrl: string, runHeadless?: boolea
     imageUrl,
     description
   };
+};
+
+export const refreshMarvelMetadata = async (seriesUrl: string) => {
+  // get html text from reddit
+  const response = await fetch(seriesUrl);
+  // using await to ensure that the promise resolves
+  const body = await response.text();
+  const $ = cheerio.load(body);
+
+  const imageUrlSelector = 'meta[name="twitter:image"]';
+  const descriptionSelector = '.featured-item-text .featured-item-desc p';
+
+  const imageUrl = $(imageUrlSelector).attr('content');
+  const description = $(descriptionSelector).text();
+  console.log({ imageUrl, description });
+
+  return { imageUrl, description };
 };
 
 /**

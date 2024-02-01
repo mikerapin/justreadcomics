@@ -3,6 +3,7 @@ import {
   CORPO_SERVICE_ID,
   HOOPLA_SERVICE_ID,
   IMAGE_SERVICE_ID,
+  MARVEL_UNLIMITED_SERVICE_ID,
   SHONEN_JUMP_SERVICE_ID
 } from '@justreadcomics/common/dist/const';
 
@@ -19,6 +20,8 @@ export const seriesScanners = [
   {
     seriesServiceId: CORPO_SERVICE_ID,
     action: `${SCRAPER_BASE_URL}/corpo/`,
+    refreshAction: `${SCRAPER_BASE_URL}/refresh/corpo/`,
+    refresh: true,
     metadata: true,
     availability: false
   },
@@ -26,13 +29,24 @@ export const seriesScanners = [
   {
     seriesServiceId: HOOPLA_SERVICE_ID,
     action: `${SCRAPER_BASE_URL}/hoopla/`,
+    refresh: false,
     metadata: false,
     availability: true
+  },
+  // hoopla scanner
+  {
+    seriesServiceId: MARVEL_UNLIMITED_SERVICE_ID,
+    action: `${SCRAPER_BASE_URL}/marvel/`,
+    refreshAction: `${SCRAPER_BASE_URL}/refresh/marvel/`,
+    refresh: true,
+    metadata: false,
+    availability: false
   },
   // image scanner
   {
     seriesServiceId: IMAGE_SERVICE_ID,
     action: `${SCRAPER_BASE_URL}/image/`,
+    refresh: false,
     metadata: true,
     availability: false
   },
@@ -40,6 +54,7 @@ export const seriesScanners = [
   {
     seriesServiceId: SHONEN_JUMP_SERVICE_ID,
     action: `${SCRAPER_BASE_URL}/shonen-jump/`,
+    refresh: false,
     metadata: true,
     availability: false
   }

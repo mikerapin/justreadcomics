@@ -2,9 +2,10 @@ import { Request, Response } from 'express';
 import { getSeriesModelById } from '@justreadcomics/shared-node/dist/model/lookup';
 import { logError } from '@justreadcomics/shared-node/dist/util/logger';
 import { refreshCorpoMetadata } from '../scrape/corpo';
-import { CORPO_SERVICE_ID } from '@justreadcomics/common/dist/const';
+import { CORPO_SERVICE_ID, MARVEL_UNLIMITED_SERVICE_ID } from '@justreadcomics/common/dist/const';
 import { ISeries } from '@justreadcomics/common/dist/types/series';
 import { uploadSeriesImageFromUrlToS3 } from '@justreadcomics/shared-node/dist/s3/s3';
+import { refreshMarvelMetadata } from '../scrape/marvel';
 
 export const refreshCorpoMetadataAction = async (req: Request, res: Response) => {
   const id = req.params.id;
@@ -53,6 +54,48 @@ export const refreshCorpoMetadataAction = async (req: Request, res: Response) =>
       res
         .status(200)
         .json({ error: true, msg: `${series.seriesName} not found on corpo, are you sure you meant to run this?` });
+    }
+  } catch (e: any) {
+    logError(e);
+    res.status(400).json({ error: true, msg: 'Something goofed when trying to refresh' });
+  }
+};
+
+export const refreshMarvelMetadataAction = async (req: Request, res: Response) => {
+  const id = req.params.id;
+  if (!id) {
+    res.status(400).json({
+      error: true,
+      msg: "that's a bad id"
+    });
+    return;
+  }
+  try {
+    const series = await getSeriesModelById(id);
+    if (!series) {
+      res.status(400).json({
+        error: true,
+        msg: "series doesn't exist, bub"
+      });
+      return;
+    }
+    const marvelSeriesService = series.services?.id(MARVEL_UNLIMITED_SERVICE_ID);
+    if (marvelSeriesService && marvelSeriesService.seriesServiceUrl) {
+      const { imageUrl, description } = await refreshMarvelMetadata(marvelSeriesService.seriesServiceUrl);
+
+      // TODO: Add scanner option to override this
+      if (imageUrl && !series.image) {
+        series.image = await uploadSeriesImageFromUrlToS3(series.seriesName, imageUrl);
+      }
+      series.set({ description });
+      series.save();
+      res
+        .status(200)
+        .json({ error: false, msg: `${series.seriesName} updated with refreshed metadata`, series: series.toJSON() });
+    } else {
+      res
+        .status(200)
+        .json({ error: true, msg: `${series.seriesName} not found on marvel, are you sure you meant to run this?` });
     }
   } catch (e: any) {
     logError(e);

@@ -1,16 +1,17 @@
-import React, { ChangeEvent, useEffect, useRef } from 'react';
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 
 import { Dropdown } from 'bootstrap';
 import { fetchSeriesByName } from '../data/series';
 import { Form, Link } from 'react-router-dom';
 import { SeriesImage } from './SeriesImage';
 import { useSearch } from '../hooks/search';
+import { Spinner } from 'react-bootstrap';
 
 export const Search = () => {
   const dropdownElementRef = useRef<HTMLDivElement>(null);
   const dropdown = useRef<Dropdown | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
-  const { searchResults, setSearchTerm } = useSearch(fetchSeriesByName);
+  const { searchResults, setSearchTerm, loading } = useSearch(fetchSeriesByName);
 
   useEffect(() => {
     if (dropdownElementRef.current) {
@@ -33,6 +34,12 @@ export const Search = () => {
     }
     const val = e.target.value;
     if (val.length > 2) searchInMenu(val);
+  };
+
+  const checkCommand = (e: React.KeyboardEvent) => {
+    if (e.code === 'Enter' || e.key === 'Enter' || e.code === 'Escape' || e.key === 'Escape') {
+      dropdown.current?.hide();
+    }
   };
 
   const closeMenu = () => {
@@ -60,16 +67,25 @@ export const Search = () => {
           placeholder="Search..."
           aria-label="Search"
           onChange={typeToSearch}
+          onKeyUp={checkCommand}
           autoComplete="off"
         />
         <div className="dropdown-menu" ref={dropdownElementRef} data-bs-auto-close="outside">
           <h6 className=" dropdown-header">Series</h6>
+          {loading && (
+            <div className="dropdown-item d-flex g-2 align-items-center">
+              <Spinner />
+            </div>
+          )}
           {searchResults?.map((hydratedSeries) => {
             const { series } = hydratedSeries;
             return (
               <Link key={series._id} to={`/series/${series._id}`} className="dropdown-item" onClick={closeMenu}>
                 <div className="d-flex g-2 align-items-center">
-                  <div className="d-flex align-items-center" style={{ marginRight: 10, minWidth: 48, maxHeight: 48, overflow: 'hidden' }}>
+                  <div
+                    className="d-flex align-items-center"
+                    style={{ marginRight: 10, minWidth: 48, maxHeight: 48, overflow: 'hidden' }}
+                  >
                     <SeriesImage series={series} style={{ width: 48 }} alt={series.seriesName} />
                   </div>
                   <div className="text-truncate" style={{ maxWidth: 320 }}>

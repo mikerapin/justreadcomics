@@ -1,19 +1,13 @@
 import express from 'express';
-import {
-  scrapeIndexedImageSeriesAction,
-  scrapeIndexedMarvelSeriesAction,
-  scrapeIndexedShonenJumpSeriesAction
-} from '../actions/indexed';
+import { scrapeIndexedImageSeriesAction, scrapeIndexedShonenJumpSeriesAction } from '../actions/indexed';
 import { searchAndScrapeCorpoAction, searchAndScrapeHooplaAction } from '../actions/search';
 import { keyChecker, verifyTokenMiddleware } from '@justreadcomics/shared-node/dist/middleware/auth';
-import { refreshCorpoMetadataAction } from '../actions/refresh';
+import { refreshCorpoMetadataAction, refreshMarvelMetadataAction } from '../actions/refresh';
 
 const scraperRouter = express.Router();
 
-/// DISABLING THESE FOR NOW, MOVING TO LAMBDA
-
 // indexed scrape callers
-scraperRouter.get('/marvel/:id', [verifyTokenMiddleware, keyChecker], scrapeIndexedMarvelSeriesAction);
+// DEPRECATE THESE AND REWRITE USING CHEERIO IN THE REFRESH FILE
 scraperRouter.get('/image/:id', [verifyTokenMiddleware], scrapeIndexedImageSeriesAction);
 scraperRouter.get('/shonen-jump/:id', [verifyTokenMiddleware], scrapeIndexedShonenJumpSeriesAction);
 //
@@ -22,6 +16,7 @@ scraperRouter.get('/corpo/:id', [verifyTokenMiddleware], searchAndScrapeCorpoAct
 scraperRouter.get('/hoopla/:id', [verifyTokenMiddleware], searchAndScrapeHooplaAction);
 
 // refresh metadata
+scraperRouter.get('/refresh/marvel/:id', refreshMarvelMetadataAction);
 scraperRouter.get('/refresh/dc/:id');
 scraperRouter.get('/refresh/image/:id');
 scraperRouter.get('/refresh/shonen-jump/:id');

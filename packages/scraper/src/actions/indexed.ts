@@ -36,30 +36,6 @@ const getSeriesAndSeriesService = async (seriesId: string, serviceId: string) =>
   };
 };
 
-export const scrapeIndexedMarvelSeriesAction = async (req: Request, res: Response) => {
-  const { series, seriesService, msg } = await getSeriesAndSeriesService(req.params.id, MARVEL_UNLIMITED_SERVICE_ID);
-
-  if (series && seriesService && seriesService.seriesServiceUrl) {
-    const { imageUrl, description, date } = await scrapeMarvelSeries(seriesService.seriesServiceUrl);
-
-    if (imageUrl) {
-      series.image = await uploadSeriesImageFromUrlToS3(series.seriesName, imageUrl);
-    }
-
-    if (description.length) {
-      series.description = description;
-    }
-
-    seriesService.lastScan = new Date().toJSON();
-
-    await series.save();
-
-    res.status(200).json({ msg: `${series.seriesName} updated!`, series });
-  } else {
-    res.status(404).json({ msg });
-  }
-};
-
 // this action only really gets credits and description, it's not great
 export const scrapeIndexedImageSeriesAction = async (req: Request, res: Response) => {
   const { series, seriesService, msg } = await getSeriesAndSeriesService(req.params.id, IMAGE_SERVICE_ID);
