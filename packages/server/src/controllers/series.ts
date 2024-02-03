@@ -1,16 +1,28 @@
 import express, { Request, Response } from 'express';
 import { Types } from 'mongoose';
 
-import { getHydratedSeriesById, lookupServicesForSeries } from '@justreadcomics/shared-node/dist/model/lookup';
+import {
+  getHydratedSeriesById,
+  getSeriesModelById,
+  getServiceModelById,
+  lookupServicesForSeries
+} from '@justreadcomics/shared-node/dist/model/lookup';
 import { IHydratedSeries, ISeries } from '@justreadcomics/common/dist/types/series';
 import { verifyTokenMiddleware } from '@justreadcomics/shared-node/dist/middleware/auth';
 import { seriesModel } from '@justreadcomics/shared-node/dist/model/series';
 import { upload } from '@justreadcomics/shared-node/dist/util/multer';
 import { uploadImageToS3 } from '@justreadcomics/shared-node/dist/s3/s3';
 import { escapeRegex } from '@justreadcomics/common/dist/util/util';
+import { logError } from '@justreadcomics/shared-node/dist/util/logger';
 
 interface CreateSeriesRequest extends Request {
   body: ISeries;
+}
+
+interface UpdateSeriesServiceRequest extends Request {
+  body: {
+    seriesServiceUrl: string;
+  };
 }
 
 const seriesRouter = express.Router();
@@ -153,6 +165,49 @@ seriesRouter.patch('/update/:id', [verifyTokenMiddleware], async (req: CreateSer
       res.status(404).json({ message: 'series with id:' + req.params.id + ' not found, sorry dude' });
     }
   } catch (error: any) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+seriesRouter.patch('/update/:id/series-service/:serviceId', async (req: UpdateSeriesServiceRequest, res: Response) => {
+  const { seriesServiceUrl } = req.body;
+  const seriesServiceId = req.params.serviceId;
+  const seriesId = req.params.id;
+  const newSeriesService = {
+    _id: seriesServiceId,
+    seriesServiceUrl
+  };
+
+  if (!seriesServiceId || !seriesId) {
+    res.status(404).json({ error: true, message: `missing the series id or the service id, idk what to say...` });
+    return;
+  }
+
+  try {
+    const series = await getSeriesModelById(seriesId);
+    const service = await getServiceModelById(seriesServiceId);
+    if (series && service) {
+      const seriesService = series.services?.id(seriesServiceId);
+      if (seriesService) {
+        // update series service
+        seriesService.seriesServiceUrl = seriesServiceUrl;
+        await seriesService.save();
+      } else {
+        if (series.services) {
+          series.services.push(newSeriesService);
+        } else {
+          series.set({ services: [newSeriesService] });
+        }
+      }
+      await series.save();
+      const hydratedServices = await lookupServicesForSeries(series.services);
+
+      res.status(200).json({ series: series, services: hydratedServices });
+    } else {
+      res.status(404).json({ error: true, message: `could not find ${seriesId} using service id ${seriesServiceId}` });
+    }
+  } catch (error: any) {
+    logError(error);
     res.status(400).json({ message: error.message });
   }
 });

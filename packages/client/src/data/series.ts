@@ -1,5 +1,10 @@
 import { API_BASE_URL } from '../static/const';
-import { IFetchMultipleSeriesWithCursor, IGetThreeRandomSeries, IHydratedSeries, ISeriesWithImageUpload } from '../types/series';
+import {
+  IFetchMultipleSeriesWithCursor,
+  IGetThreeRandomSeries,
+  IHydratedSeries,
+  ISeriesWithImageUpload
+} from '../types/series';
 import { authFetch } from './fetch';
 
 export const fetchAllSeries = async (cursor = 0): Promise<IFetchMultipleSeriesWithCursor> => {
@@ -13,7 +18,9 @@ export interface IFetchSeriesSearchOptions {
   cursor?: number;
 }
 
-export const fetchSeriesByName = async (options: IFetchSeriesSearchOptions): Promise<IFetchMultipleSeriesWithCursor> => {
+export const fetchSeriesByName = async (
+  options: IFetchSeriesSearchOptions
+): Promise<IFetchMultipleSeriesWithCursor> => {
   const { seriesName, isLargeSearch, cursor } = options;
   const fetchUrl = new URL(`${API_BASE_URL}/series/get-name/${seriesName}`);
   if (isLargeSearch) {
@@ -66,11 +73,28 @@ export const updateSeriesById = async (series: Partial<ISeriesWithImageUpload>):
 
   if (series.imageBlob) {
     const updatedHydratedSeries: IHydratedSeries = await res.json();
-    updatedHydratedSeries.series = await uploadSeriesImage(updatedHydratedSeries, series.imageBlob);;
+    updatedHydratedSeries.series = await uploadSeriesImage(updatedHydratedSeries, series.imageBlob);
     return updatedHydratedSeries;
   } else {
     return await res.json();
   }
+};
+
+export const updateSeriesService = async (
+  seriesId: string,
+  seriesServiceId: string,
+  seriesServiceUrl: string
+): Promise<IHydratedSeries> => {
+  // /update/:id:/series-service/:serviceId
+  const res = await authFetch(`${API_BASE_URL}/series/update/${seriesId}/series-service/${seriesServiceId}`, {
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    },
+    method: 'PATCH',
+    body: JSON.stringify({ seriesServiceUrl })
+  });
+  return await res.json();
 };
 
 export const createSeries = async (series: Partial<ISeriesWithImageUpload>): Promise<IHydratedSeries> => {

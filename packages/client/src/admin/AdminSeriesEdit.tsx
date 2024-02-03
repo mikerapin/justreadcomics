@@ -1,18 +1,19 @@
 import { Link, useParams } from 'react-router-dom';
 import React, { useCallback, useRef, useState } from 'react';
-import {IClientSeries, IClientSeriesService, IHydratedSeries, ISeriesWithImageUpload} from '../types/series';
+import { IClientSeries, IClientSeriesService, IHydratedSeries, ISeriesWithImageUpload } from '../types/series';
 import { createSeries, fetchSeriesById, updateSeriesById } from '../data/series';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { fetchAllServices } from '../data/services';
-import { IClientService } from '../types/service';
+import { IClientService, IClientServiceAndSeriesService } from '../types/service';
 import { ImageUploader } from './subcomponents/ImageUploader';
 import { ISeriesForm } from './types/series';
 import { SeriesImage } from '../components/SeriesImage';
 import { Scanner } from './series-service/Scanner';
-import { Button, Col, Container, FloatingLabel, Form, Row, Stack, Table } from 'react-bootstrap';
+import { Button, ButtonGroup, Col, Container, FloatingLabel, Form, Row, Stack, Table } from 'react-bootstrap';
 import { ServiceImage } from '../components/ServiceImage';
 import { IScannerResult } from '../data/scanner';
-import {useToast} from "./hooks/useToast";
+import { useToast } from './hooks/useToast';
+import { EditSeriesServiceModal } from './series-service/EditSeriesServiceModal';
 
 const getSeriesServiceStringArray = (seriesServices?: IClientSeriesService[]) => {
   return (
@@ -21,12 +22,14 @@ const getSeriesServiceStringArray = (seriesServices?: IClientSeriesService[]) =>
     }) || []
   );
 };
+
 export const AdminSeriesEdit = () => {
   const { id } = useParams();
-  const {renderToast, showSuccessToast, showErrorToast} = useToast();
+  const { renderToast, showSuccessToast, showErrorToast } = useToast();
 
   const [series, setSeries] = useState<IClientSeries>();
   const [services, setServices] = useState<IClientService[]>();
+  const [editSeriesService, setEditSeriesService] = useState<IClientServiceAndSeriesService | null>(null);
 
   const rightColumnRef = useRef<HTMLDivElement>(null);
 
@@ -107,10 +110,10 @@ export const AdminSeriesEdit = () => {
     let successMessage: string;
     if (id) {
       promise = updateSeriesById(updatedSeries);
-      successMessage = `Success updating ${updatedSeries.seriesName}!`
+      successMessage = `Success updating ${updatedSeries.seriesName}!`;
     } else {
       promise = createSeries(updatedSeries);
-      successMessage = `Success creating ${updatedSeries.seriesName}!`
+      successMessage = `Success creating ${updatedSeries.seriesName}!`;
     }
     promise.then((res) => {
       setSeries(res.series);
@@ -144,10 +147,28 @@ export const AdminSeriesEdit = () => {
       showErrorToast(result.msg);
     } else {
       setSeries(result.series);
-      setValue('description', result.series.description)
-      setValue('credits', result.series.credits)
+      setValue('description', result.series.description);
+      setValue('credits', result.series.credits);
       showSuccessToast('Scan complete!');
     }
+  };
+
+  const openEditSeriesServiceModal = (serviceId: string) => {
+    const serviceLookup = services?.find((service) => service._id === serviceId);
+    const seriesServiceLookup = getSeriesServiceById(serviceId);
+    if (serviceLookup && seriesServiceLookup) {
+      setEditSeriesService({
+        service: serviceLookup,
+        seriesService: seriesServiceLookup
+      });
+    }
+  };
+
+  const handleCloseEditSeriesServiceModal = (updatedSeries?: IClientSeries) => {
+    if (updatedSeries) {
+      setSeries(updatedSeries);
+    }
+    setEditSeriesService(null);
   };
 
   return (
@@ -183,7 +204,12 @@ export const AdminSeriesEdit = () => {
             </FloatingLabel>
             <Stack gap={2} direction="horizontal" className="align-items-center mb-2">
               <span>Credits</span>
-              <Button variant="secondary" size="sm" type="button" onClick={() => appendCredit({ role: '', name: '', order: getNextOrder() })}>
+              <Button
+                variant="secondary"
+                size="sm"
+                type="button"
+                onClick={() => appendCredit({ role: '', name: '', order: getNextOrder() })}
+              >
                 Add
               </Button>
             </Stack>
@@ -191,12 +217,20 @@ export const AdminSeriesEdit = () => {
               <Row className="row g-2 align-items-center" key={credits.id}>
                 <Col className="mb-3">
                   <FloatingLabel label="Name" className="mb-3">
-                    <Form.Control id={`name-${credits.id}`} {...register(`credits.${index}.name` as const)} autoComplete="off" />
+                    <Form.Control
+                      id={`name-${credits.id}`}
+                      {...register(`credits.${index}.name` as const)}
+                      autoComplete="off"
+                    />
                   </FloatingLabel>
                 </Col>
                 <Col className="mb-3">
                   <FloatingLabel label="Role" className="mb-3">
-                    <Form.Control id={`role-${credits.id}`} {...register(`credits.${index}.role` as const)} autoComplete="off" />
+                    <Form.Control
+                      id={`role-${credits.id}`}
+                      {...register(`credits.${index}.role` as const)}
+                      autoComplete="off"
+                    />
                   </FloatingLabel>
                 </Col>
                 <input type="hidden" {...register(`credits.${index}.order` as const)} />
@@ -215,14 +249,16 @@ export const AdminSeriesEdit = () => {
             <Table striped hover responsive className="align-middle">
               <tbody>
                 {services?.map((service) => {
+                  const currentSeriesService = getSeriesServiceById(service._id);
                   return (
                     <tr key={service.serviceName}>
-                      {/* TODO: determine if this is even needed */}
-                      {/*<td>*/}
-                      {/*  <Form.Check type="radio" {...register(`primary`)} id={`service-primary${service._id}`} value={1} />*/}
-                      {/*</td>*/}
                       <td>
-                        <Form.Check type="switch" {...register(`services`)} id={`service${service._id}`} value={service._id} />
+                        <Form.Check
+                          type="switch"
+                          {...register(`services`)}
+                          id={`service${service._id}`}
+                          value={service._id}
+                        />
                       </td>
                       <td>
                         <Form.Label className="form-check-label" htmlFor={`service${service._id}`}>
@@ -236,15 +272,23 @@ export const AdminSeriesEdit = () => {
                       </td>
                       <td>{getSeriesPageUrl(service._id)}</td>
                       <td style={{ fontSize: '12px' }}>
-                        Last Scan: <code>{getSeriesServiceById(service._id)?.lastScan}</code>
+                        Last Scan: <code>{currentSeriesService?.lastScan}</code>
                       </td>
                       <td>
-                        <Scanner
-                          seriesService={getSeriesServiceById(service._id)}
-                          seriesId={series._id}
-                          scannerResultCallback={scannerCallback}
-                          showErrorToastCall={showErrorToastCall}
-                        />
+                        <ButtonGroup>
+                          <Button
+                            variant="secondary"
+                            onClick={() => (service._id ? openEditSeriesServiceModal(service._id) : null)}
+                          >
+                            Edit
+                          </Button>
+                          <Scanner
+                            seriesService={currentSeriesService}
+                            seriesId={series._id}
+                            scannerResultCallback={scannerCallback}
+                            showErrorToastCall={showErrorToastCall}
+                          />
+                        </ButtonGroup>
                       </td>
                     </tr>
                   );
@@ -254,6 +298,12 @@ export const AdminSeriesEdit = () => {
           </Container>
         </Row>
       </Form>
+      <EditSeriesServiceModal
+        seriesService={editSeriesService}
+        series={series}
+        showModal={editSeriesService !== null}
+        handleClose={handleCloseEditSeriesServiceModal}
+      />
       {renderToast()}
     </Container>
   );

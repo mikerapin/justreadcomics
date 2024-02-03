@@ -173,7 +173,7 @@ export const refreshCorpoMetadata = async (seriesUrl: string, runHeadless?: bool
   const seriesDescription = $(seriesDescriptionSelector).text().trim();
   const creditsArray = $(seriesCreditsBaseSelector).parent().find('a');
 
-  const credits: Creator[] = [];
+  const uncleanCredits: Creator[] = [];
   if (creditsArray.length > 0) {
     creditsArray.each((i, link) => {
       const creatorText = $(link).text().trim();
@@ -183,10 +183,15 @@ export const refreshCorpoMetadata = async (seriesUrl: string, runHeadless?: bool
       }
       const creator = creatorText.split(' (')[0];
       if (creator) {
-        credits.push({ name: creator, role: creatorRole });
+        uncleanCredits.push({ name: creator, role: creatorRole });
       }
     });
   }
+
+  // clean up duplicates
+  const credits = uncleanCredits.filter(
+    (arr, index, self) => index === self.findIndex((t) => t.name === arr.name && t.role === arr.role)
+  );
 
   const withinCU = Boolean($('[aria-label="Read for Free"]').length);
 

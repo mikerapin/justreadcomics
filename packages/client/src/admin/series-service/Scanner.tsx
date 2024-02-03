@@ -1,7 +1,7 @@
 import { seriesScanners } from '../../static/const';
 import { useState } from 'react';
 import { IScannerResult, triggerScanner } from '../../data/scanner';
-import { Dropdown, DropdownButton } from 'react-bootstrap';
+import { ButtonGroup, Dropdown, DropdownButton } from 'react-bootstrap';
 import { ISeriesService } from '@justreadcomics/common/dist/types/series';
 
 interface ScannerProps {
@@ -64,9 +64,8 @@ export const Scanner = ({ seriesService, seriesId, scannerResultCallback, showEr
   ) : (
     <span>Scan</span>
   );
-  console.log(seriesServiceScanner);
   return (
-    <DropdownButton id="dropdown-basic-button" title={title} disabled={inProgress || disableButton}>
+    <DropdownButton id="dropdown-basic-button" title={title} disabled={inProgress || disableButton} as={ButtonGroup}>
       {seriesServiceScanner.availability && (
         <>
           <Dropdown.Item onClick={() => handleClick(false, false)}>Full Title & Availability</Dropdown.Item>
