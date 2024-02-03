@@ -106,6 +106,7 @@ export const searchScrapeCorpo = async (search: string, runHeadless?: boolean) =
   await page.waitForNavigation({ waitUntil: 'networkidle2' });
 
   await page.goto(searchQuery, { waitUntil: 'domcontentloaded' });
+  await page.waitForNavigation({ waitUntil: 'networkidle2' });
 
   // const firstSearchResultSelector = 'div.s-search-results ::-p-text(Kindle Edition)';
 

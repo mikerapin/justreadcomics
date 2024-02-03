@@ -3,6 +3,9 @@ import { isProduction } from '@justreadcomics/common/dist/util/process';
 import { IMassImageImport } from '@justreadcomics/common/dist/types/scraper';
 import { logError } from '@justreadcomics/shared-node/dist/util/logger';
 
+import * as cheerio from 'cheerio';
+import { Creator } from '@justreadcomics/common/dist/types/series';
+
 /**
  * This only gets series description and a (bad) creator list
  * @param seriesUrl
@@ -71,6 +74,26 @@ export const scrapeImageSeries = async (seriesUrl: string, runHeadless?: boolean
     description,
     creators
   };
+};
+
+export const refreshImageMetadata = async (seriesUrl: string) => {
+  // get html text from image
+  const response = await fetch(seriesUrl);
+  // using await to ensure that the promise resolves
+  const body = await response.text();
+  const $ = cheerio.load(body);
+
+  const description = $('#main .grid-container .cell.small-12.medium-9 p:last-child')
+    .text()
+    .trim()
+    .replace('Read the First Issue Online', '');
+  const creators: Creator[] = [];
+  $('.sidebar aside a').each((i, link) => {
+    const c = $(link).text().trim();
+    creators.push({ name: c, role: '' });
+  });
+
+  return { creators, description };
 };
 
 export const massImageImport = async (runHeadless: boolean) => {

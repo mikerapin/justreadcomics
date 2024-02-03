@@ -33,7 +33,7 @@ export const seriesScanners = [
     metadata: false,
     availability: true
   },
-  // hoopla scanner
+  // marvel scanner
   {
     seriesServiceId: MARVEL_UNLIMITED_SERVICE_ID,
     action: `${SCRAPER_BASE_URL}/marvel/`,
@@ -46,8 +46,9 @@ export const seriesScanners = [
   {
     seriesServiceId: IMAGE_SERVICE_ID,
     action: `${SCRAPER_BASE_URL}/image/`,
-    refresh: false,
-    metadata: true,
+    refreshAction: `${SCRAPER_BASE_URL}/refresh/image/`,
+    refresh: true,
+    metadata: false,
     availability: false
   },
   // shonen jump scanner

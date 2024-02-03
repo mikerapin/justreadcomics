@@ -3,42 +3,8 @@ import { initScraperPage } from './util';
 import { isProduction } from '@justreadcomics/common/dist/util/process';
 import * as cheerio from 'cheerio';
 
-export const scrapeMarvelSeries = async (seriesUrl: string, runHeadless?: boolean) => {
-  const { page, browser } = await initScraperPage(runHeadless || isProduction());
-
-  await page.goto(seriesUrl, { waitUntil: 'domcontentloaded' });
-
-  const imageUrlSelector = 'meta[name="twitter:image"]';
-
-  const descriptionSelector = '.featured-item-text .featured-item-desc p';
-
-  await page.waitForSelector(descriptionSelector);
-
-  const imageUrl = await page.evaluate((selector) => {
-    const url = document.querySelector(selector)?.getAttribute('content');
-    // !imageHref.match('image_not_available')
-    return url?.match('image_not_available') ? undefined : url;
-  }, imageUrlSelector);
-
-  const description = await page.evaluate((selector) => {
-    const featuredTexts = document.querySelectorAll(selector);
-    if (featuredTexts?.length > 1) {
-      return (featuredTexts?.[1] as HTMLParagraphElement)?.innerText.trim().slice(0, -5).trim();
-    }
-    return (featuredTexts?.[0] as HTMLParagraphElement)?.innerText.trim();
-  }, descriptionSelector);
-
-  await browser.close();
-
-  return {
-    date: new Date().toJSON(),
-    imageUrl,
-    description
-  };
-};
-
 export const refreshMarvelMetadata = async (seriesUrl: string) => {
-  // get html text from reddit
+  // get html text from marvel
   const response = await fetch(seriesUrl);
   // using await to ensure that the promise resolves
   const body = await response.text();
