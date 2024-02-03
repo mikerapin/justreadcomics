@@ -162,38 +162,46 @@ export const refreshCorpoMetadata = async (seriesUrl: string, runHeadless?: bool
   const seriesUrlSelector = 'link[rel="canonical"]';
   const seriesNameSelector = '#collection-title';
   const seriesDescriptionSelector = '#collection_description';
-  const seriesCreditsBaseSelector = '#series-common-atf a[href*="/e/B"]';
+  const seriesCreditsBaseSelector = '#contributor-link, #series-common-atf a[href*="/e/B"]';
 
-  // parse the html text and extract titles
-  const $ = cheerio.load(body);
+  try {
+    // parse the html text and extract titles
+    const $ = cheerio.load(body);
 
-  const imageUrl = $(imageUrlSelector).attr('content')?.replace('SY300', 'SY1000');
-  const seriesPageUrl = $(seriesUrlSelector).attr('content');
-  const seriesName = $(seriesNameSelector).text().trim();
-  const seriesDescription = $(seriesDescriptionSelector).text().trim();
-  const creditsArray = $(seriesCreditsBaseSelector).parent().find('a');
+    const imageUrl = $(imageUrlSelector).attr('content')?.replace('SY300', 'SY1000');
+    const seriesPageUrl = $(seriesUrlSelector).attr('content');
+    const seriesName = $(seriesNameSelector).text().trim();
+    const description = $(seriesDescriptionSelector).text().trim();
+    const creditsArray = $(seriesCreditsBaseSelector).parent().find('a');
 
-  const uncleanCredits: Creator[] = [];
-  if (creditsArray.length > 0) {
-    creditsArray.each((i, link) => {
-      const creatorText = $(link).text().trim();
-      let creatorRole = creatorText.match(withinParenthesis) || '';
-      if (typeof creatorRole === 'object') {
-        creatorRole = creatorRole[0].replace(/[^a-zA-Z0-9]/g, '');
-      }
-      const creator = creatorText.split(' (')[0];
-      if (creator) {
-        uncleanCredits.push({ name: creator, role: creatorRole });
-      }
-    });
+    const uncleanCredits: Creator[] = [];
+    if (creditsArray.length > 0) {
+      creditsArray.each((i, link) => {
+        const creatorText = $(link).text().trim();
+        let creatorRole = creatorText.match(withinParenthesis) || '';
+        if (typeof creatorRole === 'object') {
+          creatorRole = creatorRole[0].replace(/[^a-zA-Z0-9]/g, '');
+        }
+        const creator = creatorText.split(' (')[0];
+        if (creator) {
+          uncleanCredits.push({ name: creator, role: creatorRole });
+        }
+      });
+    }
+
+    // clean up duplicates
+    const credits =
+      uncleanCredits.length > 1
+        ? uncleanCredits.filter(
+            (arr, index, self) => index === self.findIndex((t) => t.name === arr.name && t.role === arr.role)
+          )
+        : uncleanCredits;
+
+    const withinCU = Boolean($('[aria-label="Read for Free"]').length);
+
+    return { imageUrl, seriesPageUrl, seriesName, description, credits, withinCU };
+  } catch (e: any) {
+    logError(e);
+    return {};
   }
-
-  // clean up duplicates
-  const credits = uncleanCredits.filter(
-    (arr, index, self) => index === self.findIndex((t) => t.name === arr.name && t.role === arr.role)
-  );
-
-  const withinCU = Boolean($('[aria-label="Read for Free"]').length);
-
-  return { imageUrl, seriesPageUrl, seriesName, seriesDescription, credits, withinCU };
 };

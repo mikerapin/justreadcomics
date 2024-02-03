@@ -55,6 +55,7 @@ export const AdminSeriesEdit = () => {
       }
       fetchAllServices().then((fetchedServices) => {
         setServices(fetchedServices.data);
+        setSeries({ seriesName: '', meta: { searches: 0, clickOuts: 0 } });
       });
       return {};
     }
@@ -81,7 +82,7 @@ export const AdminSeriesEdit = () => {
   };
 
   if (!series) {
-    return <span>'Loading'</span>;
+    return <Container className="container">Loading...</Container>;
   }
 
   const updateSeriesUIAfterSave = (series: IClientSeries) => {
@@ -96,20 +97,22 @@ export const AdminSeriesEdit = () => {
       file = seriesForm.imageBlob[0];
     }
 
-    const newServices = seriesForm.services?.map((serviceId) => {
-      const existingService = series.services?.filter((s) => s._id === serviceId);
-      if (existingService?.[0]) {
-        return existingService[0];
-      }
-      return { _id: serviceId };
-    });
-
     const updatedSeries: Partial<ISeriesWithImageUpload> = {
       ...series,
       ...seriesForm,
-      services: newServices,
+      services: undefined,
       imageBlob: file
     };
+
+    if (seriesForm.services) {
+      updatedSeries.services = seriesForm.services.map((serviceId) => {
+        const existingService = series.services?.filter((s) => s._id === serviceId);
+        if (existingService?.[0]) {
+          return existingService[0];
+        }
+        return { _id: serviceId };
+      });
+    }
 
     let promise: Promise<IHydratedSeries>;
     let successMessage: string;
