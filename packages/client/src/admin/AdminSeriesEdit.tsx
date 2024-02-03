@@ -84,6 +84,11 @@ export const AdminSeriesEdit = () => {
     return <span>'Loading'</span>;
   }
 
+  const updateSeriesUIAfterSave = (series: IClientSeries) => {
+    setSeries(series);
+    setValue('services', getSeriesServiceStringArray(series.services));
+  };
+
   const saveSeries = handleSubmit((seriesForm) => {
     seriesForm.credits = seriesForm.credits?.filter((c) => c.name !== '' && c.role !== '');
     let file;
@@ -116,8 +121,7 @@ export const AdminSeriesEdit = () => {
       successMessage = `Success creating ${updatedSeries.seriesName}!`;
     }
     promise.then((res) => {
-      setSeries(res.series);
-      setValue('services', getSeriesServiceStringArray(res.series.services));
+      updateSeriesUIAfterSave(res.series);
       showSuccessToast(successMessage);
     });
   });
@@ -156,7 +160,7 @@ export const AdminSeriesEdit = () => {
   const openEditSeriesServiceModal = (serviceId: string) => {
     const serviceLookup = services?.find((service) => service._id === serviceId);
     const seriesServiceLookup = getSeriesServiceById(serviceId);
-    if (serviceLookup && seriesServiceLookup) {
+    if (serviceLookup) {
       setEditSeriesService({
         service: serviceLookup,
         seriesService: seriesServiceLookup
@@ -166,7 +170,8 @@ export const AdminSeriesEdit = () => {
 
   const handleCloseEditSeriesServiceModal = (updatedSeries?: IClientSeries) => {
     if (updatedSeries) {
-      setSeries(updatedSeries);
+      updateSeriesUIAfterSave(updatedSeries);
+      showSuccessToast('Successfully updated series service');
     }
     setEditSeriesService(null);
   };

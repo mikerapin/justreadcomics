@@ -16,6 +16,6 @@ export interface IGetAllServicesWithCursor {
 }
 
 export interface IClientServiceAndSeriesService {
-  seriesService: IClientSeriesService;
+  seriesService?: IClientSeriesService;
   service: IClientService;
 }

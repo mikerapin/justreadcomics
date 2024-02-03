@@ -25,7 +25,7 @@ export const EditSeriesServiceModal = ({
 }: EditSeriesServiceModalProps) => {
   const { register, handleSubmit } = useForm<ISeriesServiceUpdateForm>({
     defaultValues: {
-      seriesServiceUrl: seriesService?.seriesService.seriesServiceUrl
+      seriesServiceUrl: seriesService?.seriesService?.seriesServiceUrl
     }
   });
   const submitChanges = handleSubmit((seriesServiceUpdateForm) => {
