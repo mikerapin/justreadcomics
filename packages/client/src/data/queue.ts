@@ -1,8 +1,7 @@
 import { API_BASE_URL } from '../static/const';
 import { authFetch } from './fetch';
-import { IClientQueue, IHydratedClientQueue } from '../types/queue';
+import { IHydratedClientQueue } from '../types/queue';
 import { IQueueReviewData, QueueFilterStatus, QueueFilterType } from '@justreadcomics/common/dist/types/queue';
-import { IClientSeries } from '../types/series';
 
 interface IFetchQueueEntries {
   data: IHydratedClientQueue[];

@@ -10,6 +10,7 @@ import { connectToServer } from '@justreadcomics/shared-node/dist/db/conn';
 import { uploadSeriesImageFromUrlToS3 } from '@justreadcomics/shared-node/dist/s3/s3';
 import { logError, logFatal, logInfo } from '@justreadcomics/shared-node/dist/util/logger';
 import { queueRouter } from './controllers/queue';
+import { userQueueRouter } from './controllers/user-queue';
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use('/api/series', seriesRouter);
 app.use('/api/services', servicesRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/queue', queueRouter);
+app.use('/api/user-queue', userQueueRouter);
 
 app.get('/test', (req, res) => {
   uploadSeriesImageFromUrlToS3(

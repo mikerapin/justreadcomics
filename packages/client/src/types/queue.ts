@@ -1,6 +1,6 @@
-import { IQueue } from '@justreadcomics/common/dist/types/queue';
-import { IClientSeries } from './series';
-import {IClientService} from "./service";
+import { IQueue, IUserQueueReviewData } from '@justreadcomics/common/dist/types/queue';
+import { IClientSeries, IClientSeriesService } from './series';
+import { IClientService } from './service';
 
 export interface IClientQueue extends Omit<IQueue, '_id'> {
   _id: string;
@@ -8,7 +8,7 @@ export interface IClientQueue extends Omit<IQueue, '_id'> {
 
 export interface IHydratedClientQueue extends IClientQueue {
   series: IClientSeries;
-  service: IClientService
+  service: IClientService;
 }
 
 export interface QueueViewForm {
@@ -24,4 +24,8 @@ export interface QueueModalProps {
   showModal: boolean;
   handleClose: (queueResponse?: { updatedQueue?: IHydratedClientQueue; msg?: string; error?: boolean }) => void;
   queue: IHydratedClientQueue;
+}
+
+export interface IClientUserQueueReviewData extends Omit<IUserQueueReviewData, 'seriesServices'> {
+  seriesServices?: IClientSeriesService[];
 }

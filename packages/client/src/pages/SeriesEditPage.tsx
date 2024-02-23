@@ -1,55 +1,81 @@
-import { Link, useParams } from 'react-router-dom';
-import React, { useCallback, useRef, useState } from 'react';
-import { IClientSeries, IHydratedSeries, ISeriesWithImageUpload } from '../types/series';
-import { createSeries, fetchSeriesById, updateSeriesById } from '../data/series';
+import React, { useCallback, useEffect, useState } from 'react';
+import { fetchSeriesById } from '../data/series';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { IClientSeries, IClientSeriesService } from '../types/series';
+import { IClientService } from '../types/service';
+import { LoadingSeries } from './LoadingSeries';
+import { SeriesImage } from '../components/SeriesImage';
+import { Button, Col, Container, FloatingLabel, Form, Row, Stack, Table } from 'react-bootstrap';
+import { useSubmitter } from '../hooks/submitter';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { fetchAllServices } from '../data/services';
-import { IClientService, IClientServiceAndSeriesService } from '../types/service';
-import { ImageUploader } from './subcomponents/ImageUploader';
-import { ISeriesForm } from './types/series';
-import { SeriesImage } from '../components/SeriesImage';
-import { Scanner } from './series-service/Scanner';
-import { Button, ButtonGroup, Col, Container, FloatingLabel, Form, Row, Stack, Table } from 'react-bootstrap';
+import { useToast } from '../admin/hooks/useToast';
+import { Creator } from '@justreadcomics/common/dist/types/series';
+import { IClientUserQueueReviewData } from '../types/queue';
 import { ServiceImage } from '../components/ServiceImage';
-import { IScannerResult } from '../data/scanner';
-import { useToast } from './hooks/useToast';
-import { EditSeriesServiceModal } from './series-service/EditSeriesServiceModal';
-import { getSeriesServiceStringArray } from '../util/seriesService';
+import { userSubmitQueueReview } from '../data/user-queue';
 
-export const AdminSeriesEdit = () => {
+export interface IQueueForm {
+  seriesName?: string;
+  description?: string;
+  seriesServices?: IClientSeriesService[];
+  credits?: Creator[];
+  imageUrl?: string;
+}
+
+const sortServiesBySeriesServices = (services: IClientService[], seriesServices?: IClientSeriesService[]) => {
+  if (!seriesServices) {
+    return services;
+  }
+  return services.sort((a, b) => {
+    const foundServiceA = seriesServices.findIndex((s) => s._id === a._id);
+    const foundServiceB = seriesServices.findIndex((s) => s._id === b._id);
+    if (foundServiceA > foundServiceB) {
+      return -1;
+    }
+    if (foundServiceA === foundServiceB) {
+      return 0;
+    }
+    return 1;
+  });
+};
+
+export const SeriesEditPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const isSubmitter = useSubmitter();
   const { renderToast, showSuccessToast, showErrorToast } = useToast();
 
   const [series, setSeries] = useState<IClientSeries>();
   const [services, setServices] = useState<IClientService[]>();
-  const [editSeriesService, setEditSeriesService] = useState<IClientServiceAndSeriesService | null>(null);
-
-  const rightColumnRef = useRef<HTMLDivElement>(null);
+  const [submitEnabled, setSubmitEnabled] = useState<boolean>(true);
+  useEffect(() => {
+    if (id) {
+      fetchSeriesById(id).then((result) => {
+        setSeries(result.series);
+        setServices(result.services);
+      });
+    }
+  }, [id]);
 
   const {
     register,
     handleSubmit,
     control,
     getValues,
-    setValue,
     formState: { isDirty }
-  } = useForm<ISeriesForm>({
+  } = useForm<IQueueForm>({
     defaultValues: async () => {
       if (id) {
         return Promise.all([fetchSeriesById(id), fetchAllServices()]).then((result) => {
           const [fetchedSeries, fetchedServices] = result;
           setSeries(fetchedSeries.series);
-          setServices(fetchedServices.data);
+          setServices(sortServiesBySeriesServices(fetchedServices.data, fetchedSeries.series.services));
 
-          const seriesServices = getSeriesServiceStringArray(fetchedSeries.series.services);
-          const { seriesName, credits, description } = fetchedSeries.series;
-          return { seriesName, credits, services: seriesServices, description };
+          const { seriesName, credits, description, services: seriesServices } = fetchedSeries.series;
+          return { seriesName, credits, seriesServices, description };
         });
       }
-      fetchAllServices().then((fetchedServices) => {
-        setServices(fetchedServices.data);
-        setSeries({ seriesName: '', meta: { searches: 0, clickOuts: 0 } });
-      });
       return {};
     }
   });
@@ -70,56 +96,51 @@ export const AdminSeriesEdit = () => {
     [series]
   );
 
-  const showErrorToastCall = (msg: string) => {
-    showErrorToast(msg);
-  };
+  const getSeriesServiceIndexById = useCallback(
+    (serviceId?: string) => {
+      return series?.services?.findIndex((service) => service._id === serviceId);
+    },
+    [series]
+  );
 
-  if (!series) {
-    return <Container className="container">Loading...</Container>;
+  if (!id || !isSubmitter) {
+    navigate('/');
   }
 
-  const updateSeriesUIAfterSave = (series: IClientSeries) => {
-    setSeries(series);
-    setValue('services', getSeriesServiceStringArray(series.services));
-  };
+  if (!series) {
+    return <LoadingSeries />;
+  }
 
   const saveSeries = handleSubmit((seriesForm) => {
+    setSubmitEnabled(false);
     seriesForm.credits = seriesForm.credits?.filter((c) => c.name !== '' && c.role !== '');
-    let file;
-    if (seriesForm.imageBlob?.length) {
-      file = seriesForm.imageBlob[0];
-    }
+    seriesForm.seriesServices = seriesForm.seriesServices?.filter((s) => s._id);
+    const { seriesName, seriesServices, description, credits, imageUrl } = seriesForm;
 
-    const updatedSeries: Partial<ISeriesWithImageUpload> = {
-      ...series,
-      ...seriesForm,
-      services: undefined,
-      imageBlob: file
-    };
-
-    if (seriesForm.services) {
-      updatedSeries.services = seriesForm.services.map((serviceId) => {
-        const existingService = series.services?.filter((s) => s._id === serviceId);
-        if (existingService?.[0]) {
-          return existingService[0];
-        }
-        return { _id: serviceId };
-      });
-    }
-
-    let promise: Promise<IHydratedSeries>;
-    let successMessage: string;
     if (id) {
-      promise = updateSeriesById(updatedSeries);
-      successMessage = `Success updating ${updatedSeries.seriesName}!`;
-    } else {
-      promise = createSeries(updatedSeries);
-      successMessage = `Success creating ${updatedSeries.seriesName}!`;
+      const queueSubmission: Partial<IClientUserQueueReviewData> = {
+        seriesId: id,
+        seriesName,
+        description,
+        imageUrl,
+        credits,
+        seriesServices
+      };
+      userSubmitQueueReview(queueSubmission)
+        .then((res) => {
+          if (res.error) {
+            showErrorToast(res.msg);
+          } else {
+            showSuccessToast(res.msg);
+          }
+        })
+        .catch(() => {
+          showErrorToast('There was an error with your submission. Please try again later.');
+        });
+      setTimeout(() => {
+        setSubmitEnabled(true);
+      }, 5000);
     }
-    promise.then((res) => {
-      updateSeriesUIAfterSave(res.series);
-      showSuccessToast(successMessage);
-    });
   });
 
   const getNextOrder = () => {
@@ -130,64 +151,26 @@ export const AdminSeriesEdit = () => {
     return 2;
   };
 
-  const getSeriesPageUrl = (serviceId?: string) => {
-    const seriesService = getSeriesServiceById(serviceId);
-    if (seriesService && seriesService.seriesServiceUrl) {
-      return (
-        <a target="_blank" rel="nofollow noreferrer" href={seriesService.seriesServiceUrl}>
-          Series Page
-        </a>
-      );
-    }
-    return <></>;
-  };
-
-  const scannerCallback = (result: IScannerResult) => {
-    if (!result.series && result.msg) {
-      showErrorToast(result.msg);
-    } else {
-      setSeries(result.series);
-      setValue('description', result.series.description);
-      setValue('credits', result.series.credits);
-      showSuccessToast('Scan complete!');
-    }
-  };
-
-  const openEditSeriesServiceModal = (serviceId: string) => {
-    const serviceLookup = services?.find((service) => service._id === serviceId);
-    const seriesServiceLookup = getSeriesServiceById(serviceId);
-    if (serviceLookup) {
-      setEditSeriesService({
-        service: serviceLookup,
-        seriesService: seriesServiceLookup
-      });
-    }
-  };
-
-  const handleCloseEditSeriesServiceModal = (updatedSeries?: IClientSeries) => {
-    if (updatedSeries) {
-      updateSeriesUIAfterSave(updatedSeries);
-      showSuccessToast('Successfully updated series service');
-    }
-    setEditSeriesService(null);
-  };
-
   return (
     <Container className="container">
       <Form onSubmit={saveSeries}>
         <Stack direction="horizontal" className="justify-content-between align-items-center">
           <h3 className="mt-3 mb-3">Editing {series?.seriesName}</h3>
-          <Button variant="primary" type="submit" disabled={!isDirty}>
-            Save
-          </Button>
+          <Stack direction="horizontal">
+            <Button variant="secondary" type="button" className="mx-1" onClick={() => navigate(-1)}>
+              Cancel
+            </Button>
+            <Button variant="success" type="submit" disabled={!isDirty && submitEnabled}>
+              Save
+            </Button>
+          </Stack>
         </Stack>
         <Row className="row">
           <Col xs={4} className="mb-3">
             {/* add click to view in modal \/\/\/ */}
             <SeriesImage series={series} alt={series.seriesName} />
-            <ImageUploader register={register} fieldName={'imageBlob'} />
           </Col>
-          <Col ref={rightColumnRef}>
+          <Col>
             <div className="mb-3">
               <Link to={`/series/${series._id}`}>Public Page</Link>
             </div>
@@ -249,14 +232,16 @@ export const AdminSeriesEdit = () => {
             <h3>Services</h3>
             <Table striped hover responsive className="align-middle">
               <tbody>
-                {services?.map((service) => {
+                {services?.map((service, index) => {
                   const currentSeriesService = getSeriesServiceById(service._id);
+                  const tempIndex = getSeriesServiceIndexById(service._id) || -1;
+                  const currentSeriesServiceIndex = tempIndex > -1 ? tempIndex : index;
                   return (
                     <tr key={service.serviceName}>
                       <td>
                         <Form.Check
                           type="switch"
-                          {...register(`services`)}
+                          {...register(`seriesServices.${currentSeriesServiceIndex}._id`)}
                           id={`service${service._id}`}
                           value={service._id}
                         />
@@ -271,25 +256,21 @@ export const AdminSeriesEdit = () => {
                           <p className="card-title text-center">{service.serviceName}</p>
                         </Form.Label>
                       </td>
-                      <td>{getSeriesPageUrl(service._id)}</td>
-                      <td style={{ fontSize: '12px' }}>
-                        Last Scan: <code>{currentSeriesService?.lastScan}</code>
+                      <td>
+                        {currentSeriesService?.seriesServiceUrl && (
+                          <a href={currentSeriesService?.seriesServiceUrl} target="_blank" rel="nofollow noreferrer">
+                            Open
+                          </a>
+                        )}
                       </td>
                       <td>
-                        <ButtonGroup>
-                          <Button
-                            variant="secondary"
-                            onClick={() => (service._id ? openEditSeriesServiceModal(service._id) : null)}
-                          >
-                            Edit
-                          </Button>
-                          <Scanner
-                            seriesService={currentSeriesService}
-                            seriesId={series._id}
-                            scannerResultCallback={scannerCallback}
-                            showErrorToastCall={showErrorToastCall}
+                        <Form.FloatingLabel label="Series Page URL">
+                          <Form.Control
+                            type="text"
+                            {...register(`seriesServices.${currentSeriesServiceIndex}.seriesServiceUrl`)}
+                            value={currentSeriesService?.seriesServiceUrl}
                           />
-                        </ButtonGroup>
+                        </Form.FloatingLabel>
                       </td>
                     </tr>
                   );
@@ -299,12 +280,6 @@ export const AdminSeriesEdit = () => {
           </Container>
         </Row>
       </Form>
-      <EditSeriesServiceModal
-        seriesService={editSeriesService}
-        series={series}
-        showModal={editSeriesService !== null}
-        handleClose={handleCloseEditSeriesServiceModal}
-      />
       {renderToast()}
     </Container>
   );

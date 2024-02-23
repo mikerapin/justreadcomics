@@ -15,6 +15,7 @@ import { SearchPage } from '../pages/SearchPage';
 import { authenticate } from '../data/auth';
 import { QueueList } from '../admin/QueueList';
 import { QueueView } from '../admin/QueueView';
+import { SeriesEditPage } from '../pages/SeriesEditPage';
 
 export const siteRouter = [
   {
@@ -33,6 +34,10 @@ export const siteRouter = [
       {
         path: '/search',
         element: <SearchPage />
+      },
+      {
+        path: '/edit/series/:id',
+        element: <SeriesEditPage />
       }
     ]
   },

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { fetchSeriesById } from '../data/series';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { IClientSeries } from '../types/series';
 import { Services } from '../components/Services';
 import { IClientService } from '../types/service';
@@ -8,11 +8,14 @@ import { LoadingSeries } from './LoadingSeries';
 import { SeriesImage } from '../components/SeriesImage';
 import { Helmet } from 'react-helmet-async';
 import { useAdmin } from '../hooks/admin';
-import { Badge, Col, Container, Row, Stack } from 'react-bootstrap';
+import { Badge, Button, Col, Container, Row, Stack } from 'react-bootstrap';
+import { useSubmitter } from '../hooks/submitter';
 
 export const SeriesDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const isAdmin = useAdmin();
+  const isSubmitter = useSubmitter();
   const [series, setSeries] = useState<IClientSeries>();
   const [services, setServices] = useState<IClientService[]>();
   useEffect(() => {
@@ -39,6 +42,18 @@ export const SeriesDetail = () => {
         </Col>
         <Col xs={8}>
           <div className="text-content">
+            <Stack direction="horizontal" className="justify-content-end">
+              {isAdmin && (
+                <Button type="button" onClick={() => navigate(`/admin/series/${id}`)}>
+                  Admin Edit
+                </Button>
+              )}
+              {isSubmitter && (
+                <Button type="button" onClick={() => navigate(`/edit/series/${id}`)}>
+                  Edit
+                </Button>
+              )}
+            </Stack>
             {isAdmin ? <Link to={`/admin/series/${series?._id}`}>Edit</Link> : ''}
             <h1 className="title">{series?.seriesName}</h1>
 

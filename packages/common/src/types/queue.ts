@@ -1,5 +1,5 @@
 import { Types } from 'mongoose';
-import { Creator, ISeries } from './series';
+import { Creator, ISeries, ISeriesService } from './series';
 import { IService } from './services';
 
 export enum QueueFilterType {
@@ -70,4 +70,13 @@ export interface IQueueReviewData {
   reviewStatus: QueueFilterStatus;
   addService?: boolean;
   seriesPageUrl?: string;
+}
+
+export interface IUserQueueReviewData {
+  seriesId: string;
+  seriesName?: string;
+  description?: string;
+  imageUrl?: string;
+  credits?: Creator[];
+  seriesServices: ISeriesService[];
 }

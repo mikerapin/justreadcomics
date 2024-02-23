@@ -21,6 +21,9 @@ const queueRouter = express.Router();
 interface ReviewQueueRequest extends Request {
   body: IQueueReviewData;
 }
+interface ReviewQueueUserRequest extends Request {
+  body: IQueueReviewData;
+}
 
 const getHydratedQueue = async (queue: IQueue): Promise<IHydratedQueue> => {
   const seriesData = await getSeriesModelById(queue.seriesId);
