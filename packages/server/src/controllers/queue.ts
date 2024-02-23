@@ -4,7 +4,13 @@ import { getServiceModelById, getSeriesModelById } from '@justreadcomics/shared-
 import { seriesModel } from '@justreadcomics/shared-node/dist/model/series';
 import { uploadSeriesImageFromUrlToS3 } from '@justreadcomics/shared-node/dist/s3/s3';
 import { Types } from 'mongoose';
-import { IHydratedQueue, IQueue, IQueueReviewData } from '@justreadcomics/common/dist/types/queue';
+import {
+  IHydratedQueue,
+  IQueue,
+  IQueueReviewData,
+  QueueFilterStatus,
+  QueueFilterType
+} from '@justreadcomics/common/dist/types/queue';
 import { ISeries } from '@justreadcomics/common/dist/types/series';
 import { logError } from '@justreadcomics/shared-node/dist/util/logger';
 import { queueModel } from '@justreadcomics/shared-node/dist/model/queue';
@@ -28,7 +34,20 @@ const getHydratedQueue = async (queue: IQueue): Promise<IHydratedQueue> => {
 };
 
 queueRouter.get('/get/all', [verifyTokenMiddleware], async (req: Request, res: Response) => {
-  const queueList = await queueModel.find().sort('createdAt').limit(100).sort({ createdAt: -1 });
+  const filterStatus = req.query.status;
+  const filterType = req.query.type;
+
+  const filterObject: Partial<IQueue> = {};
+  if (filterStatus) {
+    filterObject.reviewStatus = filterStatus as QueueFilterStatus;
+  }
+  if (filterType) {
+    filterObject.reviewType = filterType as QueueFilterType;
+  }
+
+  console.log(filterObject);
+
+  const queueList = await queueModel.find(filterObject).sort('createdAt').limit(100).sort({ createdAt: -1 });
   const hydratedQueues = queueList.map(async (queue) => await getHydratedQueue(queue.toObject()));
 
   const data = {

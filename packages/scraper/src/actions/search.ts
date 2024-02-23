@@ -9,6 +9,7 @@ import { queueModel } from '@justreadcomics/shared-node/dist/model/queue';
 import { logError } from '@justreadcomics/shared-node/dist/util/logger';
 import { insertOrUpdateSeriesService } from '@justreadcomics/shared-node/dist/util/scraper';
 import { searchScrapeHoopla } from '../scrape/hoopla';
+import { QueueFilterType } from '@justreadcomics/common/dist/types/queue';
 
 export const searchAndScrapeCorpoAction = async (req: Request, res: Response) => {
   const id = req.params.id;
@@ -41,8 +42,9 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
       searchValue = cleanSearch(searchValue);
     }
 
-    const { imageUrl, seriesPageUrl, withinCU, seriesCredits, seriesDescription, seriesName } =
-      await searchScrapeCorpo(searchValue);
+    const { imageUrl, seriesPageUrl, withinCU, seriesCredits, seriesDescription, seriesName } = await searchScrapeCorpo(
+      searchValue
+    );
 
     // TODO: Add "availability" search here
     if (fetchMetaData) {
@@ -66,7 +68,8 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
           credits: seriesCredits,
           seriesDescription,
           foundSeriesName: seriesName.trim(),
-          distance: textDistance
+          distance: textDistance,
+          reviewType: QueueFilterType.AUTO
         });
         await queue.validate();
         await queue.save();

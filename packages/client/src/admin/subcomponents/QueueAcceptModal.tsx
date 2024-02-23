@@ -4,9 +4,9 @@ import { Link } from 'react-router-dom';
 import { getSeriesImage } from '../../util/image';
 import { CORPO_SERVICE_ID, CU_SERVICE_ID } from '@justreadcomics/common/dist/const';
 import React from 'react';
-import { IQueueReviewData } from '@justreadcomics/common/dist/types/queue';
+import { IQueueReviewData, QueueFilterStatus } from '@justreadcomics/common/dist/types/queue';
 import { submitQueueReview } from '../../data/queue';
-import {ServiceImage} from "../../components/ServiceImage";
+import { ServiceImage } from '../../components/ServiceImage';
 
 interface QueueAcceptModalProps extends QueueModalProps {
   overrideChanges: QueueViewForm;
@@ -28,7 +28,9 @@ export const QueueAcceptModal = ({ showModal, handleClose, overrideChanges, queu
     if (queue.series._id) {
       const updatedValues: IQueueReviewData = {
         seriesId: queue.series._id,
-        reviewStatus: Object.values(overrideChanges).every((val) => val) ? 'accepted' : 'partial',
+        reviewStatus: Object.values(overrideChanges).every((val) => val)
+          ? QueueFilterStatus.ACCEPTED
+          : QueueFilterStatus.PARTIAL,
         seriesName,
         description: seriesDescription,
         credits,
@@ -63,7 +65,9 @@ export const QueueAcceptModal = ({ showModal, handleClose, overrideChanges, queu
         <Container>
           <h4>Updated Series information:</h4>
           <div>
-            <strong>Add <ServiceImage service={queue.service} size="xs" /> as Series Service:</strong>{' '}
+            <strong>
+              Add <ServiceImage service={queue.service} size="xs" /> as Series Service:
+            </strong>{' '}
             {overrideChanges.overwriteAddService ? <Badge bg="danger">Will Change!</Badge> : null}
             <br />
             {addService ? <code>true</code> : <code>false</code>}

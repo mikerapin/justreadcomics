@@ -5,25 +5,28 @@ import { IHydratedClientQueue } from '../types/queue';
 import { Link, useNavigate } from 'react-router-dom';
 import { hasBeenReviewed } from '../util/queueStatus';
 import { ServiceImage } from '../components/ServiceImage';
-import { ReviewStatus } from '@justreadcomics/common/dist/types/queue';
+import { QueueFilterStatus, QueueFilterType } from '@justreadcomics/common/dist/types/queue';
 
 export const QueueList = () => {
   const navigate = useNavigate();
   const [queueList, setQueueList] = useState<IHydratedClientQueue[] | null>(null);
+  const [filterStatus, setFilterStatus] = useState<QueueFilterStatus | undefined>();
+  const [filterType, setFilterType] = useState<QueueFilterType | undefined>();
+
   useEffect(() => {
-    fetchQueueEntries().then((res) => {
+    fetchQueueEntries({ type: filterType, status: filterStatus }).then((res) => {
       setQueueList(res.data);
     });
-  }, []);
+  }, [filterType, filterStatus]);
 
   const getReviewStatus = (queue: IHydratedClientQueue) => {
     if (hasBeenReviewed(queue)) {
       switch (queue.reviewStatus) {
-        case 'rejected':
+        case QueueFilterStatus.REJECTED:
           return <i className="bi bi-x-octagon text-danger"></i>;
-        case 'accepted':
+        case QueueFilterStatus.ACCEPTED:
           return <i className="bi bi-check-all text-success"></i>;
-        case 'partial':
+        case QueueFilterStatus.PARTIAL:
           return <i className="bi bi-check2 text-warning"></i>;
       }
     }
@@ -37,13 +40,47 @@ export const QueueList = () => {
       <Stack direction="horizontal" gap={3}>
         <div>Filter</div>
         <ButtonGroup>
-          <Button>All</Button>
-          <Button>Needs Review</Button>
-          <Button>Rejected</Button>
+          <Button
+            variant={filterStatus === undefined ? 'danger' : 'secondary'}
+            onClick={() => setFilterStatus(undefined)}
+          >
+            All
+          </Button>
+          <Button
+            variant={filterStatus === QueueFilterStatus.ACCEPTED ? 'danger' : 'secondary'}
+            onClick={() => setFilterStatus(QueueFilterStatus.ACCEPTED)}
+          >
+            Accepted
+          </Button>
+          <Button
+            variant={filterStatus === QueueFilterStatus.PARTIAL ? 'danger' : 'secondary'}
+            onClick={() => setFilterStatus(QueueFilterStatus.PARTIAL)}
+          >
+            Partial
+          </Button>
+          <Button
+            variant={filterStatus === QueueFilterStatus.REJECTED ? 'danger' : 'secondary'}
+            onClick={() => setFilterStatus(QueueFilterStatus.REJECTED)}
+          >
+            Rejected
+          </Button>
         </ButtonGroup>
         <ButtonGroup>
-          <Button>Automated</Button>
-          <Button>User-Submitted</Button>
+          <Button variant={filterType === undefined ? 'danger' : 'secondary'} onClick={() => setFilterType(undefined)}>
+            All
+          </Button>
+          <Button
+            variant={filterType === QueueFilterType.AUTO ? 'danger' : 'secondary'}
+            onClick={() => setFilterType(QueueFilterType.AUTO)}
+          >
+            Automated
+          </Button>
+          <Button
+            variant={filterType === QueueFilterType.USER ? 'danger' : 'secondary'}
+            onClick={() => setFilterType(QueueFilterType.USER)}
+          >
+            User-Submitted
+          </Button>
         </ButtonGroup>
       </Stack>
 
@@ -95,7 +132,19 @@ export const QueueList = () => {
                   </OverlayTrigger>
                 </td>
                 <td style={{ textAlign: 'center' }}>
-                  <i className="bi bi-upc-scan"></i>
+                  <OverlayTrigger
+                    overlay={
+                      <Tooltip id="queue-status">
+                        {queue.reviewType === QueueFilterType.AUTO ? 'Scanner' : 'User-Submitted'}
+                      </Tooltip>
+                    }
+                  >
+                    {queue.reviewType === QueueFilterType.AUTO ? (
+                      <i className="bi bi-upc-scan"></i>
+                    ) : (
+                      <i className="bi bi-person"></i>
+                    )}
+                  </OverlayTrigger>
                 </td>
                 <td style={{ textAlign: 'center' }}>
                   <ServiceImage service={queue.service} size="xs" />

@@ -2,8 +2,16 @@ import { Types } from 'mongoose';
 import { Creator, ISeries } from './series';
 import { IService } from './services';
 
-export type ReviewStatus = 'rejected' | 'accepted' | 'partial';
-export type ReviewType = 'scanner' | 'user-submitted';
+export enum QueueFilterType {
+  USER = 'user',
+  AUTO = 'auto'
+}
+
+export enum QueueFilterStatus {
+  ACCEPTED = 'accepted',
+  PARTIAL = 'partial',
+  REJECTED = 'rejected'
+}
 
 export interface IQueue {
   _id?: Types.ObjectId;
@@ -22,8 +30,8 @@ export interface IQueue {
   distance?: number;
 
   reviewedDate?: string;
-  reviewStatus?: ReviewStatus;
-  reviewType?: ReviewType;
+  reviewStatus?: QueueFilterStatus;
+  reviewType?: QueueFilterType;
 }
 
 export interface IHydratedQueue extends IQueue {
@@ -59,7 +67,7 @@ export interface IQueueReviewData {
   imageUrl?: string;
   credits?: Creator[];
   withinCU?: boolean;
-  reviewStatus: ReviewStatus;
+  reviewStatus: QueueFilterStatus;
   addService?: boolean;
   seriesPageUrl?: string;
 }
