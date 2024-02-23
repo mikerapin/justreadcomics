@@ -1,5 +1,5 @@
 import { Button, ButtonGroup, Col, Container, Form, Row, Stack } from 'react-bootstrap';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import { fetchSingleQueueEntry } from '../data/queue';
 import { IHydratedClientQueue, QueueViewForm } from '../types/queue';
@@ -10,7 +10,7 @@ import { useForm } from 'react-hook-form';
 import { QueueAcceptModal } from './subcomponents/QueueAcceptModal';
 import { useToast } from './hooks/useToast';
 import { QueueRejectChangesModal } from './subcomponents/QueueRejectChangesModal';
-import {ServiceImage} from "../components/ServiceImage";
+import { ServiceImage } from '../components/ServiceImage';
 
 const defaultQueueOverrides: QueueViewForm = {
   overwriteAddService: false,
@@ -23,6 +23,7 @@ const defaultQueueOverrides: QueueViewForm = {
 
 export const QueueView = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { renderToast, showErrorToast, showSuccessToast } = useToast();
 
   const [queue, setQueue] = useState<IHydratedClientQueue | null>(null);
@@ -90,6 +91,7 @@ export const QueueView = () => {
 
   return (
     <Container>
+      <Button onClick={() => navigate(-1)}>Back</Button>
       <Stack direction="horizontal" className="justify-content-between">
         <h2 className="me-2">
           Queue <code>{id}</code>
