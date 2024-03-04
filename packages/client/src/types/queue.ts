@@ -25,7 +25,3 @@ export interface QueueModalProps {
   handleClose: (queueResponse?: { updatedQueue?: IHydratedClientQueue; msg?: string; error?: boolean }) => void;
   queue: IHydratedClientQueue;
 }
-
-export interface IClientUserQueueReviewData extends Omit<IUserQueueReviewData, 'seriesServices'> {
-  seriesServices?: IClientSeriesService[];
-}

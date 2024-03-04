@@ -7,16 +7,16 @@ import { massImportIdw } from '../scrape/idw';
 import { Types } from 'mongoose';
 import { massImportShonenJump } from '../scrape/shonen-jump';
 import { cleanSeriesName } from '@justreadcomics/common/dist/util/string';
-import { promiseAllSequence } from '@justreadcomics/common/dist/util/actions';
-import { seriesModel } from '@justreadcomics/common/dist/model/series';
-import { logError } from '@justreadcomics/common/dist/util/logger';
-import { uploadSeriesImageFromUrlToS3 } from '@justreadcomics/common/dist/s3/s3';
 import {
   DC_INFINITE_UNIVERSE_SERVICE_ID,
   IMAGE_SERVICE_ID,
   MARVEL_UNLIMITED_SERVICE_ID,
   SHONEN_JUMP_SERVICE_ID
 } from '@justreadcomics/common/dist/const';
+import { seriesModel } from '@justreadcomics/shared-node/dist/model/series';
+import { logError } from '@justreadcomics/shared-node/dist/util/logger';
+import { promiseAllSequence } from '@justreadcomics/shared-node/dist/util/scraper';
+import { uploadSeriesImageFromUrlToS3 } from '@justreadcomics/shared-node/dist/s3/s3';
 
 export const massImportMarvelAction = async (req: Request, res: Response) => {
   const result = await massImportMarvel(false);

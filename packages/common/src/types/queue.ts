@@ -78,5 +78,6 @@ export interface IUserQueueReviewData {
   description?: string;
   imageUrl?: string;
   credits?: Creator[];
-  seriesServices: ISeriesService[];
+  services: ISeriesService[];
+  ongoingSeries?: boolean;
 }

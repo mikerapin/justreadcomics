@@ -10,6 +10,7 @@ import { Helmet } from 'react-helmet-async';
 import { useAdmin } from '../hooks/admin';
 import { Badge, Button, Col, Container, Row, Stack } from 'react-bootstrap';
 import { useSubmitter } from '../hooks/submitter';
+import { fetchUserQueue } from '../data/user-queue';
 
 export const SeriesDetail = () => {
   const { id } = useParams();
@@ -18,6 +19,7 @@ export const SeriesDetail = () => {
   const isSubmitter = useSubmitter();
   const [series, setSeries] = useState<IClientSeries>();
   const [services, setServices] = useState<IClientService[]>();
+  const [queueId, setQueueId] = useState<string | null>(null);
   useEffect(() => {
     if (id) {
       fetchSeriesById(id).then((result) => {
@@ -26,6 +28,15 @@ export const SeriesDetail = () => {
       });
     }
   }, [id]);
+  useEffect(() => {
+    if (id && isSubmitter) {
+      fetchUserQueue(id).then((result) => {
+        if (result) {
+          setQueueId(result.data._id);
+        }
+      });
+    }
+  }, [id, isSubmitter]);
 
   if (!series) {
     return <LoadingSeries />;
@@ -49,12 +60,11 @@ export const SeriesDetail = () => {
                 </Button>
               )}
               {isSubmitter && (
-                <Button type="button" onClick={() => navigate(`/edit/series/${id}`)}>
+                <Button type="button" onClick={() => navigate(`/edit/series/${id}${queueId ? `?qid=${queueId}` : ''}`)}>
                   Edit
                 </Button>
               )}
             </Stack>
-            {isAdmin ? <Link to={`/admin/series/${series?._id}`}>Edit</Link> : ''}
             <h1 className="title">{series?.seriesName}</h1>
 
             <p>{series?.description}</p>

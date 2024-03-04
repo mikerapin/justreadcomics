@@ -24,7 +24,7 @@ export const verifyTokenMiddleware = (req: Request, res: Response, next: NextFun
     }
     /* Verifying the token. */
     if (process.env.TOKEN_KEY) {
-      verify(token, process.env.TOKEN_KEY);
+      res.locals.auth = verify(token, process.env.TOKEN_KEY);
     } else {
       throw new Error('no token provided');
     }

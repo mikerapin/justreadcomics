@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { fetchSeriesById } from '../data/series';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { IClientSeries, IClientSeriesService } from '../types/series';
 import { IClientService } from '../types/service';
 import { LoadingSeries } from './LoadingSeries';
@@ -11,9 +11,9 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { fetchAllServices } from '../data/services';
 import { useToast } from '../admin/hooks/useToast';
 import { Creator } from '@justreadcomics/common/dist/types/series';
-import { IClientUserQueueReviewData } from '../types/queue';
 import { ServiceImage } from '../components/ServiceImage';
-import { userSubmitQueueReview } from '../data/user-queue';
+import { fetchUserQueue, userSubmitQueueReview } from '../data/user-queue';
+import { IClientUserQueueReviewData } from '../types/user-queue';
 
 export interface IQueueForm {
   seriesName?: string;
@@ -21,6 +21,7 @@ export interface IQueueForm {
   seriesServices?: IClientSeriesService[];
   credits?: Creator[];
   imageUrl?: string;
+  ongoingSeries?: boolean;
 }
 
 const sortServiesBySeriesServices = (services: IClientService[], seriesServices?: IClientSeriesService[]) => {
@@ -42,21 +43,15 @@ const sortServiesBySeriesServices = (services: IClientService[], seriesServices?
 
 export const SeriesEditPage = () => {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const isSubmitter = useSubmitter();
   const { renderToast, showSuccessToast, showErrorToast } = useToast();
 
   const [series, setSeries] = useState<IClientSeries>();
   const [services, setServices] = useState<IClientService[]>();
+  const [userQueue, setUserQueue] = useState<IClientUserQueueReviewData>();
   const [submitEnabled, setSubmitEnabled] = useState<boolean>(true);
-  useEffect(() => {
-    if (id) {
-      fetchSeriesById(id).then((result) => {
-        setSeries(result.series);
-        setServices(result.services);
-      });
-    }
-  }, [id]);
 
   const {
     register,
@@ -67,14 +62,30 @@ export const SeriesEditPage = () => {
   } = useForm<IQueueForm>({
     defaultValues: async () => {
       if (id) {
-        return Promise.all([fetchSeriesById(id), fetchAllServices()]).then((result) => {
-          const [fetchedSeries, fetchedServices] = result;
-          setSeries(fetchedSeries.series);
-          setServices(sortServiesBySeriesServices(fetchedServices.data, fetchedSeries.series.services));
+        return Promise.all([fetchSeriesById(id), fetchAllServices(), fetchUserQueue(id, searchParams.get('qid'))]).then(
+          (result) => {
+            const [fetchedSeries, fetchedServices, fetchedQueue] = result;
+            setUserQueue(fetchedQueue.data);
+            setSeries(fetchedSeries.series);
+            setServices(sortServiesBySeriesServices(fetchedServices.data, fetchedSeries.series.services));
 
-          const { seriesName, credits, description, services: seriesServices } = fetchedSeries.series;
-          return { seriesName, credits, seriesServices, description };
-        });
+            if (fetchedQueue.data) {
+              const {
+                seriesName,
+                credits,
+                description,
+                services: seriesServices,
+                imageUrl,
+                ongoingSeries
+              } = fetchedQueue.data;
+              return { seriesName, credits, seriesServices, description, imageUrl, ongoingSeries };
+            }
+
+            // fallback to the series if we're not editing a queue
+            const { seriesName, credits, description, services: seriesServices, ongoingSeries } = fetchedSeries.series;
+            return { seriesName, credits, seriesServices, description, ongoingSeries };
+          }
+        );
       }
       return {};
     }
@@ -103,7 +114,7 @@ export const SeriesEditPage = () => {
     [series]
   );
 
-  if (!id || !isSubmitter) {
+  if (!id) {
     navigate('/');
   }
 
@@ -124,9 +135,9 @@ export const SeriesEditPage = () => {
         description,
         imageUrl,
         credits,
-        seriesServices
+        services: seriesServices
       };
-      userSubmitQueueReview(queueSubmission)
+      userSubmitQueueReview(queueSubmission, userQueue?._id)
         .then((res) => {
           if (res.error) {
             showErrorToast(res.msg);
@@ -136,6 +147,11 @@ export const SeriesEditPage = () => {
         })
         .catch(() => {
           showErrorToast('There was an error with your submission. Please try again later.');
+        })
+        .finally(() => {
+          setTimeout(() => {
+            navigate(-1);
+          }, 5000);
         });
       setTimeout(() => {
         setSubmitEnabled(true);
@@ -173,12 +189,6 @@ export const SeriesEditPage = () => {
           <Col>
             <div className="mb-3">
               <Link to={`/series/${series._id}`}>Public Page</Link>
-            </div>
-            <div className="mb-3">
-              ID: <code>{series._id}</code>
-            </div>
-            <div className="mb-3">
-              Last Scan: <code>{series?.lastScan ? new Date(series.lastScan).toLocaleString() : 'Unknown'}</code>
             </div>
             <FloatingLabel label="Series Name" className="mb-3">
               <Form.Control {...register('seriesName')} id="seriesName" placeholder="X-Men (2023)" />

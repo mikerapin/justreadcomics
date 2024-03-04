@@ -1,7 +1,7 @@
 import { Model, model, models, Schema } from 'mongoose';
 import { ISeries, ISeriesService } from '@justreadcomics/common/dist/types/series';
 
-const seriesServiceSchema = new Schema<ISeriesService>({
+export const seriesServiceSchema = new Schema<ISeriesService>({
   seriesServiceUrl: String,
   lastScan: {
     type: Date,

@@ -1,13 +1,13 @@
 import express from 'express';
 import { scrapeIndexedShonenJumpSeriesAction } from '../actions/indexed';
 import { searchAndScrapeCorpoAction, searchAndScrapeHooplaAction } from '../actions/search';
-import { keyChecker, verifyTokenMiddleware } from '@justreadcomics/shared-node/dist/middleware/auth';
+import { verifyTokenMiddleware } from '@justreadcomics/shared-node/dist/middleware/auth';
+import { confirmIdFromParamAndFetchSeries } from '@justreadcomics/shared-node/dist/middleware/refreshFetch';
 import {
   refreshCorpoMetadataAction,
   refreshImageMetadataAction,
   refreshMarvelMetadataAction
 } from '../actions/refresh';
-import { confirmIdAndFetchSeries } from '../middleware/refreshFetch';
 
 const scraperRouter = express.Router();
 
@@ -20,11 +20,23 @@ scraperRouter.get('/corpo/:id', [verifyTokenMiddleware], searchAndScrapeCorpoAct
 scraperRouter.get('/hoopla/:id', [verifyTokenMiddleware], searchAndScrapeHooplaAction);
 
 // refresh metadata
-scraperRouter.get('/refresh/marvel/:id', [confirmIdAndFetchSeries], refreshMarvelMetadataAction);
+scraperRouter.get(
+  '/refresh/marvel/:id',
+  [verifyTokenMiddleware, confirmIdFromParamAndFetchSeries],
+  refreshMarvelMetadataAction
+);
 scraperRouter.get('/refresh/dc/:id');
-scraperRouter.get('/refresh/image/:id', [confirmIdAndFetchSeries], refreshImageMetadataAction);
+scraperRouter.get(
+  '/refresh/image/:id',
+  [verifyTokenMiddleware, confirmIdFromParamAndFetchSeries],
+  refreshImageMetadataAction
+);
 scraperRouter.get('/refresh/shonen-jump/:id');
-scraperRouter.get('/refresh/corpo/:id', [confirmIdAndFetchSeries], refreshCorpoMetadataAction);
+scraperRouter.get(
+  '/refresh/corpo/:id',
+  [verifyTokenMiddleware, confirmIdFromParamAndFetchSeries],
+  refreshCorpoMetadataAction
+);
 scraperRouter.get('/refresh/hoopla/:id');
 //
 // // mass import scrapers (very primitive)
