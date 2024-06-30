@@ -31,7 +31,7 @@ export const SeriesDetail = () => {
   useEffect(() => {
     if (id && isSubmitter) {
       fetchUserQueue(id).then((result) => {
-        if (result) {
+        if (result && result.data) {
           setQueueId(result.data._id);
         }
       });
@@ -74,8 +74,8 @@ export const SeriesDetail = () => {
             <>
               <h3>Creators:</h3>
               <Stack direction="horizontal" gap={2} style={{ flexWrap: 'wrap' }}>
-                {series.credits?.map((credit) => (
-                  <Badge pill bg="secondary">
+                {series.credits?.map((credit, index) => (
+                  <Badge key={`${credit.name}-${index}`} pill bg="secondary">
                     {credit.name}
                   </Badge>
                 ))}
