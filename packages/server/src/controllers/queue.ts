@@ -48,8 +48,6 @@ queueRouter.get('/get/all', [verifyTokenMiddleware], async (req: Request, res: R
     filterObject.reviewType = filterType as QueueFilterType;
   }
 
-  console.log(filterObject);
-
   const queueList = await queueModel.find(filterObject).sort('createdAt').limit(100).sort({ createdAt: -1 });
   const hydratedQueues = queueList.map(async (queue) => await getHydratedQueue(queue.toObject()));
 

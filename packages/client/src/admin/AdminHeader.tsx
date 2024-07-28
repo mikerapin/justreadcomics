@@ -43,6 +43,12 @@ export const AdminHeader = () => {
               >
                 Queue
               </Link>
+              <Link
+                to="/admin/user-submissions"
+                className={`m-2 btn ${path.match('/admin/user-submissions') ? 'btn-danger' : 'btn-secondary'}`}
+              >
+                User Submissions
+              </Link>
             </Nav>
 
             <Nav>

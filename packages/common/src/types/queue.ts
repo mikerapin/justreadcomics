@@ -72,12 +72,10 @@ export interface IQueueReviewData {
   seriesPageUrl?: string;
 }
 
-export interface IUserQueueReviewData {
+export interface IUserQueueReviewData extends ISeriesUpdatableValues {
   seriesId: string;
-  seriesName?: string;
-  description?: string;
-  imageUrl?: string;
-  credits?: Creator[];
   services: ISeriesService[];
   ongoingSeries?: boolean;
+  reviewedDate?: string;
+  reviewStatus?: QueueFilterStatus;
 }

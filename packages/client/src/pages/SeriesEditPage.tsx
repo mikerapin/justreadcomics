@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { fetchSeriesById } from '../data/series';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { IClientSeries, IClientSeriesService } from '../types/series';
@@ -73,12 +73,12 @@ export const SeriesEditPage = () => {
               const {
                 seriesName,
                 credits,
-                description,
+                seriesDescription,
                 services: seriesServices,
                 imageUrl,
                 ongoingSeries
               } = fetchedQueue.data;
-              return { seriesName, credits, seriesServices, description, imageUrl, ongoingSeries };
+              return { seriesName, credits, seriesServices, description: seriesDescription, imageUrl, ongoingSeries };
             }
 
             // fallback to the series if we're not editing a queue
@@ -132,7 +132,7 @@ export const SeriesEditPage = () => {
       const queueSubmission: Partial<IClientUserQueueReviewData> = {
         seriesId: id,
         seriesName,
-        description,
+        seriesDescription: description,
         imageUrl,
         credits,
         services: seriesServices
@@ -160,7 +160,7 @@ export const SeriesEditPage = () => {
   });
 
   const getNextOrder = () => {
-    const currentCredits = getValues('credits');
+    const currentCredits = getValues().credits;
     if (currentCredits) {
       return currentCredits.length;
     }

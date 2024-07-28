@@ -7,11 +7,22 @@ interface SubmitQueueUserReviewResult {
   error: boolean;
 }
 
-interface FetchUserQueueResult {
+export interface FetchUserQueueResult {
   msg: string;
   error: boolean;
   data: IClientUserQueueReviewData;
 }
+
+export const fetchAllUserSubmissions = async () => {
+  const res = await authFetch(`${API_BASE_URL}/user-queue/get/all`, {
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    },
+    method: 'GET'
+  });
+  return res.json();
+};
 
 export const fetchUserQueue = async (seriesId: string, queueId?: string | null): Promise<FetchUserQueueResult> => {
   const res = await authFetch(

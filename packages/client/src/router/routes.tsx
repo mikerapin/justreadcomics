@@ -16,6 +16,7 @@ import { authenticate } from '../data/auth';
 import { QueueList } from '../admin/QueueList';
 import { QueueView } from '../admin/QueueView';
 import { SeriesEditPage } from '../pages/SeriesEditPage';
+import { UserSubmissionsList } from '../admin/UserSubmissionsList';
 
 export const siteRouter = [
   {
@@ -89,6 +90,10 @@ export const siteRouter = [
       {
         path: '/admin/queue/:id',
         element: <QueueView />
+      },
+      {
+        path: '/admin/user-submissions',
+        element: <UserSubmissionsList />
       }
     ]
   }

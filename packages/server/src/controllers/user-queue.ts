@@ -5,6 +5,7 @@ import { confirmIdFromBodyAndFetchSeries } from '@justreadcomics/shared-node/dis
 import { logError } from '@justreadcomics/shared-node/dist/util/logger';
 import { userQueueModel } from '@justreadcomics/shared-node/dist/model/user-queue';
 import { Types } from 'mongoose';
+import { getSeriesModelById, lookupServicesForSeries } from '@justreadcomics/shared-node/dist/model/lookup';
 
 interface UserQueueSubmissionRequest extends Request {
   body: IUserQueueReviewData;
@@ -32,13 +33,13 @@ userQueueRouter.post(
     try {
       const fetchedSeries = res.locals.series;
       const queueId = req.query.qid as string;
-      const { seriesId, seriesName, services, credits, description, imageUrl, ongoingSeries } = req.body;
+      const { seriesId, seriesName, services, credits, seriesDescription, imageUrl, ongoingSeries } = req.body;
 
       const queueData = {
         seriesId,
         seriesName,
         services,
-        description,
+        seriesDescription,
         credits,
         ongoingSeries,
         imageUrl
@@ -98,6 +99,35 @@ userQueueRouter.get('/client-fetch/:id', [verifyTokenMiddleware], async (req: Re
     }
     const userQueue = await userQueueModel.findOne({ seriesId: id });
     res.status(200).json({ msg: '', error: false, data: userQueue });
+  } catch (e) {
+    logError(e);
+    res.status(500).json({ msg: 'Something went wrong fetching your data, bub...', error: true });
+  }
+});
+
+userQueueRouter.get('/get/all', [verifyTokenMiddleware], async (req: Request, res: Response) => {
+  try {
+    const userQueues = await userQueueModel.find().sort('createdAt').limit(100).sort({ createdAt: -1 });
+    const hydratedUserQueues = userQueues.map(async (queue) => {
+      const seriesData = await getSeriesModelById(queue.seriesId);
+      const newServices = await lookupServicesForSeries(queue.services);
+      const currentServices = await lookupServicesForSeries(seriesData?.services);
+
+      return {
+        _id: queue.id,
+        seriesId: queue.seriesId,
+        seriesDescription: queue.description,
+        seriesName: queue.seriesName,
+        userId: queue.userId,
+        credits: queue.credits,
+        createdAt: queue.createdAt,
+        series: seriesData,
+        newServices,
+        currentServices
+      };
+    });
+
+    res.status(200).json({ msg: '', error: false, data: await Promise.all(hydratedUserQueues) });
   } catch (e) {
     logError(e);
     res.status(500).json({ msg: 'Something went wrong fetching your data, bub...', error: true });

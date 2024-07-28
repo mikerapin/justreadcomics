@@ -1,11 +1,13 @@
-import { Await, Navigate, Outlet, useLoaderData } from 'react-router-dom';
+import { Await, Navigate, Outlet, useLoaderData, useSearchParams } from 'react-router-dom';
 import Footer from '../components/Footer';
 import React, { Suspense } from 'react';
 import { AdminHeader } from './AdminHeader';
 import { Helmet } from 'react-helmet-async';
 import { AuthProvider } from '../providers/AuthProvider';
+import { Container } from 'react-bootstrap';
 
 export const AdminTemplate = () => {
+  const [params] = useSearchParams();
   const authPromise = useLoaderData() as boolean;
   return (
     <>
@@ -32,6 +34,7 @@ export const AdminTemplate = () => {
                   <Outlet />
                 </div>
                 <Footer />
+                <Container>{params.get('token') && <code>Token: {user.toString()}</code>}</Container>
               </AuthProvider>
             );
           }}

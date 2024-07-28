@@ -3,9 +3,9 @@ import React, { useEffect, useState } from 'react';
 import { fetchQueueEntries } from '../data/queue';
 import { IHydratedClientQueue } from '../types/queue';
 import { Link, useNavigate } from 'react-router-dom';
-import { hasBeenReviewed } from '../util/queueStatus';
 import { ServiceImage } from '../components/ServiceImage';
 import { QueueFilterStatus, QueueFilterType } from '@justreadcomics/common/dist/types/queue';
+import { getReviewStatus } from '../util/getReviewStatus';
 
 export const QueueList = () => {
   const navigate = useNavigate();
@@ -18,20 +18,6 @@ export const QueueList = () => {
       setQueueList(res.data);
     });
   }, [filterType, filterStatus]);
-
-  const getReviewStatus = (queue: IHydratedClientQueue) => {
-    if (hasBeenReviewed(queue)) {
-      switch (queue.reviewStatus) {
-        case QueueFilterStatus.REJECTED:
-          return <i className="bi bi-x-octagon text-danger"></i>;
-        case QueueFilterStatus.ACCEPTED:
-          return <i className="bi bi-check-all text-success"></i>;
-        case QueueFilterStatus.PARTIAL:
-          return <i className="bi bi-check2 text-warning"></i>;
-      }
-    }
-    return <i className="bi bi-envelope text-primary-emphasis"></i>;
-  };
 
   return (
     <Container>
