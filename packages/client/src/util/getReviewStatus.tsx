@@ -2,9 +2,9 @@ import { IHydratedClientQueue } from '../types/queue';
 import { hasBeenReviewed } from './queueStatus';
 import { QueueFilterStatus } from '@justreadcomics/common/dist/types/queue';
 import React from 'react';
-import { IClientUserQueueReviewData } from '../types/user-queue';
+import { IClientUserQueueReviewData, IClientUserSubmissionListData } from '../types/user-queue';
 
-export const getReviewStatus = (queue: IHydratedClientQueue | IClientUserQueueReviewData) => {
+export const getReviewStatus = (queue: IHydratedClientQueue | IClientUserSubmissionListData) => {
   if (hasBeenReviewed(queue)) {
     switch (queue.reviewStatus) {
       case QueueFilterStatus.REJECTED:

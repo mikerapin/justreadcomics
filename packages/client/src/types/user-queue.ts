@@ -1,6 +1,6 @@
 import { IUserQueueReviewData, QueueFilterStatus } from '@justreadcomics/common/dist/types/queue';
 import { IClientSeries, IClientSeriesService } from './series';
-import { Creator } from '@justreadcomics/common/dist/types/series';
+import { Creator, ISeriesService } from '@justreadcomics/common/dist/types/series';
 import { IClientService } from './service';
 
 export interface IClientUserQueueReviewData extends Omit<IUserQueueReviewData, 'services'> {
@@ -19,8 +19,10 @@ export interface IClientUserSubmissionListData {
   userId: string;
   credits: Creator[];
   series: IClientSeries;
+  services: ISeriesService[];
   newServices: IClientService[];
   currentServices: IClientService[];
+
   reviewedDate?: string;
   reviewStatus?: QueueFilterStatus;
 }

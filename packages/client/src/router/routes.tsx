@@ -17,6 +17,7 @@ import { QueueList } from '../admin/QueueList';
 import { QueueView } from '../admin/QueueView';
 import { SeriesEditPage } from '../pages/SeriesEditPage';
 import { UserSubmissionsList } from '../admin/UserSubmissionsList';
+import { UserSubmissionView } from '../admin/UserSubmissionView';
 
 export const siteRouter = [
   {
@@ -94,6 +95,10 @@ export const siteRouter = [
       {
         path: '/admin/user-submissions',
         element: <UserSubmissionsList />
+      },
+      {
+        path: '/admin/user-submissions/:id',
+        element: <UserSubmissionView />
       }
     ]
   }

@@ -6,12 +6,33 @@ import { logError } from '@justreadcomics/shared-node/dist/util/logger';
 import { userQueueModel } from '@justreadcomics/shared-node/dist/model/user-queue';
 import { Types } from 'mongoose';
 import { getSeriesModelById, lookupServicesForSeries } from '@justreadcomics/shared-node/dist/model/lookup';
+import { IUserQueue } from '@justreadcomics/common/dist/types/user-queue';
 
 interface UserQueueSubmissionRequest extends Request {
   body: IUserQueueReviewData;
 }
 
 const userQueueRouter = express.Router();
+
+const hydratedUserQueueForAdmin = async (queue: IUserQueue) => {
+  const seriesData = await getSeriesModelById(queue.seriesId);
+  const newServices = await lookupServicesForSeries(queue.services);
+  const currentServices = await lookupServicesForSeries(seriesData?.services);
+
+  return {
+    _id: queue._id,
+    seriesId: queue.seriesId,
+    seriesDescription: queue.description,
+    seriesName: queue.seriesName,
+    userId: queue.userId,
+    credits: queue.credits,
+    createdAt: queue.createdAt,
+    series: seriesData,
+    services: queue.services,
+    newServices,
+    currentServices
+  };
+};
 
 /*
 NEXT STEPS:
@@ -108,26 +129,35 @@ userQueueRouter.get('/client-fetch/:id', [verifyTokenMiddleware], async (req: Re
 userQueueRouter.get('/get/all', [verifyTokenMiddleware], async (req: Request, res: Response) => {
   try {
     const userQueues = await userQueueModel.find().sort('createdAt').limit(100).sort({ createdAt: -1 });
-    const hydratedUserQueues = userQueues.map(async (queue) => {
-      const seriesData = await getSeriesModelById(queue.seriesId);
-      const newServices = await lookupServicesForSeries(queue.services);
-      const currentServices = await lookupServicesForSeries(seriesData?.services);
-
-      return {
-        _id: queue.id,
-        seriesId: queue.seriesId,
-        seriesDescription: queue.description,
-        seriesName: queue.seriesName,
-        userId: queue.userId,
-        credits: queue.credits,
-        createdAt: queue.createdAt,
-        series: seriesData,
-        newServices,
-        currentServices
-      };
-    });
+    const hydratedUserQueues = userQueues.map(async (queue) => hydratedUserQueueForAdmin(queue));
 
     res.status(200).json({ msg: '', error: false, data: await Promise.all(hydratedUserQueues) });
+  } catch (e) {
+    logError(e);
+    res.status(500).json({ msg: 'Something went wrong fetching your data, bub...', error: true });
+  }
+});
+
+userQueueRouter.get('/get/:id', [verifyTokenMiddleware], async (req: Request, res: Response) => {
+  const id = req.params.id;
+  if (!id) {
+    res.status(404).json({
+      msg: 'wtf bud? no data here',
+      error: true
+    });
+    return;
+  }
+
+  try {
+    const userQueue = await userQueueModel.findOne({ _id: new Types.ObjectId(id) });
+    if (userQueue) {
+      res.status(200).json({
+        msg: 'dis is user queue',
+        error: false,
+        data: await hydratedUserQueueForAdmin(userQueue)
+      });
+    }
+    return;
   } catch (e) {
     logError(e);
     res.status(500).json({ msg: 'Something went wrong fetching your data, bub...', error: true });

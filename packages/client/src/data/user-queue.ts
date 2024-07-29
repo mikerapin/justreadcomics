@@ -1,6 +1,6 @@
 import { authFetch } from './fetch';
 import { API_BASE_URL } from '../static/const';
-import { IClientUserQueueReviewData } from '../types/user-queue';
+import { IClientUserQueueReviewData, IClientUserSubmissionListData } from '../types/user-queue';
 
 interface SubmitQueueUserReviewResult {
   msg: string;
@@ -13,8 +13,31 @@ export interface FetchUserQueueResult {
   data: IClientUserQueueReviewData;
 }
 
-export const fetchAllUserSubmissions = async () => {
+export interface FetchSingleUserSubmissionResult {
+  msg: string;
+  error: boolean;
+  data: IClientUserSubmissionListData;
+}
+
+export interface FetchUserSubmissionsResult {
+  msg: string;
+  error: boolean;
+  data: IClientUserSubmissionListData[];
+}
+
+export const fetchAllUserSubmissions = async (): Promise<FetchUserSubmissionsResult> => {
   const res = await authFetch(`${API_BASE_URL}/user-queue/get/all`, {
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    },
+    method: 'GET'
+  });
+  return res.json();
+};
+
+export const fetchSingleUserSubmission = async (id: string): Promise<FetchSingleUserSubmissionResult> => {
+  const res = await authFetch(`${API_BASE_URL}/user-queue/get/${id}`, {
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json'

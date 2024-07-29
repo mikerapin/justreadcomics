@@ -24,7 +24,7 @@ export interface IQueueForm {
   ongoingSeries?: boolean;
 }
 
-const sortServiesBySeriesServices = (services: IClientService[], seriesServices?: IClientSeriesService[]) => {
+const sortServicesBySeriesServices = (services: IClientService[], seriesServices?: IClientSeriesService[]) => {
   if (!seriesServices) {
     return services;
   }
@@ -67,7 +67,7 @@ export const SeriesEditPage = () => {
             const [fetchedSeries, fetchedServices, fetchedQueue] = result;
             setUserQueue(fetchedQueue.data);
             setSeries(fetchedSeries.series);
-            setServices(sortServiesBySeriesServices(fetchedServices.data, fetchedSeries.series.services));
+            setServices(sortServicesBySeriesServices(fetchedServices.data, fetchedSeries.series.services));
 
             if (fetchedQueue.data) {
               const {
@@ -245,7 +245,8 @@ export const SeriesEditPage = () => {
                 {services?.map((service, index) => {
                   const currentSeriesService = getSeriesServiceById(service._id);
                   const tempIndex = getSeriesServiceIndexById(service._id) || -1;
-                  const currentSeriesServiceIndex = tempIndex > -1 ? tempIndex : index;
+                  const currentSeriesServiceIndex = tempIndex > -1 ? tempIndex : index + 1;
+                  console.log({ tempIndex, currentSeriesServiceIndex });
                   return (
                     <tr key={service.serviceName}>
                       <td>

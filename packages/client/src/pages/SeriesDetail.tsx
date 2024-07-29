@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { fetchSeriesById } from '../data/series';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { IClientSeries } from '../types/series';
 import { Services } from '../components/Services';
 import { IClientService } from '../types/service';
@@ -61,7 +61,7 @@ export const SeriesDetail = () => {
               )}
               {isSubmitter && (
                 <Button type="button" onClick={() => navigate(`/edit/series/${id}${queueId ? `?qid=${queueId}` : ''}`)}>
-                  Edit
+                  Edit{queueId ? <>&nbsp;Submission</> : ''}
                 </Button>
               )}
             </Stack>

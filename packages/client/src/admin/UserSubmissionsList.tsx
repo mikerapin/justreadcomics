@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Container, OverlayTrigger, Table, Tooltip } from 'react-bootstrap';
-import { IClientUserQueueReviewData, IClientUserSubmissionListData } from '../types/user-queue';
+import { IClientUserSubmissionListData } from '../types/user-queue';
 import { getReviewStatus } from '../util/getReviewStatus';
 import { fetchAllUserSubmissions } from '../data/user-queue';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export const UserSubmissionsList = () => {
+  const navigate = useNavigate();
   const [submissionsList, setSubmissionsList] = useState<IClientUserSubmissionListData[] | null>(null);
 
   useEffect(() => {
     fetchAllUserSubmissions().then((res) => {
-      console.log(res.data);
       setSubmissionsList(res.data);
     });
   }, []);
@@ -35,7 +35,9 @@ export const UserSubmissionsList = () => {
             return (
               <tr key={submission._id}>
                 <td>
-                  <Button>View</Button>
+                  <Button size="sm" onClick={() => navigate(`/admin/user-submissions/${submission._id}`)}>
+                    View
+                  </Button>
                 </td>
                 <td style={{ textAlign: 'center' }}>
                   <OverlayTrigger
