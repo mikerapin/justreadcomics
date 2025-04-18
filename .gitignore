@@ -69,7 +69,6 @@ samconfig.toml
 
 # Nx
 .nx
-.nx
 
 # TypeScript
 *.tsbuildinfo
@@ -79,6 +78,7 @@ samconfig.toml
 *.temp
 .cache/
 .temp/
+.npm-cache/
 
 # Debug
 .debug/

@@ -18,7 +18,10 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "test": "nx run-many -t test",
     "test:watch": "nx run-many -t test --watch",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "audit": "npm audit",
+    "audit:fix": "npm audit fix",
+    "security-check": "npm audit && snyk test"
   },
   "devDependencies": {
     "@commitlint/cli": "^18.6.1",
@@ -54,5 +57,16 @@
     "*.{json,md}": [
       "prettier --write"
     ]
+  },
+  "overrides": {
+    "nth-check": "^2.0.1",
+    "postcss": "^8.4.31",
+    "object-path": "^0.11.8",
+    "tar-fs": "^3.0.7",
+    "ws": "^8.17.1"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
   }
 }
