@@ -6,14 +6,14 @@ import { logError } from '@justreadcomics/shared-node/dist/util/logger';
 export const massDcImport = async (runHeadless: boolean) => {
   const { page, browser } = await initScraperPage(runHeadless || isProduction());
 
-  // this is the DC series list page, but it's a search page?
-  // either way, it's loading 100 pages of all comic series sorted by title
-  await page.goto(
-    'https://www.dcuniverseinfinite.com/browse/comics?sort=eyJkZWZhdWx0IjpmYWxzZSwiZGlyZWN0aW9uIjoiYXNjIiwiZmllbGQiOiJ0aXRsZSJ9&category=W10%3D&page=100&series',
-    { waitUntil: 'domcontentloaded' }
-  );
-
   try {
+    // this is the DC series list page, but it's a search page?
+    // either way, it's loading 100 pages of all comic series sorted by title
+    await page.goto(
+      'https://www.dcuniverseinfinite.com/browse/comics?sort=eyJkZWZhdWx0IjpmYWxzZSwiZGlyZWN0aW9uIjoiYXNjIiwiZmllbGQiOiJ0aXRsZSJ9&category=W10%3D&page=100&series',
+      { waitUntil: 'domcontentloaded' }
+    );
+
     await page.waitForSelector('.browse-results__container');
     // waiting for this request ensures the page has fully loaded its ajax content
     await page.waitForRequest(
@@ -65,11 +65,17 @@ export const massDcImport = async (runHeadless: boolean) => {
 
     await browser.close();
 
+    // Filter out any malformed data that might have slipped through
+    const filteredTitles = snaggedTitles.filter(
+      (series) => series.seriesLink && series.seriesName && series.seriesLink.length > 0 && series.seriesName.length > 0
+    );
+
     return {
-      series: snaggedTitles
+      series: filteredTitles
     };
   } catch (e: any) {
     logError(e);
+    await browser.close();
     return {
       series: [],
       error: e
