@@ -1,5 +1,9 @@
 import { Request, Response } from 'express';
-import { refreshCorpoMetadataAction, refreshMarvelMetadataAction, refreshImageMetadataAction } from '../refresh';
+import {
+  refreshCorpoMetadataAction,
+  refreshMarvelMetadataAction,
+  refreshImageMetadataAction
+} from '../../actions/refresh';
 import { refreshCorpoMetadata } from '../../scrape/corpo';
 import { refreshMarvelMetadata } from '../../scrape/marvel';
 import { refreshImageMetadata } from '../../scrape/image';
@@ -76,7 +80,10 @@ describe('Refresh Actions', () => {
       await refreshCorpoMetadataAction(mockReq as Request, mockRes as Response);
 
       expect(refreshCorpoMetadata).toHaveBeenCalledWith('https://corpo.com/series/1');
-      expect(mockSeries.set).toHaveBeenCalledWith({ description: 'Test description' });
+      expect(mockSeries.set).toHaveBeenCalledWith({
+        description: 'Test description',
+        imageUrl: 'https://example.com/image.jpg'
+      });
       expect(mockSeries.save).toHaveBeenCalled();
       expect(mockRes.json).toHaveBeenCalledWith({
         error: false,

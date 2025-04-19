@@ -159,6 +159,8 @@ describe('Search Actions', () => {
         msg: 'this is where you only check availability'
       });
       expect(logError).not.toHaveBeenCalled();
+      expect(mockSeries.save).not.toHaveBeenCalled();
+      expect(insertOrUpdateSeriesService).not.toHaveBeenCalled();
     });
 
     it('should handle series not found in corpo', async () => {

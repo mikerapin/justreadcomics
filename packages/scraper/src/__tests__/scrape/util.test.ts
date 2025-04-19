@@ -1,4 +1,4 @@
-import { initScraperPage, cleanSearch } from '../util';
+import { initScraperPage, cleanSearch } from '../../scrape/util';
 import puppeteer from 'puppeteer';
 
 // Mock puppeteer

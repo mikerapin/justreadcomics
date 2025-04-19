@@ -1,9 +1,9 @@
-import { massImportHoopla } from '../hoopla';
-import { initScraperPage } from '../util';
+import { massImportHoopla } from '../../scrape/hoopla';
+import { initScraperPage } from '../../scrape/util';
 import { isProduction } from '@justreadcomics/common/dist/util/process';
 import { logError } from '@justreadcomics/shared-node/dist/util/logger';
 
-jest.mock('../util');
+jest.mock('../../scrape/util');
 jest.mock('@justreadcomics/common/dist/util/process');
 jest.mock('@justreadcomics/shared-node/dist/util/logger');
 

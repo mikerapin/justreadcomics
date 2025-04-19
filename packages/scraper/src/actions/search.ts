@@ -42,9 +42,8 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
       searchValue = cleanSearch(searchValue);
     }
 
-    const { imageUrl, seriesPageUrl, withinCU, seriesCredits, seriesDescription, seriesName } = await searchScrapeCorpo(
-      searchValue
-    );
+    const { imageUrl, seriesPageUrl, withinCU, seriesCredits, seriesDescription, seriesName } =
+      await searchScrapeCorpo(searchValue);
 
     // TODO: Add "availability" search here
     if (fetchMetaData) {
@@ -74,7 +73,7 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
         await queue.validate();
         await queue.save();
 
-        // should we also update the scan date here for the series service??
+        // TODO: should we also update the scan date here for the series service??
 
         res.status(200).json({
           error: false,
@@ -83,6 +82,7 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
         return;
       }
 
+      // Only update the series if the distance is within the allowed threshold
       insertOrUpdateSeriesService(series, CORPO_SERVICE_ID, seriesPageUrl);
 
       // we can't use `insertOrUpdateSeriesService` here because we may need to remove CU if it existed

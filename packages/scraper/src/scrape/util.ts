@@ -22,5 +22,15 @@ export const initScraperPage = async (runHeadless = true) => {
  * @param search
  */
 export const cleanSearch = (search: string) => {
-  return search.replace(/ *\([^)]*\) */g, '');
+  let result = search;
+  let prevResult;
+
+  // Keep removing parentheses until no more changes
+  do {
+    prevResult = result;
+    result = result.replace(/ *\([^()]*\) */g, ' ');
+  } while (result !== prevResult);
+
+  // Clean up any double spaces
+  return result.replace(/\s+/g, ' ').trim();
 };
