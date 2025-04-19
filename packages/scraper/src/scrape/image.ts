@@ -97,14 +97,10 @@ export const refreshImageMetadata = async (seriesUrl: string) => {
 };
 
 export const massImageImport = async (runHeadless: boolean) => {
-  //
   const { page, browser } = await initScraperPage(runHeadless || isProduction());
 
-  // this is the DC series list page, but it's a search page?
-  // either way, it's loading 100 pages of all comic series sorted by title
-  await page.goto('https://imagecomics.com/comics/series', { waitUntil: 'domcontentloaded' });
-
   try {
+    await page.goto('https://imagecomics.com/comics/series', { waitUntil: 'domcontentloaded' });
     await page.waitForSelector('.all-series');
 
     // get series blocks selector
@@ -112,12 +108,10 @@ export const massImageImport = async (runHeadless: boolean) => {
 
     const snaggedTitles = await page.evaluate((selector) => {
       const seriesData: IMassImageImport[] = [];
-
       const seriesLinks = document.querySelectorAll(selector);
 
       seriesLinks.forEach((link) => {
         const seriesLinkElement = link as HTMLAnchorElement;
-
         const seriesLink = seriesLinkElement.getAttribute('href');
         const seriesName = seriesLinkElement.innerText;
 
@@ -134,11 +128,17 @@ export const massImageImport = async (runHeadless: boolean) => {
 
     await browser.close();
 
+    // Filter out any malformed data that might have slipped through
+    const filteredTitles = snaggedTitles.filter(
+      (series) => series.seriesName && series.seriesLink && series.seriesName.length > 0 && series.seriesLink.length > 0
+    );
+
     return {
-      series: snaggedTitles
+      series: filteredTitles
     };
   } catch (e: any) {
     logError(e);
+    await browser.close();
     return {
       series: [],
       error: e

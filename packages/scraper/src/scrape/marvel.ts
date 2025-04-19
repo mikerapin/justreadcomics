@@ -95,9 +95,8 @@ interface IMassMarvelImport {
 export const massImportMarvel = async (runHeadless?: boolean) => {
   const { page, browser } = await initScraperPage(runHeadless || isProduction());
 
-  await page.goto('https://www.marvel.com/comics/series', { waitUntil: 'domcontentloaded' });
-
   try {
+    await page.goto('https://www.marvel.com/comics/series', { waitUntil: 'domcontentloaded' });
     await page.waitForSelector('.modu_AZ');
 
     const titlesLocator = '.modu_AZ .az-list';
@@ -112,7 +111,11 @@ export const massImportMarvel = async (runHeadless?: boolean) => {
           const ongoing = el.parentElement?.tagName.toLowerCase() === 'b';
 
           if (text && text.length > 0 && link && link !== '#') {
-            titles.push({ seriesName: text, link: `https://www.marvel.com${link}`, ongoing });
+            titles.push({
+              seriesName: text,
+              link: `https://www.marvel.com${link}`,
+              ongoing
+            });
           }
         });
       });
@@ -121,12 +124,17 @@ export const massImportMarvel = async (runHeadless?: boolean) => {
 
     await browser.close();
 
+    // Filter out any malformed data that might have slipped through
+    const filteredTitles = snaggedTitles.filter(
+      (series) => series.seriesName && series.link && series.seriesName.length > 0 && series.link.length > 0
+    );
+
     return {
-      series: snaggedTitles
+      series: filteredTitles
     };
   } catch (e: any) {
-    console.log(e);
     logError(e);
+    await browser.close();
     return {
       series: [],
       error: e
