@@ -21,7 +21,7 @@ import { uploadSeriesImageFromUrlToS3 } from '@justreadcomics/shared-node/dist/s
 export const massImportMarvelAction = async (req: Request, res: Response) => {
   const result = await massImportMarvel(false);
   if (result.error) {
-    res.status(400).json(result.error);
+    res.status(400).json({ error: result.error });
     return;
   }
 
@@ -63,7 +63,7 @@ export const massImportDcAction = async (req: Request, res: Response) => {
   const includeImages = req.query.includeImages;
 
   if (result.error) {
-    res.status(400).json(result.error);
+    res.status(400).json({ error: result.error });
     return;
   }
 
@@ -115,7 +115,7 @@ export const massImportImageAction = async (req: Request, res: Response) => {
   const result = await massImageImport(false);
 
   if (result.error) {
-    res.status(400).json(result.error);
+    res.status(400).json({ error: result.error });
     return;
   }
 
@@ -153,6 +153,11 @@ export const massImportImageAction = async (req: Request, res: Response) => {
 
 export const massImportShonenJumpAction = async (req: Request, res: Response) => {
   const result = await massImportShonenJump(false);
+
+  if (result.error) {
+    res.status(400).json({ error: result.error });
+    return;
+  }
 
   try {
     const finalResults = await promiseAllSequence(chunk(result.series, 20), (chunk) =>
