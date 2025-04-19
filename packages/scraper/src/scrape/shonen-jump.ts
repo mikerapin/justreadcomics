@@ -6,10 +6,8 @@ import { logError } from '@justreadcomics/shared-node/dist/util/logger';
 export const massImportShonenJump = async (runHeadless = true) => {
   const { page, browser } = await initScraperPage(runHeadless || isProduction());
 
-  // this is kind of an okay url...
-  await page.goto('https://www.viz.com/read/shonenjump/section/free-chapters', { waitUntil: 'domcontentloaded' });
-
   try {
+    await page.goto('https://www.viz.com/read/shonenjump/section/free-chapters', { waitUntil: 'domcontentloaded' });
     await page.waitForSelector('.property-row');
 
     const titlesLocator = '.property-row .p-cs-tile a.disp-bl';
@@ -36,12 +34,17 @@ export const massImportShonenJump = async (runHeadless = true) => {
 
     await browser.close();
 
+    // Filter out any malformed data that might have slipped through
+    const filteredTitles = snaggedTitles.filter(
+      (series) => series.seriesName && series.seriesLink && series.seriesName.length > 0 && series.seriesLink.length > 0
+    );
+
     return {
-      series: snaggedTitles
+      series: filteredTitles
     };
   } catch (e: any) {
-    console.log(e);
     logError(e);
+    await browser.close();
     return {
       series: [],
       error: e

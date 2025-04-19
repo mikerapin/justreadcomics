@@ -106,3 +106,65 @@ export const searchScrapeHoopla = async (
     seriesPageUrl
   };
 };
+
+interface IHooplaSeries {
+  seriesName: string;
+  seriesLink: string;
+  imageUrl: string;
+}
+
+export const massImportHoopla = async (runHeadless = true) => {
+  const { page, browser } = await initScraperPage(runHeadless || isProduction());
+
+  try {
+    await page.goto('https://www.hoopladigital.com/genre/Comics', { waitUntil: 'domcontentloaded' });
+    await page.waitForSelector('.series-list');
+
+    const titlesLocator = '.series-list .series-item';
+
+    const snaggedTitles = await page.evaluate((selector) => {
+      const titles: IHooplaSeries[] = [];
+      const seriesItems = document.querySelectorAll(selector);
+
+      seriesItems.forEach((item) => {
+        const linkElement = item.querySelector('a.series-link') as HTMLAnchorElement;
+        const nameElement = item.querySelector('.series-title') as HTMLElement;
+        const imageElement = item.querySelector('img.series-cover') as HTMLImageElement;
+
+        if (linkElement && nameElement && imageElement) {
+          const seriesLink = linkElement.getAttribute('href') || '';
+          const seriesName = nameElement.textContent || '';
+          const imageUrl = imageElement.getAttribute('src') || '';
+
+          if (seriesLink && seriesName) {
+            titles.push({
+              seriesName,
+              seriesLink: `https://www.hoopladigital.com${seriesLink}`,
+              imageUrl
+            });
+          }
+        }
+      });
+
+      return titles;
+    }, titlesLocator);
+
+    await browser.close();
+
+    // Filter out any malformed data that might have slipped through
+    const filteredTitles = snaggedTitles.filter(
+      (series) => series.seriesName && series.seriesLink && series.seriesName.length > 0 && series.seriesLink.length > 0
+    );
+
+    return {
+      series: filteredTitles
+    };
+  } catch (e: any) {
+    logError(e);
+    await browser.close();
+    return {
+      series: [],
+      error: e
+    };
+  }
+};
