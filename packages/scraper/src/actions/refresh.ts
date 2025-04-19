@@ -19,8 +19,7 @@ export const refreshCorpoMetadataAction = async (req: Request, res: Response) =>
       for (const [key, value] of Object.entries(fetchedMetadata)) {
         if (value) {
           if (typeof value !== 'object' || (typeof value === 'object' && value.length > 0)) {
-            // @ts-expect-error - type matching doesn't like this
-            updateObj[key] = value;
+            (updateObj as any)[key] = value;
           }
         }
       }
