@@ -90,12 +90,14 @@ This applies to all branches and all contributors.
 
 ## Memory & Progress
 
-Always save progress, decisions, and context that would be useful to other contributors in project memory (`.claude/` memory files). This includes:
+Always save progress, decisions, and context that would be useful to other contributors in `.claude/memory/`. The index is at `.claude/memory/MEMORY.md`. This includes:
 
 - Architectural decisions and the reasoning behind them
 - Known constraints, workarounds, or non-obvious behaviors
 - In-progress work or partially completed features
 - Any context that isn't obvious from reading the code or git history
+
+Note: `.claude/` is gitignored by default. If memory files should be shared with all contributors, add `!.claude/memory/` to `.gitignore`.
 
 ## Commit Messages
 
