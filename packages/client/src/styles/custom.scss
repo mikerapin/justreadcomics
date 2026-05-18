@@ -1,0 +1,7 @@
+// Import order matters: variables must come before Bootstrap so overrides take effect.
+
+@import 'variables';          // 1. Design tokens — edit this first
+@import 'bootstrap/scss/bootstrap'; // 2. Bootstrap (reads our variables)
+@import 'typography';         // 3. Font-face + typographic overrides
+@import 'buttons';            // 4. Button structural overrides
+@import 'components';         // 5. Component-level tweaks

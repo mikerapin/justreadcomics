@@ -1,0 +1,8 @@
+// Per-heading font weights — Bootstrap exposes only one $headings-font-weight
+// global, so individual weights are set here as element overrides.
+h1, .h1 { font-weight: 400; }
+h2, .h2 { font-weight: 600; }
+h3, .h3 { font-weight: 700; }
+h4, .h4 { font-weight: 700; }
+h5, .h5 { font-weight: 700; }
+h6, .h6 { font-weight: 700; }
