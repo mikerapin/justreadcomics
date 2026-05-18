@@ -36,6 +36,16 @@ yarn-error.log*
 pino-logger.log*
 lerna-debug.log*
 
+# Claude Code
+.claude/settings.local.json
+.claude/plans
+.claude/plugins
+.claude/teams
+.claude/todos
+
+# oh-my-claudecode
+.omc/
+
 # IDE and Editor files
 .idea/
 .vscode/
