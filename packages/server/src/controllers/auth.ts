@@ -1,6 +1,7 @@
 import express from 'express';
 import { Request, Response } from 'express';
 import { sign, verify } from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 
 // most of the auth business here was taken from this guide:
 //   https://hackernoon.com/how-to-add-authentication-to-a-full-stack-mern-web-application
@@ -8,7 +9,7 @@ import { sign, verify } from 'jsonwebtoken';
 const authRouter = express.Router();
 
 const EMAIL = process.env.EMAIL;
-const PASSWORD = process.env.PASSWORD;
+const PASSWORD_HASH = process.env.PASSWORD_HASH;
 const TOKEN = process.env.TOKEN_KEY || '';
 
 authRouter.get('/me', (req: Request, res: Response) => {
@@ -37,12 +38,12 @@ authRouter.get('/me', (req: Request, res: Response) => {
 });
 
 /* If the email and password are correct, then return a token. */
-authRouter.post('/login', (req: Request, res: Response) => {
-  /* Destructuring the email and password from the request body. */
+authRouter.post('/login', async (req: Request, res: Response) => {
   const { username, password } = req.body;
 
-  if (username === EMAIL && password === PASSWORD) {
-    /* Creating a token. */
+  const passwordValid = PASSWORD_HASH ? await bcrypt.compare(password, PASSWORD_HASH) : false;
+
+  if (username === EMAIL && passwordValid) {
     const token = sign({ username }, TOKEN, {
       expiresIn: '7d'
     });

@@ -21,7 +21,7 @@ process.on('uncaughtException', function (err) {
   logInfo('Node NOT Exiting...');
 });
 
-app.use(cors());
+app.use(cors({ origin: process.env.ALLOWED_ORIGINS?.split(',') ?? '*' }));
 app.use(express.json());
 // app.use(loggerMiddleware);
 app.use('/api/series', seriesRouter);

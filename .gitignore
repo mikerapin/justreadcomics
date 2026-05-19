@@ -24,7 +24,10 @@ packages/*/build/
 # misc
 .env
 .env.*
+.env.*.local
 !.env.example
+packages/**/config/.env*
+!packages/**/config/.env.example
 .lambda.local.json
 
 # logs

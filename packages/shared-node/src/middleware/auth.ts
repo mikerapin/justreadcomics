@@ -3,7 +3,7 @@ import { verify } from 'jsonwebtoken';
 
 export const keyChecker = (req: Request, res: Response, next: NextFunction) => {
   const key = process.env.MASS_IMPORT_KEY;
-  if (req.query.key !== key) {
+  if (req.headers['x-api-key'] !== key) {
     res.status(400).json({ msg: 'no key, no import' });
     return;
   }
