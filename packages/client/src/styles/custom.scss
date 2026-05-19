@@ -1,7 +1,12 @@
-// Import order matters: variables must come before Bootstrap so overrides take effect.
+// Import order is load-bearing:
+//   1. _variables  — must come before Bootstrap so SCSS overrides take effect at compile time
+//   2. bootstrap   — generates all base CSS, reading our variable overrides
+//   3. _themes     — must come after Bootstrap to override its generated CSS custom properties
+//   4. Everything else — post-Bootstrap CSS rules
 
-@import 'variables';          // 1. Design tokens — edit this first
-@import 'bootstrap/scss/bootstrap'; // 2. Bootstrap (reads our variables)
-@import 'typography';         // 3. Font-face + typographic overrides
-@import 'buttons';            // 4. Button structural overrides
-@import 'components';         // 5. Component-level tweaks
+@import 'variables';
+@import 'bootstrap/scss/bootstrap';
+@import 'themes';
+@import 'typography';
+@import 'buttons';
+@import 'components';
