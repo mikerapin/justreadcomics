@@ -2,7 +2,7 @@ import { Helmet } from 'react-helmet-async';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { loginFetch } from '../data/auth';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button, FloatingLabel, Form, Stack } from 'react-bootstrap';
 
 interface IAdminLoginForm {
@@ -14,6 +14,8 @@ export const AdminLogin = () => {
   const { register, handleSubmit } = useForm<IAdminLoginForm>();
   const [error, setError] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const sessionExpired = searchParams.get('expired') === '1';
 
   const submitAction = handleSubmit(async (loginForm) => {
     loginFetch(loginForm)
@@ -38,6 +40,7 @@ export const AdminLogin = () => {
           <Form onSubmit={submitAction}>
             <h1 className="h3 mb-3 fw-normal">Please sign in</h1>
 
+            {sessionExpired && <p className="text-warning">Your session has expired. Please sign in again.</p>}
             {error && <p className="text-danger">Sorry that login didn't work.</p>}
             <FloatingLabel controlId="username" label="Email address" className="mb-1">
               <Form.Control {...register('username')} type="email" id="username" placeholder="name@example.com" autoComplete="off" />

@@ -66,8 +66,7 @@ userQueueRouter.post(
         imageUrl
       };
 
-      // TODO: Replace with real user ids?
-      const user = res.locals.auth.username;
+      const user = res.locals.auth.sub;
 
       let userQueue;
 

@@ -44,7 +44,7 @@ authRouter.post('/login', async (req: Request, res: Response) => {
   const passwordValid = PASSWORD_HASH ? await bcrypt.compare(password, PASSWORD_HASH) : false;
 
   if (username === EMAIL && passwordValid) {
-    const token = sign({ username }, TOKEN, {
+    const token = sign({ username, sub: username }, TOKEN, {
       expiresIn: '7d'
     });
     res.status(200).json({
