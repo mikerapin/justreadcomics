@@ -10,7 +10,7 @@ This project is actively in progress.
 
 ## Monorepo Structure
 
-npm workspaces + Nx + Lerna. Packages must be built in dependency order — `common` and `shared-node` always first, since all other packages import from their `dist/` output.
+npm workspaces + Nx. Packages must be built in dependency order — `common` and `shared-node` always first, since all other packages import from their `dist/` output.
 
 | Package                       | Purpose                                                                | Port |
 | ----------------------------- | ---------------------------------------------------------------------- | ---- |
@@ -33,6 +33,9 @@ npm run start:dev
 # Run all tests
 npm test
 
+# Watch mode for active development
+npm run test:watch
+
 # Run tests for a specific package
 nx test @justreadcomics/scraper
 
@@ -45,11 +48,28 @@ npm run lint:fix
 npm run format
 ```
 
-## Environment Config
+## Known Constraints & Gotchas
+
+### Environment Config
 
 Each backend package loads its config from `./config/.env.${NODE_ENV}.local` (e.g. `packages/server/config/.env.development.local`). The `dotenv.config()` call in each `server.ts` **must stay at the top**, before any module imports that need env vars — this is a known constraint noted in comments.
 
 Required env vars: `DATABASE_URL`, `TOKEN_KEY`, `MASS_IMPORT_KEY`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_S3_BUCKET_NAME`.
+
+### CommonJS Imports from `@justreadcomics/common`
+
+When importing from `@justreadcomics/common`, use default imports or `import * as` syntax to avoid CJS compatibility issues:
+
+```typescript
+// ✓ Good
+import CommonTypes from '@justreadcomics/common';
+import * as CommonExports from '@justreadcomics/common';
+
+// ✗ Avoid
+import { MARVEL_UNLIMITED_SERVICE_ID } from '@justreadcomics/common';
+```
+
+The package is built as CJS; named imports may fail in some contexts. Default or namespace imports are stable.
 
 ## Architecture
 
@@ -90,14 +110,14 @@ This applies to all branches and all contributors.
 
 ## Memory & Progress
 
-Always save progress, decisions, and context that would be useful to other contributors in `.claude/memory/`. The index is at `.claude/memory/MEMORY.md`. This includes:
+Session progress, decisions, and context are saved in `.claude/memory/` (see the index at `.claude/memory/MEMORY.md`). These files are **committed to git** and shared with all contributors. They include:
 
 - Architectural decisions and the reasoning behind them
 - Known constraints, workarounds, or non-obvious behaviors
 - In-progress work or partially completed features
 - Any context that isn't obvious from reading the code or git history
 
-Note: `.claude/` is gitignored by default. If memory files should be shared with all contributors, add `!.claude/memory/` to `.gitignore`.
+**Read `.claude/memory/MEMORY.md` to catch up on decisions from prior sessions.**
 
 ## Commit Messages
 
