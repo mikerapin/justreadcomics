@@ -26,4 +26,11 @@ Result: 107 → 15 npm audit vulnerabilities. Remaining 15 tracked in [[project-
 
 **`eslintrc.js`** (no leading dot) still exists in package root. ESLint auto-discovery looks for `.eslintrc.*` — the file may not be picked up automatically. Pre-existing issue, not introduced by this migration.
 
+**CJS interop for `@justreadcomics/common` sub-paths.** Vite 5 serves linked workspace packages directly to the browser without pre-bundling, so CJS named imports (`exports.XXX = ...`) fail at runtime with "does not provide an export named". Fixed in commit `2d4bf28` by adding to `vite.config.ts`:
+```typescript
+optimizeDeps: { include: ['@justreadcomics/common', '...dist/const', '...dist/types/queue', '...dist/types/series', '...dist/types/services'] },
+build: { commonjsOptions: { include: [/@justreadcomics\/common/, /node_modules/] } }
+```
+If you add new `@justreadcomics/common/dist/*` sub-path imports in the client, add them to `optimizeDeps.include` too.
+
 **Why:** Motivation was eliminating the 107 CRA/webpack-sourced npm audit vulnerabilities which could not be fixed without replacing react-scripts.

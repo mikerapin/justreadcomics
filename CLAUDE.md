@@ -16,7 +16,7 @@ npm workspaces + Nx + Lerna. Packages must be built in dependency order — `com
 | ----------------------------- | ---------------------------------------------------------------------- | ---- |
 | `@justreadcomics/common`      | Shared types, constants, browser+node utilities                        | —    |
 | `@justreadcomics/shared-node` | Node-only: Mongoose models, DB connection, auth middleware, S3, logger | —    |
-| `@justreadcomics/client`      | React SPA (Create React App)                                           | 3000 |
+| `@justreadcomics/client`      | React SPA (Vite + React)                                               | 3000 |
 | `@justreadcomics/server`      | Express REST API                                                       | 8090 |
 | `@justreadcomics/scraper`     | Express scraping service (Puppeteer + Cheerio)                         | 9090 |
 | `justreadcomics-lambda`       | AWS Lambda handlers (AWS SAM)                                          | —    |
@@ -111,4 +111,15 @@ Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`
 
 ## Testing
 
-Tests live in `src/__tests__/` in each package. Scraper tests use `ts-jest` with a 30s timeout (Puppeteer is slow). Client tests use `jsdom` and enforce 80% coverage thresholds. Tests import from `@justreadcomics/common/dist/` and `@justreadcomics/shared-node/dist/`, so those packages must be built before running tests.
+Tests live in `src/__tests__/` in each package.
+
+- **Client** — Vitest + jsdom. Config in `packages/client/vite.config.ts`. Run with `npm run test --workspace=@justreadcomics/client`.
+- **Server** — Jest + ts-jest. Config in `packages/server/jest.config.ts`.
+- **Scraper** — Jest + ts-jest with a 30s timeout (Puppeteer is slow). Run with `nx test @justreadcomics/scraper`.
+
+All packages import from `@justreadcomics/common/dist/` and `@justreadcomics/shared-node/dist/`, so those packages must be built (`npm run common`) before running tests.
+
+To run a single scraper or server test file:
+```bash
+npx jest packages/scraper/src/__tests__/myfile.test.ts
+```
