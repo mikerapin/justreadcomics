@@ -7,6 +7,20 @@ export default defineConfig({
   server: {
     port: 3000,
   },
+  optimizeDeps: {
+    include: [
+      '@justreadcomics/common',
+      '@justreadcomics/common/dist/const',
+      '@justreadcomics/common/dist/types/queue',
+      '@justreadcomics/common/dist/types/series',
+      '@justreadcomics/common/dist/types/services',
+    ],
+  },
+  build: {
+    commonjsOptions: {
+      include: [/@justreadcomics\/common/, /node_modules/],
+    },
+  },
   test: {
     environment: 'jsdom',
     globals: true,
