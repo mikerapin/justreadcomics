@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import { rateLimit } from 'express-rate-limit';
 import dotenv from 'dotenv';
 // don't move this line down or the DB won't connect correctly
 dotenv.config({ path: `./config/.env.${process.env.NODE_ENV}.local` });
@@ -16,19 +18,24 @@ const app = express();
 
 const port = process.env.SERVER_PORT || 8090;
 
+const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 10 });
+const writeLimiter = rateLimit({ windowMs: 60 * 1000, limit: 30 });
+
 process.on('uncaughtException', function (err) {
   logFatal(err);
   logInfo('Node NOT Exiting...');
 });
 
+app.use(helmet());
 app.use(cors({ origin: process.env.ALLOWED_ORIGINS?.split(',') ?? '*' }));
-app.use(express.json());
+app.use(express.json({ limit: '100kb' }));
+app.use(express.urlencoded({ limit: '100kb', extended: true }));
 // app.use(loggerMiddleware);
-app.use('/api/series', seriesRouter);
-app.use('/api/services', servicesRouter);
-app.use('/api/auth', authRouter);
-app.use('/api/queue', queueRouter);
-app.use('/api/user-queue', userQueueRouter);
+app.use('/api/auth', authLimiter, authRouter);
+app.use('/api/series', writeLimiter, seriesRouter);
+app.use('/api/services', writeLimiter, servicesRouter);
+app.use('/api/queue', writeLimiter, queueRouter);
+app.use('/api/user-queue', writeLimiter, userQueueRouter);
 
 app.get('/test', (req, res) => {
   uploadSeriesImageFromUrlToS3(

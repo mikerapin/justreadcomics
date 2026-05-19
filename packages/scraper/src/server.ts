@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import dotenv from 'dotenv';
 // don't move this line down or the DB won't connect correctly
 dotenv.config({ path: `./config/.env.${process.env.NODE_ENV}.local` });
@@ -16,8 +17,10 @@ process.on('uncaughtException', function (err) {
   logInfo('Node NOT Exiting...');
 });
 
+app.use(helmet());
 app.use(cors({ origin: process.env.ALLOWED_ORIGINS?.split(',') ?? '*' }));
-app.use(express.json());
+app.use(express.json({ limit: '100kb' }));
+app.use(express.urlencoded({ limit: '100kb', extended: true }));
 
 app.use('/scraper', scraperRouter);
 

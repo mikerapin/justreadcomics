@@ -94,8 +94,12 @@ queueRouter.post('/review/:id', [verifyTokenMiddleware], async (req: ReviewQueue
       credits
     };
 
-    if (seriesName && imageUrl && !imageUrl?.match(/justreadcomics/gi)) {
-      seriesUpdateObject.image = await uploadSeriesImageFromUrlToS3(seriesName, imageUrl);
+    if (seriesName && imageUrl) {
+      const parsedImageUrl = new URL(imageUrl);
+      const alreadyHosted = ['s3.amazonaws.com', 'justreadcomics.com'].some((h) => parsedImageUrl.hostname.endsWith(h));
+      if (!alreadyHosted) {
+        seriesUpdateObject.image = await uploadSeriesImageFromUrlToS3(seriesName, imageUrl);
+      }
     }
 
     const series = await seriesModel.findOneAndUpdate({ _id: new Types.ObjectId(seriesId) }, seriesUpdateObject, {
