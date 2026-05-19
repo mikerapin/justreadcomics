@@ -12,6 +12,12 @@ const EMAIL = process.env.EMAIL;
 const PASSWORD_HASH = process.env.PASSWORD_HASH;
 const TOKEN = process.env.TOKEN_KEY || '';
 
+if (!PASSWORD_HASH) {
+  console.warn(
+    '[auth] PASSWORD_HASH is not set — all login attempts will fail. Run: PASSWORD=yourpassword npx ts-node scripts/hash-password.ts'
+  );
+}
+
 authRouter.get('/me', (req: Request, res: Response) => {
   const token = String(req.headers.authorization)
     .replace(/^Bearer|^jwt/i, '')

@@ -9,9 +9,9 @@ export const authFetch = async (url: RequestInfo | URL, options?: RequestInit): 
       ...options?.headers
     }
   });
-  if (response.status === 401) {
+  if (response.status === 401 && token) {
     window.localStorage.removeItem(USER_TOKEN_LOCAL_STORAGE_ID);
-    window.location.replace('/admin?expired=1');
+    window.location.replace('/a/login?expired=1');
   }
   return response;
 };

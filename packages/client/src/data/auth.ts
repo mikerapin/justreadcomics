@@ -2,8 +2,10 @@ import { authFetch } from './fetch';
 import { API_BASE_URL, USER_TOKEN_LOCAL_STORAGE_ID } from '../static/const';
 
 export const authenticate = async () => {
-  const res = await authFetch(new URL(`${API_BASE_URL}/auth/me`));
+  const token = window.localStorage.getItem(USER_TOKEN_LOCAL_STORAGE_ID);
+  if (!token) return null;
 
+  const res = await authFetch(new URL(`${API_BASE_URL}/auth/me`));
   if (res.status === 200) {
     return window.localStorage.getItem(USER_TOKEN_LOCAL_STORAGE_ID);
   } else {
