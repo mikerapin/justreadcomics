@@ -52,7 +52,7 @@ export const massImportMarvelAction = async (req: Request, res: Response) => {
       return;
     }
     res.status(200).json({ size: finalResults.length, finalResults });
-  } catch (e: any) {
+  } catch (e: unknown) {
     logError(e);
     res.status(400).json({ e });
   }
@@ -105,7 +105,7 @@ export const massImportDcAction = async (req: Request, res: Response) => {
       return;
     }
     res.status(200).json({ size: finalResults.length, finalResults });
-  } catch (e: any) {
+  } catch (e: unknown) {
     logError(e);
     res.status(400).json({ e });
   }
@@ -145,7 +145,7 @@ export const massImportImageAction = async (req: Request, res: Response) => {
       return;
     }
     res.status(200).json({ size: finalResults.length, finalResults });
-  } catch (e: any) {
+  } catch (e: unknown) {
     logError(e);
     res.status(400).json({ e });
   }
@@ -193,7 +193,7 @@ export const massImportShonenJumpAction = async (req: Request, res: Response) =>
       return;
     }
     res.status(200).json({ size: finalResults.length, finalResults });
-  } catch (e: any) {
+  } catch (e: unknown) {
     logError(e);
     res.status(400).json({ e });
   }
@@ -245,7 +245,7 @@ export const massImportIdwAction = async (req: Request, res: Response) => {
       return;
     }
     res.status(200).json({ size: finalResults.length, finalResults });
-  } catch (e: any) {
+  } catch (e: unknown) {
     logError(e);
     res.status(400).json({ e });
   }

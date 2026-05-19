@@ -31,7 +31,7 @@ export const loginFetch = async (loginForm: { username: string; password: string
     }
     window.localStorage.setItem(USER_TOKEN_LOCAL_STORAGE_ID, data.token);
     return true;
-  } catch (e: any) {
+  } catch (e: unknown) {
     return false;
   }
 };

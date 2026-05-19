@@ -22,7 +22,7 @@ const confirmIdAndFetchSeries = async (req: Request, res: Response, next: NextFu
 
     res.locals.series = series;
     next();
-  } catch (e: any) {
+  } catch (e: unknown) {
     logError(e);
     res.status(400).json({ error: true, msg: 'Something goofed when trying to refresh' });
   }

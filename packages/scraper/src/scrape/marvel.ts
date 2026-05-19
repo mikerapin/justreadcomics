@@ -1,5 +1,5 @@
 import { logError } from '@justreadcomics/shared-node/dist/util/logger';
-import { initScraperPage } from './util';
+import { initScraperPage, withRetry } from './util';
 import { isProduction } from '@justreadcomics/common/dist/util/process';
 import * as cheerio from 'cheerio';
 
@@ -33,7 +33,7 @@ export const scrapeAndSearchMarvel = async (search: string, runHeadless?: boolea
     encodeURIComponent(search)
   );
 
-  await page.goto(searchQuery, { waitUntil: 'domcontentloaded' });
+  await withRetry(() => page.goto(searchQuery, { waitUntil: 'domcontentloaded' }));
 
   const firstSearchResultSelector = '.search-list a.card-body__content-type';
 
@@ -50,7 +50,7 @@ export const scrapeAndSearchMarvel = async (search: string, runHeadless?: boolea
   }
 
   // auto filter the results to MU books
-  await page.goto(filteredUrl + '?isDigital=1', { waitUntil: 'domcontentloaded' });
+  await withRetry(() => page.goto(filteredUrl + '?isDigital=1', { waitUntil: 'domcontentloaded' }));
 
   const imageSelector = '.row-item-image img';
 
@@ -96,7 +96,7 @@ export const massImportMarvel = async (runHeadless?: boolean) => {
   const { page, browser } = await initScraperPage(runHeadless || isProduction());
 
   try {
-    await page.goto('https://www.marvel.com/comics/series', { waitUntil: 'domcontentloaded' });
+    await withRetry(() => page.goto('https://www.marvel.com/comics/series', { waitUntil: 'domcontentloaded' }));
     await page.waitForSelector('.modu_AZ');
 
     const titlesLocator = '.modu_AZ .az-list';
@@ -132,7 +132,7 @@ export const massImportMarvel = async (runHeadless?: boolean) => {
     return {
       series: filteredTitles
     };
-  } catch (e: any) {
+  } catch (e: unknown) {
     logError(e);
     await browser.close();
     return {

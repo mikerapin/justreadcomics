@@ -96,7 +96,7 @@ servicesRouter.post(
       const savedSeries = await newService.save();
 
       res.status(200).json(savedSeries);
-    } catch (err: any) {
+    } catch (err: unknown) {
       res.status(400).json(err);
     }
   }
@@ -132,7 +132,7 @@ servicesRouter.patch(
       } else {
         res.status(404).json({ message: 'service with id:' + req.params.id + ' not found, sorry dude' });
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       res.status(400).json(err);
     }
   }
@@ -162,7 +162,7 @@ servicesRouter.patch('/update/:id', [verifyTokenMiddleware], async (req: CreateS
     } else {
       res.status(404).json({ message: 'service with id:' + req.params.id + ' not found, sorry dude' });
     }
-  } catch (err: any) {
+  } catch (err: unknown) {
     res.status(400).json(err);
   }
 });

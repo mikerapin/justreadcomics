@@ -1,4 +1,4 @@
-import { initScraperPage } from './util';
+import { initScraperPage, withRetry } from './util';
 import { isProduction } from '@justreadcomics/common/dist/util/process';
 import { IMassDcImport } from '@justreadcomics/common/dist/types/scraper';
 import { logError } from '@justreadcomics/shared-node/dist/util/logger';
@@ -9,9 +9,11 @@ export const massDcImport = async (runHeadless: boolean) => {
   try {
     // this is the DC series list page, but it's a search page?
     // either way, it's loading 100 pages of all comic series sorted by title
-    await page.goto(
-      'https://www.dcuniverseinfinite.com/browse/comics?sort=eyJkZWZhdWx0IjpmYWxzZSwiZGlyZWN0aW9uIjoiYXNjIiwiZmllbGQiOiJ0aXRsZSJ9&category=W10%3D&page=100&series',
-      { waitUntil: 'domcontentloaded' }
+    await withRetry(() =>
+      page.goto(
+        'https://www.dcuniverseinfinite.com/browse/comics?sort=eyJkZWZhdWx0IjpmYWxzZSwiZGlyZWN0aW9uIjoiYXNjIiwiZmllbGQiOiJ0aXRsZSJ9&category=W10%3D&page=100&series',
+        { waitUntil: 'domcontentloaded' }
+      )
     );
 
     await page.waitForSelector('.browse-results__container');
@@ -73,7 +75,7 @@ export const massDcImport = async (runHeadless: boolean) => {
     return {
       series: filteredTitles
     };
-  } catch (e: any) {
+  } catch (e: unknown) {
     logError(e);
     await browser.close();
     return {

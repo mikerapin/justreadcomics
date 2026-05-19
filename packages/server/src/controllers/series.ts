@@ -132,7 +132,7 @@ seriesRouter.patch(
       } else {
         res.status(404).json({ message: 'series with id:' + req.params.id + ' not found, sorry dude' });
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       res.status(400).json(err);
     }
   }

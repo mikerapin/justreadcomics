@@ -45,7 +45,7 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
     const { imageUrl, seriesPageUrl, withinCU, seriesCredits, seriesDescription, seriesName } =
       await searchScrapeCorpo(searchValue);
 
-    // TODO: Add "availability" search here
+    // NOT IMPLEMENTED: availability-only search
     if (fetchMetaData) {
       console.log('only fetch the metadata');
       res.status(200).json({ error: false, msg: 'this is where you only check availability' });
@@ -73,7 +73,7 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
         await queue.validate();
         await queue.save();
 
-        // TODO: should we also update the scan date here for the series service??
+        // NOT IMPLEMENTED: update scan date after queue insertion
 
         res.status(200).json({
           error: false,
@@ -107,12 +107,11 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
       }
 
       // only update the image if it didn't already exist (to save space on s3...?)
-      // TODO add scanner override option for this
+      // NOT IMPLEMENTED: scanner override to force image re-upload
       if (imageUrl && !series.image) {
         series.image = await uploadSeriesImageFromUrlToS3(series.seriesName, imageUrl);
       }
       if (seriesCredits) {
-        // TODO this isn't working great, maybe fix it up a bit
         series.credits = seriesCredits;
       }
       if (seriesDescription) {
@@ -125,7 +124,7 @@ export const searchAndScrapeCorpoAction = async (req: Request, res: Response) =>
     } else {
       res.status(200).json({ error: true, msg: 'Series not found in corpoland' });
     }
-  } catch (e: any) {
+  } catch (e: unknown) {
     logError(e);
     res.status(400).json({ error: true, msg: 'Something goofed when trying to scan' });
   }
@@ -170,7 +169,7 @@ export const searchAndScrapeHooplaAction = async (req: Request, res: Response) =
         insertOrUpdateSeriesService(series, HOOPLA_SERVICE_ID, seriesPageUrl);
       } else {
         console.log(allowedDistance);
-        // TODO: check the distance and queue if incorrect
+        // NOT IMPLEMENTED: distance check and queue for hoopla fetchMetaData path
       }
 
       res.status(200).json({ error: false, msg: `${series.seriesName} updated!`, series });
@@ -178,7 +177,7 @@ export const searchAndScrapeHooplaAction = async (req: Request, res: Response) =
     } else {
       res.status(200).json({ error: true, msg: 'Series not found on hoopla' });
     }
-  } catch (e: any) {
+  } catch (e: unknown) {
     logError(e);
     res.status(400).json({ error: true, msg: 'Something goofed when trying to scan' });
   }

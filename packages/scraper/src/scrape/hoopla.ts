@@ -1,4 +1,4 @@
-import { initScraperPage } from './util';
+import { initScraperPage, withRetry } from './util';
 import { isProduction } from '@justreadcomics/common/dist/util/process';
 import { servicesModel } from '@justreadcomics/shared-node/dist/model/services';
 import { Types } from 'mongoose';
@@ -36,7 +36,7 @@ export const searchScrapeHoopla = async (
     // await page.goto('https://hoopladigital.com/', { waitUntil: 'domcontentloaded' });
     // await page.waitForNavigation({ waitUntil: 'networkidle2' });
 
-    await page.goto(searchQuery, { waitUntil: 'domcontentloaded' });
+    await withRetry(() => page.goto(searchQuery, { waitUntil: 'domcontentloaded' }));
     await page.waitForNavigation({ waitUntil: 'networkidle2' });
 
     await new Promise((r) => setTimeout(r, 3000));
@@ -70,7 +70,7 @@ export const searchScrapeHoopla = async (
 
     console.log({ results });
 
-    await page.goto(results[0], { waitUntil: 'domcontentloaded' });
+    await withRetry(() => page.goto(results[0], { waitUntil: 'domcontentloaded' }));
     await new Promise((r) => setTimeout(r, 3000));
 
     // Part 2 of the Time Before Time series
@@ -95,7 +95,7 @@ export const searchScrapeHoopla = async (
         // parse the metadata on this page and return it
       }
     }
-  } catch (e: any) {
+  } catch (e: unknown) {
     logError('unable to find or load dom queries');
     console.log(e);
   }
@@ -117,7 +117,7 @@ export const massImportHoopla = async (runHeadless = true) => {
   const { page, browser } = await initScraperPage(runHeadless || isProduction());
 
   try {
-    await page.goto('https://www.hoopladigital.com/genre/Comics', { waitUntil: 'domcontentloaded' });
+    await withRetry(() => page.goto('https://www.hoopladigital.com/genre/Comics', { waitUntil: 'domcontentloaded' }));
     await page.waitForSelector('.series-list');
 
     const titlesLocator = '.series-list .series-item';
@@ -159,7 +159,7 @@ export const massImportHoopla = async (runHeadless = true) => {
     return {
       series: filteredTitles
     };
-  } catch (e: any) {
+  } catch (e: unknown) {
     logError(e);
     await browser.close();
     return {

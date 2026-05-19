@@ -28,7 +28,7 @@ const server = app.listen(port, async () => {
   try {
     logInfo(`Attempting to connect to db on ${process.env.NODE_ENV}`);
     await connectToServer();
-  } catch (e: any) {
+  } catch (e: unknown) {
     logError(e);
   }
   logInfo(`Server is running on port: ${port}`);

@@ -1,5 +1,20 @@
 import puppeteer from 'puppeteer';
 
+export async function withRetry<T>(fn: () => Promise<T>, retries = 3, delayMs = 1000): Promise<T> {
+  let lastErr: unknown;
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      return await fn();
+    } catch (e: unknown) {
+      lastErr = e;
+      if (attempt < retries) {
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+      }
+    }
+  }
+  throw lastErr;
+}
+
 export const initScraperPage = async (runHeadless = true) => {
   // Launch the browser
   const browser = await puppeteer.launch({ headless: runHeadless });

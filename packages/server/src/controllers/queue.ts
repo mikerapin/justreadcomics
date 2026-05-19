@@ -18,6 +18,11 @@ import { insertOrUpdateSeriesService } from '@justreadcomics/shared-node/dist/ut
 
 const queueRouter = express.Router();
 
+export function isAllowedImageHost(imageUrl: string): boolean {
+  const parsed = new URL(imageUrl);
+  return ['s3.amazonaws.com', 'justreadcomics.com'].some((h) => parsed.hostname.endsWith(h));
+}
+
 interface ReviewQueueRequest extends Request {
   body: IQueueReviewData;
 }
@@ -95,9 +100,7 @@ queueRouter.post('/review/:id', [verifyTokenMiddleware], async (req: ReviewQueue
     };
 
     if (seriesName && imageUrl) {
-      const parsedImageUrl = new URL(imageUrl);
-      const alreadyHosted = ['s3.amazonaws.com', 'justreadcomics.com'].some((h) => parsedImageUrl.hostname.endsWith(h));
-      if (!alreadyHosted) {
+      if (!isAllowedImageHost(imageUrl)) {
         seriesUpdateObject.image = await uploadSeriesImageFromUrlToS3(seriesName, imageUrl);
       }
     }
@@ -132,7 +135,7 @@ queueRouter.post('/review/:id', [verifyTokenMiddleware], async (req: ReviewQueue
       logError('error finding and updating the series or queue');
       res.status(400).json({ error: true, msg: 'error finding and updating the series or queue' });
     }
-  } catch (e: any) {
+  } catch (e: unknown) {
     logError(e);
     res.status(400).json({ error: true, msg: 'There was an error updating the queue' });
   }
@@ -169,7 +172,7 @@ queueRouter.post('/review/:id/reject', [verifyTokenMiddleware], async (req: Requ
       logError('error finding and updating the queue');
       res.status(400).json({ error: true, msg: 'error finding and updating the queue' });
     }
-  } catch (e: any) {
+  } catch (e: unknown) {
     logError(e);
     res.status(400).json({ error: true, msg: 'There was an error updating the queue' });
   }

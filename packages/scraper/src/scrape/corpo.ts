@@ -1,4 +1,4 @@
-import { initScraperPage } from './util';
+import { initScraperPage, withRetry } from './util';
 import { isProduction } from '@justreadcomics/common/dist/util/process';
 import { Creator } from '@justreadcomics/common/dist/types/series';
 import { Types } from 'mongoose';
@@ -79,7 +79,7 @@ const findContentOnPage = async (page: Page) => {
     if (cuItem) {
       withinCU = true;
     }
-  } catch (e: any) {
+  } catch (e: unknown) {
     withinCU = false;
   }
 
@@ -102,10 +102,10 @@ export const searchScrapeCorpo = async (search: string, runHeadless?: boolean) =
 
   const searchQuery = searchUrl.replace('%s', encodeURIComponent(search));
 
-  await page.goto('https://www.amazon.com/', { waitUntil: 'domcontentloaded' });
+  await withRetry(() => page.goto('https://www.amazon.com/', { waitUntil: 'domcontentloaded' }));
   await page.waitForNavigation({ waitUntil: 'networkidle2' });
 
-  await page.goto(searchQuery, { waitUntil: 'domcontentloaded' });
+  await withRetry(() => page.goto(searchQuery, { waitUntil: 'domcontentloaded' }));
   await page.waitForNavigation({ waitUntil: 'networkidle2' });
 
   // const firstSearchResultSelector = 'div.s-search-results ::-p-text(Kindle Edition)';
@@ -133,7 +133,7 @@ export const searchScrapeCorpo = async (search: string, runHeadless?: boolean) =
       seriesCredits = content.seriesCredits;
       withinCU = content.withinCU;
     }
-  } catch (e: any) {
+  } catch (e: unknown) {
     logError('unable to find or load dom queries');
     console.log(e);
   }
@@ -200,7 +200,7 @@ export const refreshCorpoMetadata = async (seriesUrl: string, runHeadless?: bool
     const withinCU = Boolean($('[aria-label="Read for Free"]').length);
 
     return { imageUrl, seriesPageUrl, seriesName, description, credits, withinCU };
-  } catch (e: any) {
+  } catch (e: unknown) {
     logError(e);
     return {};
   }

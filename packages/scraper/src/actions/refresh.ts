@@ -40,7 +40,7 @@ export const refreshCorpoMetadataAction = async (req: Request, res: Response) =>
         .status(200)
         .json({ error: true, msg: `${series.seriesName} not found on corpo, are you sure you meant to run this?` });
     }
-  } catch (e: any) {
+  } catch (e: unknown) {
     logError(e);
     res.status(400).json({ error: true, msg: 'Something goofed when trying to refresh' });
   }
@@ -67,7 +67,7 @@ export const refreshMarvelMetadataAction = async (req: Request, res: Response) =
         .status(200)
         .json({ error: true, msg: `${series.seriesName} not found on marvel, are you sure you meant to run this?` });
     }
-  } catch (e: any) {
+  } catch (e: unknown) {
     logError(e);
     res.status(400).json({ error: true, msg: 'Something goofed when trying to refresh' });
   }
@@ -90,7 +90,7 @@ export const refreshImageMetadataAction = async (req: Request, res: Response) =>
         .status(200)
         .json({ error: true, msg: `${series.seriesName} not found on marvel, are you sure you meant to run this?` });
     }
-  } catch (e: any) {
+  } catch (e: unknown) {
     logError(e);
     res.status(400).json({ error: true, msg: 'Something goofed when trying to refresh' });
   }

@@ -38,9 +38,9 @@ export const uploadImageToS3 = async ({ image, filename, fileExtension, path }: 
   try {
     await s3.send(command);
     return generateS3BucketUrl(cleanedFilename);
-  } catch (e: any) {
+  } catch (e: unknown) {
     logError(e);
-    throw new Error(e);
+    throw e;
   }
 };
 

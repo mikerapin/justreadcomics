@@ -7,7 +7,8 @@ import { CORPO_SERVICE_ID } from '@justreadcomics/common/dist/const';
 
 // Mock external dependencies
 jest.mock('../../scrape/util', () => ({
-  initScraperPage: jest.fn()
+  initScraperPage: jest.fn(),
+  withRetry: jest.fn((fn: () => Promise<unknown>) => fn())
 }));
 
 jest.mock('@justreadcomics/shared-node/dist/model/services', () => ({

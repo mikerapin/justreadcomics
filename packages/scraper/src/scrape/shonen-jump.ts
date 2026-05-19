@@ -1,4 +1,4 @@
-import { initScraperPage } from './util';
+import { initScraperPage, withRetry } from './util';
 import { IShonenJumpSeries } from '@justreadcomics/common/dist/types/scraper';
 import { isProduction } from '@justreadcomics/common/dist/util/process';
 import { logError } from '@justreadcomics/shared-node/dist/util/logger';
@@ -7,7 +7,9 @@ export const massImportShonenJump = async (runHeadless = true) => {
   const { page, browser } = await initScraperPage(runHeadless || isProduction());
 
   try {
-    await page.goto('https://www.viz.com/read/shonenjump/section/free-chapters', { waitUntil: 'domcontentloaded' });
+    await withRetry(() =>
+      page.goto('https://www.viz.com/read/shonenjump/section/free-chapters', { waitUntil: 'domcontentloaded' })
+    );
     await page.waitForSelector('.property-row');
 
     const titlesLocator = '.property-row .p-cs-tile a.disp-bl';
@@ -42,7 +44,7 @@ export const massImportShonenJump = async (runHeadless = true) => {
     return {
       series: filteredTitles
     };
-  } catch (e: any) {
+  } catch (e: unknown) {
     logError(e);
     await browser.close();
     return {
@@ -56,7 +58,7 @@ export const scrapeShonenJumpSeries = async (seriesUrl: string, runHeadless = tr
   // modal-follow
   const { page, browser } = await initScraperPage(runHeadless || isProduction());
 
-  await page.goto(seriesUrl, { waitUntil: 'domcontentloaded' });
+  await withRetry(() => page.goto(seriesUrl, { waitUntil: 'domcontentloaded' }));
 
   try {
     const modalId = '#modal-follow';
@@ -91,7 +93,7 @@ export const scrapeShonenJumpSeries = async (seriesUrl: string, runHeadless = tr
           return image?.getAttribute('src');
         }, modalImage);
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       // try a cheeky way
       try {
         // grab the title
@@ -116,7 +118,7 @@ export const scrapeShonenJumpSeries = async (seriesUrl: string, runHeadless = tr
             return image?.getAttribute('data-original');
           }
         }, searchResultImageSelector);
-      } catch (e: any) {
+      } catch (e: unknown) {
         // skip
         console.log('no');
       }
@@ -127,7 +129,7 @@ export const scrapeShonenJumpSeries = async (seriesUrl: string, runHeadless = tr
       description,
       creators
     };
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.log(e);
     logError(e);
     return {

@@ -3,7 +3,10 @@ import { initScraperPage } from '../../scrape/util';
 import { isProduction } from '@justreadcomics/common/dist/util/process';
 import { logError } from '@justreadcomics/shared-node/dist/util/logger';
 
-jest.mock('../../scrape/util');
+jest.mock('../../scrape/util', () => ({
+  initScraperPage: jest.fn(),
+  withRetry: jest.fn((fn: () => Promise<unknown>) => fn())
+}));
 jest.mock('@justreadcomics/common/dist/util/process');
 jest.mock('@justreadcomics/shared-node/dist/util/logger');
 

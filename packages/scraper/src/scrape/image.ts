@@ -1,4 +1,4 @@
-import { initScraperPage } from './util';
+import { initScraperPage, withRetry } from './util';
 import { isProduction } from '@justreadcomics/common/dist/util/process';
 import { IMassImageImport } from '@justreadcomics/common/dist/types/scraper';
 import { logError } from '@justreadcomics/shared-node/dist/util/logger';
@@ -14,7 +14,7 @@ import { Creator } from '@justreadcomics/common/dist/types/series';
 export const scrapeImageSeries = async (seriesUrl: string, runHeadless?: boolean) => {
   const { page, browser } = await initScraperPage(runHeadless || isProduction());
 
-  await page.goto(seriesUrl, { waitUntil: 'domcontentloaded' });
+  await withRetry(() => page.goto(seriesUrl, { waitUntil: 'domcontentloaded' }));
 
   const imageUrl = '';
 
@@ -100,7 +100,7 @@ export const massImageImport = async (runHeadless: boolean) => {
   const { page, browser } = await initScraperPage(runHeadless || isProduction());
 
   try {
-    await page.goto('https://imagecomics.com/comics/series', { waitUntil: 'domcontentloaded' });
+    await withRetry(() => page.goto('https://imagecomics.com/comics/series', { waitUntil: 'domcontentloaded' }));
     await page.waitForSelector('.all-series');
 
     // get series blocks selector
@@ -136,7 +136,7 @@ export const massImageImport = async (runHeadless: boolean) => {
     return {
       series: filteredTitles
     };
-  } catch (e: any) {
+  } catch (e: unknown) {
     logError(e);
     await browser.close();
     return {

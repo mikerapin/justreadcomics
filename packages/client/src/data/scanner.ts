@@ -30,7 +30,7 @@ export const triggerScanner = async (
       return res.json();
     }
     return Promise.reject(`error finding scanner url for service: ${seriesServiceId}`);
-  } catch (e: any) {
+  } catch (e: unknown) {
     return Promise.reject(e);
   }
 };

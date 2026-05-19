@@ -4,7 +4,8 @@ import { logError } from '@justreadcomics/shared-node/dist/util/logger';
 
 // Mock external dependencies
 jest.mock('../../scrape/util', () => ({
-  initScraperPage: jest.fn()
+  initScraperPage: jest.fn(),
+  withRetry: jest.fn((fn: () => Promise<unknown>) => fn())
 }));
 
 jest.mock('@justreadcomics/shared-node/dist/util/logger', () => ({
