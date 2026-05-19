@@ -1,6 +1,6 @@
 export const getBaseUrl = () => {
   let url;
-  switch (process.env.NODE_ENV) {
+  switch (import.meta.env.MODE) {
     case 'production':
       url = 'https://api.justreadcomics.com';
       break;
@@ -17,7 +17,7 @@ export const getBaseUrl = () => {
 
 export const getScraperBaseUrl = () => {
   let url;
-  switch (process.env.NODE_ENV) {
+  switch (import.meta.env.MODE) {
     case 'production':
       url = 'https://find.justreadcomics.com';
       break;
