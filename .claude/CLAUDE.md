@@ -77,6 +77,8 @@ If you add new `@justreadcomics/common/dist/*` sub-path imports in the client, a
 
 ## Known constraints and gotchas
 
+**TypeScript pinned to `5.8.x` — do NOT upgrade to 5.9+.** `@typescript-eslint@8.30.1` declares `peerDependencies: { typescript: ">=4.7.4 <5.9.0" }`. Upgrading TypeScript to 5.9.x causes an ERESOLVE that falls back to installing `@typescript-eslint@6.x` locally, which reintroduces vulnerable `minimatch@9.0.x`.
+
 **cheerio pinned to exact `1.0.0`** in scraper — do NOT add caret or upgrade without confirming Node ≥ 20. `^1.0.0-rc.12` resolves to `1.2.0` which crashes on Node 18.
 
 **Express 5 requires handlers on every route.** Routes registered without a handler throw at startup. Three scraper routes are intentionally commented out as stubs — do not uncomment without implementing the handler.
