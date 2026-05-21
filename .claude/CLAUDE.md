@@ -2,7 +2,20 @@
 
 ## What this is
 
-JRC is a utility for comic fans to find where a series is available across subscription services and retailers. React SPA + Express API + Puppeteer scraper + AWS Lambda + MongoDB.
+**Just Read Comics (JRC)** is the JustWatch.com for digital comics.
+
+Comic book readers who want to read digitally face a fragmented landscape: content is scattered across unlimited subscription services (Marvel Unlimited, DC Universe Infinite), library apps (Hoopla, Libby), storefronts (ComiXology, Google Play Books), publisher direct sites (Shonen Jump, Webtoon), and more. It's often impossible to know which service carries a given series, whether it's free, paid, or requires membership — without checking each platform manually.
+
+JRC solves this by letting users search for any comic book series, original graphic novel, collected edition, anthology, or graphic album and get back:
+
+- **Basic metadata** — title, description, issue count, publication dates
+- **Creators** — writer, artist, penciller, inker, letterer, editor, colorist, etc.
+- **Cover image(s)**
+- **Availability list** — which digital services carry it, and on what terms (free, paid, subscription-included, library borrow, etc.)
+
+If a title has no digital availability anywhere, that's still a valid and useful result — the goal is consolidating all options into one place so fans can make informed decisions about where to read legally.
+
+The product model follows JustWatch closely: a neutral aggregator that links out to sources rather than hosting content itself. The name says it all — the goal is to get people to **Just Read Comics**.
 
 ## Monorepo structure
 
