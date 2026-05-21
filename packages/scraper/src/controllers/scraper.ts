@@ -25,19 +25,19 @@ scraperRouter.get(
   [verifyTokenMiddleware, confirmIdFromParamAndFetchSeries],
   refreshMarvelMetadataAction
 );
-scraperRouter.get('/refresh/dc/:id');
+// scraperRouter.get('/refresh/dc/:id'); // not yet implemented
 scraperRouter.get(
   '/refresh/image/:id',
   [verifyTokenMiddleware, confirmIdFromParamAndFetchSeries],
   refreshImageMetadataAction
 );
-scraperRouter.get('/refresh/shonen-jump/:id');
+// scraperRouter.get('/refresh/shonen-jump/:id'); // not yet implemented
 scraperRouter.get(
   '/refresh/corpo/:id',
   [verifyTokenMiddleware, confirmIdFromParamAndFetchSeries],
   refreshCorpoMetadataAction
 );
-scraperRouter.get('/refresh/hoopla/:id');
+// scraperRouter.get('/refresh/hoopla/:id'); // not yet implemented
 //
 // // mass import scrapers (very primitive)
 // // honestly, the following controllers should only need to be done once.
