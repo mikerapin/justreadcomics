@@ -19,7 +19,7 @@ npm workspaces + Nx. Packages must be built in dependency order — `common` and
 | `@justreadcomics/client`      | React SPA (Vite + React)                                               | 3000 |
 | `@justreadcomics/server`      | Express REST API                                                       | 8090 |
 | `@justreadcomics/scraper`     | Express scraping service (Puppeteer + Cheerio)                         | 9090 |
-| `justreadcomics-lambda`       | AWS Lambda handlers (AWS SAM)                                          | —    |
+| `justreadcomics-lambda`       | AWS Lambda handlers (AWS SAM); mirrors scraper service scrapers        | —    |
 
 ## Commands
 
@@ -46,6 +46,7 @@ npx jest packages/scraper/src/__tests__/myfile.test.ts
 npm run lint
 npm run lint:fix
 npm run format
+npm run format:check
 ```
 
 ## Known Constraints & Gotchas
@@ -93,6 +94,25 @@ The three scraper action types in `packages/scraper/src/actions/`:
 - **search** (`search.ts`): Looks up a series by name on a service; if found and distance is within threshold, updates the series directly; otherwise queues for review.
 - **refresh** (`refresh.ts`): Re-fetches metadata (description, credits, image) from a service URL that's already stored on a series.
 - **indexed** (`indexed.ts`): Bulk-scrapes a service's own series index (one-time mass import, mostly disabled).
+
+### Client Structure
+
+`packages/client/src/` is organized as:
+
+- `pages/` — top-level route views
+- `components/` — shared UI components
+- `admin/` — admin-only UI (triggers scrape operations against the scraper service)
+- `hooks/`, `providers/` — React hooks and context providers
+- `router/` — React Router config
+- `styles/` — SCSS theming (see below)
+
+### SCSS Theming
+
+Design tokens live in `packages/client/src/styles/_variables.scss` as `$jrc-*` SCSS variables. Bootstrap 5.3 theming is applied in `_themes.scss` by overriding `--bs-*` CSS custom properties under `[data-bs-theme="dark"]` and `[data-bs-theme="light"]` selectors — this is how brand colors win over Bootstrap's defaults. `_typography.scss`, `_buttons.scss`, and `_components.scss` extend the theme. All partials are imported via `custom.scss`.
+
+### Server Structure
+
+`packages/server/src/controllers/` contains one file per domain: `auth.ts`, `series.ts`, `services.ts`, `queue.ts`, `user-queue.ts`. Each controller exports route handlers mounted in `server.ts`.
 
 ### Auth
 
