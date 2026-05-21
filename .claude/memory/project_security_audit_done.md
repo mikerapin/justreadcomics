@@ -29,7 +29,7 @@ All 4 security audit batches committed on 2026-05-18/19 (commits on branch `v2`)
 
 **httpOnly cookie migration.** Auth tokens are still in `localStorage` — vulnerable to XSS. Batch 3 deferred a full httpOnly cookie rewrite as a separate architectural change. This is the highest-remaining auth risk.
 
-**15 npm audit vulnerabilities remaining** (reduced from 107 via CRA→Vite migration on 2026-05-19, commit 657f728). Remaining require major-version upgrades — tracked in [[project-vuln-backlog]].
+**9 npm audit vulnerabilities remaining** (reduced from 107 via CRA→Vite migration on 2026-05-19, then 74→9 via dep upgrade session on 2026-05-21). All remaining are devtool or build-tool scope — zero production runtime vulns. Tracked in [[project-vuln-backlog]].
 
 **lambda package has pre-existing ESLint + typecheck failures.** Not introduced by this audit. The lambda scrape functions are stubs returning 501 — likely not in production use.
 
