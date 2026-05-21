@@ -17,10 +17,11 @@ export const verifyTokenMiddleware = (req: Request, res: Response, next: NextFun
 
   try {
     if (!token) {
-      return res.status(403).json({
+      res.status(403).json({
         statusCode: 403,
         msg: 'A token is required for authentication'
       });
+      return;
     }
     /* Verifying the token. */
     if (process.env.TOKEN_KEY) {
@@ -29,10 +30,11 @@ export const verifyTokenMiddleware = (req: Request, res: Response, next: NextFun
       throw new Error('no token provided');
     }
   } catch (err) {
-    return res.status(401).json({
+    res.status(401).json({
       statusCode: 401,
       msg: 'Invalid Token'
     });
+    return;
   }
   return next();
 };
