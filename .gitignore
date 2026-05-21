@@ -100,3 +100,4 @@ samconfig.toml
 *.pem
 .vercel
 .netlify
+.claude/worktrees
