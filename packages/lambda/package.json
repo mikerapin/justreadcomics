@@ -33,6 +33,6 @@
   "dependencies": {
     "@justreadcomics/common": "1.0.0",
     "@types/aws-lambda": "^8.10.130",
-    "puppeteer": "^21.5.2"
+    "puppeteer": "^25.0.4"
   }
 }
