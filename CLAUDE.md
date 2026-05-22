@@ -105,6 +105,9 @@ The three scraper action types in `packages/scraper/src/actions/`:
 - `hooks/`, `providers/` — React hooks and context providers
 - `router/` — React Router config
 - `styles/` — SCSS theming (see below)
+- `types/` — client-only TypeScript types (shared types live in `@justreadcomics/common`)
+- `util/` — client utilities (HTTP helpers, image handling, route paths, queue status)
+- `data/` — static data and client-side data helpers
 
 ### SCSS Theming
 
