@@ -1,0 +1,29 @@
+// ─── Button Overrides ─────────────────────────────────────────────────────────
+// Bootstrap generates button variants from the color map, so most work happens
+// in _variables.scss. Use this file for structural or behavioral overrides that
+// can't be expressed as variables.
+
+// Example: consistent icon + text spacing
+// .btn {
+//   display: inline-flex;
+//   align-items: center;
+//   gap: .375rem;
+// }
+
+// Example: ghost / text-only variant not in Bootstrap by default
+// .btn-ghost {
+//   background: transparent;
+//   border-color: transparent;
+//   color: var(--bs-body-color);
+//
+//   &:hover {
+//     background: var(--bs-secondary-bg);
+//   }
+// }
+
+// The primary action in the public UI is the card "View" button — currently
+// .btn.btn-sm.btn-outline-secondary in ResultCard.tsx. Override the outline
+// variant here if you want it visually distinct from the default.
+// .btn-outline-secondary {
+//   --bs-btn-hover-bg: var(--bs-secondary-bg);
+// }

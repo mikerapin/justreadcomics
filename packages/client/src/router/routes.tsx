@@ -18,6 +18,7 @@ import { QueueView } from '../admin/QueueView';
 import { SeriesEditPage } from '../pages/SeriesEditPage';
 import { UserSubmissionsList } from '../admin/UserSubmissionsList';
 import { UserSubmissionView } from '../admin/UserSubmissionView';
+import { DesignSystem } from '../pages/DesignSystem';
 
 export const siteRouter = [
   {
@@ -42,6 +43,11 @@ export const siteRouter = [
         element: <SeriesEditPage />
       }
     ]
+  },
+  {
+    path: '/design',
+    element: <DesignSystem />,
+    errorElement: <ErrorPage />,
   },
   {
     path: '/a/login',

@@ -1,0 +1,36 @@
+// ─── Theme overrides ──────────────────────────────────────────────────────────
+// Bootstrap 5.3 applies theme colors at runtime via CSS custom properties
+// keyed to data-bs-theme on <html>. Override them here — after Bootstrap is
+// imported — so our design tokens win over Bootstrap's defaults.
+//
+// SCSS variables ($jrc-*, $primary, …) are available here because _variables.scss
+// is compiled first; #{} interpolation writes the resolved value into the CSS.
+
+// ── Dark ──────────────────────────────────────────────────────────────────────
+[data-bs-theme="dark"] {
+  --bs-body-bg:              #{$jrc-bg-dark};
+  --bs-body-bg-rgb:          30, 30, 30;
+  --bs-body-color:           #fff;
+  --bs-body-color-rgb:       255, 255, 255;
+  --bs-secondary-bg:         #{$jrc-bg-dark-subtle};
+  --bs-secondary-bg-rgb:     42, 42, 42;
+  --bs-tertiary-bg:          #{$jrc-bg-dark-muted};
+  --bs-tertiary-bg-rgb:      51, 51, 51;
+  --bs-border-color:         rgba(255, 255, 255, 0.09);
+  --bs-border-color-translucent: rgba(255, 255, 255, 0.06);
+  --bs-emphasis-color:       #fff;
+  --bs-heading-color:        #fff;
+  --bs-link-color:           #{$jrc-primary};
+  --bs-link-color-rgb:       255, 75, 1;
+  --bs-link-hover-color:     #{$jrc-accent};
+  --bs-link-hover-color-rgb: 230, 186, 186;
+}
+
+// ── Light ─────────────────────────────────────────────────────────────────────
+// Bootstrap's light surface defaults are kept; only brand colors are pinned.
+[data-bs-theme="light"] {
+  --bs-link-color:           #{$jrc-primary};
+  --bs-link-color-rgb:       255, 75, 1;
+  --bs-link-hover-color:     #cc3c01;
+  --bs-link-hover-color-rgb: 204, 60, 1;
+}

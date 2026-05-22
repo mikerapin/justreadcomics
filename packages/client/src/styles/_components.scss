@@ -1,0 +1,16 @@
+// ─── Component Overrides ──────────────────────────────────────────────────────
+// Post-Bootstrap CSS rules for specific components. Theme-level custom property
+// overrides live in _themes.scss, not here.
+
+// ── Creator badges ────────────────────────────────────────────────────────────
+// SeriesDetail renders creators as <Badge pill bg="secondary">, which produces
+// .badge.rounded-pill.bg-secondary. Bootstrap's utility !important on bg-*
+// requires an equally-specific override here.
+.badge.rounded-pill.bg-secondary {
+  background-color: rgba(230, 186, 186, 0.1) !important;
+  border: 1px solid $jrc-accent;
+  color: $jrc-accent;
+  font-size: $h5-font-size;
+  font-weight: 700;
+  padding: 4px 10px;
+}
